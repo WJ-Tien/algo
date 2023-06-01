@@ -3,7 +3,7 @@ class Node:
 		self.value = value
 		self.next_ptr = next_ptr
 
-class LinkedList:
+class SinglyLinkedList:
 	def __init__(self):
 		self.head = None
 		self.size = 0
@@ -41,8 +41,30 @@ class LinkedList:
 
 	def get_size(self):
 		return self.size
+	
+	def delete_node_at(self, node_index):
+		list_size = self.get_size()
 
-	def reversed_list(self):
+		if list_size - 1 < node_index or node_index < 0:
+			raise IndexError("invalid index")
+
+		cur_head = self.head
+		cur_index = 0
+		prev = None
+		while cur_head:
+			if cur_index == node_index:
+				self.size -= 1
+				if node_index == 0:
+					self.head = self.head.next_ptr
+					return
+				to_delete_next = cur_head.next_ptr	
+				prev.next_ptr = to_delete_next
+				return 
+			prev = cur_head
+			cur_head = cur_head.next_ptr
+			cur_index += 1
+
+	def reverse_list(self):
 		cur_head = self.head
 		prev = None
 		
@@ -59,11 +81,14 @@ class LinkedList:
 		self.head = prev	
 
 if __name__ == "__main__":
-	L = LinkedList()
-	L.push_back_node(1)
-	L.insert_front_node(2)
-	L.push_back_node(3)
-	print(L.get_size())
-	L.print_node()
-	L.reversed_list()
-	L.print_node()
+	SLL = SinglyLinkedList()
+	
+	SLL.push_back_node(1)
+	SLL.print_node()
+	SLL.insert_front_node(2)
+	SLL.push_back_node(3)
+	SLL.delete_node_at(2)
+	SLL.print_node()
+	SLL.reverse_list()
+	SLL.print_node()
+	print(SLL.get_size())
