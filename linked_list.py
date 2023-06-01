@@ -42,6 +42,20 @@ class SinglyLinkedList:
 	def get_size(self):
 		return self.size
 	
+	def get_ith_node(self, node_index):
+		list_size = self.get_size()
+
+		if list_size - 1 < node_index or node_index < 0:
+			raise IndexError("invalid index")
+		
+		cur_head = self.head
+		cur_index = 0
+		while cur_head:
+			if cur_index == node_index:
+				return cur_head.value
+			cur_head = cur_head.next_ptr
+			cur_index += 1
+	
 	def delete_node_at(self, node_index):
 		list_size = self.get_size()
 
@@ -84,6 +98,7 @@ if __name__ == "__main__":
 	SLL = SinglyLinkedList()
 	
 	SLL.push_back_node(1)
+	SLL.push_back_node(4)
 	SLL.print_node()
 	SLL.insert_front_node(2)
 	SLL.push_back_node(3)
@@ -91,4 +106,6 @@ if __name__ == "__main__":
 	SLL.print_node()
 	SLL.reverse_list()
 	SLL.print_node()
-	print(SLL.get_size())
+	# 3 1 2
+	print("Size: ", SLL.get_size())
+	print("Ith_node: ", SLL.get_ith_node(0))
