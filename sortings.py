@@ -2,6 +2,7 @@
     DESC: swap when arr[j+1] > arr[j]
     ASC: swap when arr[j+1] < arr[j]
 """
+from math import log10, floor, pow
 
 def bubble(arr: list) -> None:
     # deal with n - 1 round
@@ -41,8 +42,62 @@ def insertion(arr: list) -> None:
                 arr[j], arr[j-1] = arr[j-1], arr[j]
             j -= 1
 
-def radix(arr: list) -> None:
-    pass
+def radix(arr: list) -> list:
+    # TC: O(nd). d = max_digit
+    # SC: O(n + k). k = 10 here
+
+    # The idea behind radix sort is that num with longer num of digit
+    # is larger :). The early the num goes to lower bucket_idx --> smaller
+    # kinda like stack LIFO ops
+    # 1. get max num of digit in the arr to determine n_iters
+    # 2. create a bucket to store temporary result (k = 10)
+    # 3. loop over n_iters times
+    # 4. assign the num to bucket_idx by get_digit
+    # 5. concat all sub array to a array 
+    # 6. repeat 3 ~ 5 
+    # handle postive and negative ints separately
+
+    def get_digit(num: int, idx: int) -> int:
+        return floor(abs(num)//(pow(10, idx))) % 10
+
+    def get_digit_count(num: int) -> int:
+        if num == 0:
+            return 1
+        return floor(log10(abs(num))) + 1
+
+    def max_n_digits(arr: list) -> int:
+        max_digit = 0
+        for num in arr:
+            max_digit = max(max_digit, get_digit_count(num))
+        return max_digit
+
+    n_iters = max_n_digits(arr) 
+    is_positive = [num for num in arr if num >= 0]
+    is_negative = [num for num in arr if num < 0]
+
+    positive_n_iters = max_n_digits(is_positive) 
+    negative_n_iters = max_n_digits(is_negative) 
+
+    for n in range(positive_n_iters):
+        bucket = [[] for _ in range(10)] # k = 10
+        for num in is_positive:
+            bucket_idx = get_digit(num, n)
+            bucket[bucket_idx].append(num)
+
+        is_positive = [element for buc in bucket for element in buc] # n
+
+    for n in range(negative_n_iters):
+        bucket = [[] for _ in range(10)] # k = 10
+        for num in is_negative:
+            bucket_idx = get_digit(num, n)
+            bucket[bucket_idx].append(num)
+
+        is_negative = [element for buc in bucket for element in buc] # n
+
+    is_negative.reverse()
+    is_negative.extend(is_positive)
+
+    return is_negative
 
 def merge(arr: list) -> None:
     pass
@@ -52,7 +107,7 @@ def quick(arr: list) -> None:
 
 
 if __name__ == "__main__":
-    arr = [3, 2, 7, 1, 4]
+    arr = [3, 2, -7, 0,  1, 4]
     print("Before: ", arr)
-    insertion(arr)
+    arr = radix(arr)
     print("After: ", arr)
