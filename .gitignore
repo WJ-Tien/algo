@@ -1,3 +1,5 @@
 *.swp
 util.py
+*.txt
+leetcode.py
 
