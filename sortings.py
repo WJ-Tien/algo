@@ -71,33 +71,32 @@ def radix(arr: list) -> list:
             max_digit = max(max_digit, get_digit_count(num))
         return max_digit
 
-    n_iters = max_n_digits(arr) 
-    is_positive = [num for num in arr if num >= 0]
-    is_negative = [num for num in arr if num < 0]
+    positive_list = [num for num in arr if num >= 0]
+    negative_list = [num for num in arr if num < 0]
 
-    positive_n_iters = max_n_digits(is_positive) 
-    negative_n_iters = max_n_digits(is_negative) 
+    positive_n_iters = max_n_digits(positive_list) 
+    negative_n_iters = max_n_digits(negative_list) 
 
     for n in range(positive_n_iters):
         bucket = [[] for _ in range(10)] # k = 10
-        for num in is_positive:
+        for num in positive_list:
             bucket_idx = get_digit(num, n)
             bucket[bucket_idx].append(num)
 
-        is_positive = [element for buc in bucket for element in buc] # n
+        positive_list = [element for buc in bucket for element in buc] # n
 
     for n in range(negative_n_iters):
         bucket = [[] for _ in range(10)] # k = 10
-        for num in is_negative:
+        for num in negative_list:
             bucket_idx = get_digit(num, n)
             bucket[bucket_idx].append(num)
 
-        is_negative = [element for buc in bucket for element in buc] # n
+        negative_list = [element for buc in bucket for element in buc] # n
 
-    is_negative.reverse()
-    is_negative.extend(is_positive)
+    negative_list.reverse()
+    negative_list.extend(positive_list)
 
-    return is_negative
+    return negative_list
 
 def merge(arr: list) -> None:
     pass
