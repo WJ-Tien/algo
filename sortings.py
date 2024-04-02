@@ -29,7 +29,17 @@ def selection(arr: list) -> None:
         i += 1
 
 def insertion(arr: list) -> None:
-    pass
+    # loop over each element and compare that element to all elements 
+    # before that element
+    # need to loop till the end since the last element might be the smallest
+    # kinda like selection, except that insertion keep swaping
+    # while selection find min and swap 1 time
+    for i in range(len(arr)):
+        j = i
+        while j - 1 >= 0:
+            if arr[j] < arr[j-1]:
+                arr[j], arr[j-1] = arr[j-1], arr[j]
+            j -= 1
 
 def radix(arr: list) -> None:
     pass
