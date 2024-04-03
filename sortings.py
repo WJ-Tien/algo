@@ -160,7 +160,7 @@ def _partition(arr: list, left: int, right: int) -> int:
 
 def quick(arr: list, left: int, right: int) -> None:
     # TC: O(nlogn)
-    # SC: O(1)
+    # SC: O(logn)
     if left >= right:
         return
     partition_pos = _partition(arr, left, right) 
