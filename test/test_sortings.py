@@ -51,3 +51,29 @@ def test_insertion_sort(arr, expected):
 ])
 def test_radix_sort(arr, expected):
     assert radix(arr) == expected
+
+@pytest.mark.parametrize("arr, expected", [
+    ([5, 2, 4, 6, 1, 3], [1, 2, 3, 4, 5, 6]),
+    ([1, 2, 3, 4, 5], [1, 2, 3, 4, 5]),
+    ([5, 4, 3, 2, 1], [1, 2, 3, 4, 5]),
+    ([], []),
+    ([1], [1]),
+    ([1, 1, 1, 1], [1, 1, 1, 1]),
+    ([5, -2, 4, -6, 1, 3], [-6, -2, 1, 3, 4, 5]),
+])
+def test_merge_sort(arr, expected):
+    merge(arr)
+    assert arr == expected
+
+@pytest.mark.parametrize("arr, expected", [
+    ([5, 2, 4, 6, 1, 3], [1, 2, 3, 4, 5, 6]),
+    ([1, 2, 3, 4, 5], [1, 2, 3, 4, 5]),
+    ([5, 4, 3, 2, 1], [1, 2, 3, 4, 5]),
+    ([], []),
+    ([1], [1]),
+    ([1, 1, 1, 1], [1, 1, 1, 1]),
+    ([5, -2, 4, -6, 1, 3], [-6, -2, 1, 3, 4, 5]),
+])
+def test_quick_sort(arr, expected):
+    quick(arr, 0, len(arr) - 1)
+    assert arr == expected

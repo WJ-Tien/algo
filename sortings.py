@@ -5,6 +5,8 @@
 from math import log10, floor, pow
 
 def bubble(arr: list) -> None:
+    # TC: O(n^2)
+    # SC: O(1)
     # deal with n - 1 round
     # for this last round, it's not required since we've finished the sorting
     # for each round, the "local max" element of that round is fixed 
@@ -16,6 +18,8 @@ def bubble(arr: list) -> None:
                 arr[j], arr[j+1] = arr[j+1], arr[j]
 
 def selection(arr: list) -> None:
+    # TC: O(n^2)
+    # SC: O(1)
     # each round pick the ith element, and loop over the remaining [i+1: n] elements
     # if jth element < ith element, record that idx (swp = j)
     # after the loop, swap them, increase i by 1
@@ -30,6 +34,8 @@ def selection(arr: list) -> None:
         i += 1
 
 def insertion(arr: list) -> None:
+    # TC: O(n^2)
+    # SC: O(1)
     # loop over each element and compare that element to all elements 
     # before that element
     # need to loop till the end since the last element might be the smallest
@@ -99,14 +105,71 @@ def radix(arr: list) -> list:
     return negative_list
 
 def merge(arr: list) -> None:
-    pass
+    # TC: O(nlogn)
+    # SC: O(n)
+    # split till the array contains only 1 element
+    # sort it (this does merge as well)
+    # do above steps recursively
+    
+    if len(arr) <= 1:
+        return
 
-def quick(arr: list) -> None:
-    pass
+    # split
+    left_arr = arr[:len(arr)//2]
+    right_arr = arr[len(arr)//2:]
+    merge(left_arr)
+    merge(right_arr)
+
+    # merge 
+    # with order implicitly 
+    i = j = k = 0
+    while i < len(left_arr) and j < len(right_arr):
+        if left_arr[i] < right_arr[j]:
+            arr[k] = left_arr[i] 
+            i += 1
+        else:
+            arr[k] = right_arr[j]
+            j += 1
+        k += 1
+    
+    while i < len(left_arr):
+        arr[k] = left_arr[i]
+        k += 1
+        i += 1
+
+    while j < len(right_arr):
+        arr[k] = right_arr[j]
+        k += 1
+        j += 1
+
+def _partition(arr: list, left: int, right: int) -> int:
+    # return end index
+    i = left
+    j = right - 1
+    pivot = arr[right]
+    while i < j:
+        while i < right and arr[i] < pivot:
+            i += 1
+        while j > left and arr[j] >= pivot:
+            j -= 1
+        if i < j:
+            arr[i], arr[j] = arr[j], arr[i]
+    if arr[i] > pivot:
+        arr[i], arr[right] = arr[right], arr[i]
+    return i
+
+def quick(arr: list, left: int, right: int) -> None:
+    # TC: O(nlogn)
+    # SC: O(1)
+    if left >= right:
+        return
+    partition_pos = _partition(arr, left, right) 
+    quick(arr, left, partition_pos - 1)
+    quick(arr, partition_pos + 1, right)
 
 
 if __name__ == "__main__":
     arr = [3, 2, -7, 0,  1, 4]
     print("Before: ", arr)
-    arr = radix(arr)
+    quick(arr, 0, len(arr) - 1) 
     print("After: ", arr)
