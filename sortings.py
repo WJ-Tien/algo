@@ -166,10 +166,3 @@ def quick(arr: list, left: int, right: int) -> None:
     partition_pos = _partition(arr, left, right) 
     quick(arr, left, partition_pos - 1)
     quick(arr, partition_pos + 1, right)
-
-
-if __name__ == "__main__":
-    arr = [3, 2, -7, 0,  1, 4]
-    print("Before: ", arr)
-    quick(arr, 0, len(arr) - 1) 
-    print("After: ", arr)
