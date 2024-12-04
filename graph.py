@@ -28,7 +28,7 @@ class BFS:
         return image
 
 
-class DFS:
+class DFS_RECUR:
     def floodFill(self, image: List[List[int]], sr: int, sc: int, color: int) -> List[List[int]]:
 
         rows, cols = len(image), len(image[0])
@@ -49,7 +49,7 @@ class DFS:
         dfs(sr, sc)
         return image
 
-class Solution:
+class DFS_ITER:
     def floodFill(self, image: List[List[int]], sr: int, sc: int, color: int) -> List[List[int]]:
 
         rows, cols = len(image), len(image[0])
