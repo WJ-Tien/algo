@@ -1,4 +1,5 @@
 from collections import deque
+from typing import List
 
 # floodfill algorithm
 # BFS or DFS
@@ -46,4 +47,24 @@ class DFS:
             dfs(r, c + 1)
         
         dfs(sr, sc)
+        return image
+
+class Solution:
+    def floodFill(self, image: List[List[int]], sr: int, sc: int, color: int) -> List[List[int]]:
+
+        rows, cols = len(image), len(image[0])
+        ori_color = image[sr][sc]
+        stack = []
+        visited = set()
+        stack.append((sr, sc))
+
+        while stack:
+            r, c = stack.pop()
+            image[r][c] = color
+            visited.add((r, c))
+
+            for nr, nc in [(r, c-1), (r, c+1), (r-1, c), (r+1, c)]:
+                if (0 <= nr < rows and 0 <= nc < cols and image[nr][nc] == ori_color and ((nr, nc) not in visited)):
+                    image[nr][nc] = color
+                    stack.append((nr, nc))
         return image
