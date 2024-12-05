@@ -9,6 +9,34 @@ class TreeNode:
         self.left = left
         self.right = right
 
+
+def maxDepth_iter(root: Optional[TreeNode]) -> int:
+    if root is None:
+        return 0
+    
+    stack = [(root, 1)]
+    max_depth = 0
+
+    while stack:
+        node, depth = stack.pop()
+        max_depth = max(max_depth, depth) 
+
+        if node.left:
+            stack.append((node.left, depth + 1))
+        if node.right:
+            stack.append((node.right, depth + 1))
+
+    return max_depth
+
+
+def maxDepth_recur(root: Optional[TreeNode]) -> int:
+
+    if root is None: 
+        return 0
+    
+    return 1 + max(maxDepth_recur(root.left), maxDepth_recur(root.right))
+
+
 def isBalanced_recur(root: Optional[TreeNode]) -> bool:
     
     def dfs(root):
@@ -18,6 +46,8 @@ def isBalanced_recur(root: Optional[TreeNode]) -> bool:
         lh = dfs(root.left)
         rh = dfs(root.right)
 
+        # isbalance of the individual tree does not always guarantee  \
+        # to create balanced subtree
         is_balanced = (lh[0] and rh[0]) and \
                         (abs(lh[1] - rh[1]) <= 1)
         return (is_balanced, 1 + max(lh[1], rh[1]))
@@ -58,7 +88,7 @@ def isBalanced_iter(root: Optional[TreeNode]) -> bool:
         return True
 
 
-def diameterOfBinaryTree(self, root: Optional[TreeNode]) -> int:
+def diameterOfBinaryTree(root: Optional[TreeNode]) -> int:
     """
     diameter = lh + rh 
     lh, rh := max_depth(max_height) of the left and right subtree respectively
@@ -81,3 +111,32 @@ def diameterOfBinaryTree(self, root: Optional[TreeNode]) -> int:
         return 1 + max(lh, rh)
     dfs(root) 
     return ans
+
+
+def isSameTree(p: Optional[TreeNode], q: Optional[TreeNode]) -> bool:
+
+    if p is None and q is None:
+        return True
+    elif p is None or q is None: 
+        return False
+    else:
+        if p.val == q.val:
+            return isSameTree(p.left, q.left) and isSameTree(p.right, q.right)
+        return False
+
+
+def isSymmetric(root: Optional[TreeNode]) -> bool:
+
+    # using sametree concept
+    # dfs is better, bfs is way too complicated
+
+    def dfs(p, q):
+        if p is None and q is None:
+            return True
+        elif p is None or q is None:
+            return False
+        else:
+            if p.val == q.val:
+                return dfs(p.left, q.right) and dfs(p.right, q.left)
+            return False
+    return dfs(root.left, root.right)
