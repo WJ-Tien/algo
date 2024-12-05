@@ -45,7 +45,8 @@ def isBalanced_iter(root: Optional[TreeNode]) -> bool:
                 stack.append((node.right, False))
                 stack.append((node.left, False))
             else:
-                # cal height
+                # when a node is visited twice
+                # --> cal height
                 left_depth = depth.get(node.left, 0)
                 right_depth = depth.get(node.right, 0)
 
@@ -55,3 +56,28 @@ def isBalanced_iter(root: Optional[TreeNode]) -> bool:
                 depth[node] = 1 + max(left_depth, right_depth)
 
         return True
+
+
+def diameterOfBinaryTree(self, root: Optional[TreeNode]) -> int:
+    """
+    diameter = lh + rh 
+    lh, rh := max_depth(max_height) of the left and right subtree respectively
+    1 + max(lh, rh) := max_depth(max_height) of the node ==
+                    := return of dfs func
+    """
+
+    ans = float("-inf")
+
+    def dfs(root):
+        nonlocal ans
+        if root is None:
+            return 0
+        
+        lh = dfs(root.left)
+        rh = dfs(root.right)
+        d = lh + rh
+        ans = max(ans, d)
+
+        return 1 + max(lh, rh)
+    dfs(root) 
+    return ans
