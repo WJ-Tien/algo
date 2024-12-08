@@ -140,3 +140,32 @@ def isSymmetric(root: Optional[TreeNode]) -> bool:
                 return dfs(p.left, q.right) and dfs(p.right, q.left)
             return False
     return dfs(root.left, root.right)
+
+
+def sortedArrayToBST(nums: list[int]) -> Optional[TreeNode]:
+
+    # in-order placement
+    def dfs(start, end):
+        if start > end:
+            # reach leaf
+            return None
+        mid = start + (end - start) // 2
+        root = TreeNode(nums[mid])
+
+        root.left = dfs(start, mid - 1)
+        root.right = dfs(mid + 1, end)
+        return root
+    
+    return dfs(0, len(nums) - 1)
+
+def lowestCommonAncestor(root: 'TreeNode', p: 'TreeNode', q: 'TreeNode') -> 'TreeNode':
+
+    cur = root
+
+    while cur:
+        if cur.val > p.val and cur.val > q.val:
+            cur = cur.left
+        elif cur.val < p.val and cur.val < q.val:
+            cur = cur.right
+        else:
+            return cur
