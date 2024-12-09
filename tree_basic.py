@@ -1,3 +1,8 @@
+"""
+pre-order: <M><L><R>
+in-order: <L><M><R>
+post-order: <L><R><M>
+"""
 
 class Node:
 	def __init__(self, value, left=None, right=None):
