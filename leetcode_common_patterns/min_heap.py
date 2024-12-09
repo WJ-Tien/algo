@@ -1,6 +1,8 @@
 from heapq import heappush, heappushpop
 
 # heap sort by the first element of the tuple
+# and then by the second element and etc
+# so it's always a good idea to store data in a tuple
 
 def kClosest(points: list[list[int]], k: int) -> list[list[int]]:
 
@@ -21,5 +23,17 @@ def kClosest(points: list[list[int]], k: int) -> list[list[int]]:
 
     return ans
 
+
+def findClosestElements(arr: list[int], k: int, x: int) -> list[int]:
+    hp = []
+
+    for num in arr:
+        dist = -abs(num - x)
+        if len(hp) == k:
+            heappushpop(hp, (dist, -num))
+        else:
+            heappush(hp, (dist, -num))
+
+    return sorted([-hp[i][1] for i in range(k)])
 
     
