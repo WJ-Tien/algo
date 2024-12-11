@@ -1,5 +1,11 @@
+# space: O(N * L * A)
+# Time O(L)
+# L: average length
+# A: dict length (26, actually <= 26)
 class TrieNode:
     def __init__(self):
+        # children key = char
+        #          value = TrieNode()
         self.children = {} 
         self.end_of_words = False
 
