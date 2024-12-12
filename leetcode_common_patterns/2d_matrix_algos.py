@@ -98,3 +98,28 @@ def updateMatrix(mat):
                 seen.add((nr, nc))           
 
     return dist
+
+
+def rotate_90(matrix: list[list[int]]) -> None:
+    """
+    rotate clockwise (90 degrees) in-place
+    """
+
+    # reverse
+    matrix.reverse() # O(n), row-wise
+
+    # transpose O(n^2)
+    for i in range(len(matrix)):
+        for j in range(i+1, len(matrix)):
+            matrix[i][j], matrix[j][i] = matrix[j][i], matrix[i][j]
+
+def rotate_180(matrix: list[list[int]]) -> None:
+    """
+    rotate clockwise (180 degrees) in-place
+    """
+
+    # reverse and transpose 
+    matrix.reverse() # O(n), row-wise
+
+    for row in matrix: 
+        row.reverse()
