@@ -12,7 +12,7 @@ Base case:
 結果保存:
 
 通常用一個全域變數 result 保存所有可能的解。
-
+backtrack開始就是一個tree的 root
 """
 
 def permute(nums: list[int]) -> list[list[int]]:
@@ -25,6 +25,7 @@ def permute(nums: list[int]) -> list[list[int]]:
 
         if len(path) == len(nums):
             ans.append(path[:])
+            return
         
         for i in range(len(nums)):
             if visited[i]:
@@ -46,6 +47,7 @@ def combine(n: int, k: int) -> list[list[int]]:
     def backtrack(start, path):
         if len(path) == k:
             ans.append(path[:])
+            return
 
         for i in range(start, n + 1):
             path.append(i)
@@ -55,18 +57,44 @@ def combine(n: int, k: int) -> list[list[int]]:
     return ans
 
 
+def subsets(nums: list[int]) -> list[list[int]]:
+    # TC: O(n*2^n) --> n stack depth * 2^n results
+    # SC: O(n)
+    ans = []
 
-
-
-
-def subsets(nums):
-    def backtrack(start, path):
-        result.append(path[:])  # 每次都加入當前子集
+    def backtrack(start, path, k):
+        if len(path) == k:
+            ans.append(path[:])
+            return
+        
         for i in range(start, len(nums)):
-            path.append(nums[i])  # 選擇
-            backtrack(i + 1, path)  # 遞歸下一步
-            path.pop()  # 撤銷選擇
+            path.append(nums[i])
+            backtrack(i + 1, path, k)
+            path.pop()
+    
+    for i in range(len(nums)+1):
+        backtrack(0, [], i)
+    return ans
 
-    result = []
-    backtrack(0, [])
-    return result
+
+def combinationSum(candidates: list[int], target: int) -> list[list[int]]:
+    # n = len(candidates)
+    # t is deepest when candidates = 1 (min(candidates))
+    # TC: O(n^target) --> n, n^2, n^3 --> n^target
+    # SC: O(t/min(candidates))
+
+    ans = []
+    def backtrack(path, start, cur_sum):
+        if cur_sum == target:
+            ans.append(path[:])
+            return
+        elif cur_sum > target:
+            return
+        
+        for i in range(start, len(candidates)):
+            path.append(candidates[i])
+            backtrack(path, i, cur_sum + candidates[i]) 
+            path.pop()
+        
+    backtrack([], 0, 0)
+    return ans
