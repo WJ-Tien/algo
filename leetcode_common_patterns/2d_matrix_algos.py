@@ -87,6 +87,7 @@ def updateMatrix(mat):
 
     # Step 2: BFS
     # not visited elements are 1
+    # bfs guarantees to find the shortest path
     directions = [(0, 1), (0, -1), (1, 0), (-1, 0)]
     while queue:
         r, c = queue.popleft()

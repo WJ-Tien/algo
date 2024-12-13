@@ -26,3 +26,20 @@ def reverseBits(n: int) -> int:
         n >>= 1
     return ret
         
+
+def productExceptSelf(nums: list[int]) -> list[int]:
+    # prefix product like
+    ret = [1] * len(nums)
+
+    # ret[i-1] = prefix_prod before i - 1 (0~i-2)
+    # prod[0~i) = prefix_prod[0 ~ i - 2] * nums[i-1]
+
+    for i in range(1, len(nums)):
+        ret[i] = ret[i-1] * nums[i - 1]
+    
+    rprod = 1
+    for i in range(len(nums)-1, -1, -1):
+        ret[i] *= rprod # the order of this two lines is critical
+        rprod *= nums[i]
+
+    return ret

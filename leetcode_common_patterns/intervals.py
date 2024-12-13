@@ -77,3 +77,23 @@ def is_overlapped(interval1: list[list[int]], interval2: list[list[int]]) -> boo
         return False
     # overlapped 
     return True
+
+
+def eraseOverlapIntervals(intervals: list[list[int]]) -> int:
+
+    intervals.sort(key=lambda x: x[0])
+    ans = 0
+    prev_end = intervals[0][1]
+
+    for start, end in intervals[1:]:
+        # not-overlapped
+        if start >= prev_end:  
+            prev_end = end
+        else:
+            ans += 1
+            prev_end = min(prev_end, end)
+            # greedy way
+            # the earlier we keep the smaller end instead of larger end
+            # the more likely we can remove less intervals
+    return ans
+        
