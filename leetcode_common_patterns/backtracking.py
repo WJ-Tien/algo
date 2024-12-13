@@ -15,33 +15,49 @@ Base case:
 
 """
 
-def permute(nums):
-    def backtrack(path, options):
-        if len(path) == len(nums):  # 路徑長度達到目標
-            result.append(path[:])
-            return
-        for i in range(len(options)):
-            path.append(options[i])  # 選擇
-            backtrack(path, options[:i] + options[i+1:])  # 選擇剩餘的
-            path.pop()  # 撤銷選擇
+def permute(nums: list[int]) -> list[list[int]]:
+    # TC: O(N* N!) --> N depths * N! leaves
+    # SC: O(N) --> recursion call stacks
 
-    result = []
-    backtrack([], nums)
-    return result
+    ans = []
+    visited = [False] * len(nums) 
+    def backtrack(path, visited):
 
-def combine(n, k):
+        if len(path) == len(nums):
+            ans.append(path[:])
+        
+        for i in range(len(nums)):
+            if visited[i]:
+                continue
+            path.append(nums[i]) 
+            visited[i] = True
+            backtrack(path, visited)
+            path.pop()
+            visited[i] = False
+    backtrack([], visited)
+    return ans
+
+def combine(n: int, k: int) -> list[list[int]]:
+    # [1..n]
+    # TC: O(k * C(n, k)) --> k depth * C(n, k) leaves
+    # SC: O(k) --> recursion call stacks
+
+    ans = []
     def backtrack(start, path):
-        if len(path) == k:  # 達到所需組合長度
-            result.append(path[:])
-            return
-        for i in range(start, n + 1):  # 遍歷剩餘選項
-            path.append(i)
-            backtrack(i + 1, path)  # 避免重複選擇
-            path.pop()  # 撤銷選擇
+        if len(path) == k:
+            ans.append(path[:])
 
-    result = []
-    backtrack(1, [])
-    return result
+        for i in range(start, n + 1):
+            path.append(i)
+            backtrack(i + 1, path)
+            path.pop()
+    backtrack(1, []) 
+    return ans
+
+
+
+
+
 
 def subsets(nums):
     def backtrack(start, path):
