@@ -116,6 +116,9 @@ def romanToInt(s: str) -> int:
 
 
 class LRUCacheSimple:
+    # LRU --> get and put will be treated as used
+    # remove least one in case key not in LRU_CACHE and size > capacity
+    # otherwise we set lru_cache[key] = value
     # production use this
     def __init__(self, capacity: int):
         self.lru_cache = OrderedDict()
@@ -147,6 +150,11 @@ class Node:
 
 class LRUCacheComplicatd:
     # interview use this
+    # LRU --> get and put will be treated as used
+    # remove least one in case key not in LRU_CACHE and size > capacity
+    # otherwise we set lru_cache[key] = value
+    # hashmap is for fast lookup O(1)
+    # doublelinkedlist is for fast insert and deletion
 
     def __init__(self, capacity: int):
         self.capacity = capacity
