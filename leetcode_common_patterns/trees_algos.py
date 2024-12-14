@@ -48,6 +48,7 @@ def isBalanced_recur(root: Optional[TreeNode]) -> bool:
 
         # isbalance of the individual tree does not always guarantee  \
         # to create balanced subtree
+        # isbalanced = True for left/right substree, but their height diff may larger than one
         is_balanced = (lh[0] and rh[0]) and \
                         (abs(lh[1] - rh[1]) <= 1)
         return (is_balanced, 1 + max(lh[1], rh[1]))
@@ -228,7 +229,7 @@ def pathSumII(root: Optional[TreeNode], targetSum: int) -> list[list[int]]:
             
         dfs(root.left, cur_sum, path)
         dfs(root.right, cur_sum, path)
-        path.pop()
+        path.pop() # very important, inspired by backtracking
         
     dfs(root, 0, [])
     return ans
