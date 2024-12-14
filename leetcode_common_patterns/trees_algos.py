@@ -195,6 +195,8 @@ def levelOrder(root: Optional[TreeNode]) -> list[list[int]]:
 
 
 def hasPathSum(root: Optional[TreeNode], targetSum: int) -> bool:
+    # TC: O(N), O(N)
+    # SC: O(logN), O(N)
 
     def dfs(root, cur_sum):
         if root is None:
@@ -202,6 +204,7 @@ def hasPathSum(root: Optional[TreeNode], targetSum: int) -> bool:
         
         cur_sum += root.val
         if cur_sum == targetSum and root.left is None and root.right is None:
+            # early termination, since we only need to know if any ONE is true
             return True
         return dfs(root.left, cur_sum) or dfs(root.right, cur_sum)
 
@@ -209,6 +212,8 @@ def hasPathSum(root: Optional[TreeNode], targetSum: int) -> bool:
 
 
 def pathSumII(root: Optional[TreeNode], targetSum: int) -> list[list[int]]:
+    # average O(N*logN) TS
+    # worst/skewed O(N^2) TS
 
     ans = []
     def dfs(root, cur_sum, path):
@@ -218,6 +223,7 @@ def pathSumII(root: Optional[TreeNode], targetSum: int) -> list[list[int]]:
         cur_sum += root.val
         path.append(root.val)
         if cur_sum == targetSum and root.left is None and root.right is None:
+            # can't early terminate here, we have to collect all
             ans.append(path[:])
             
         dfs(root.left, cur_sum, path)
