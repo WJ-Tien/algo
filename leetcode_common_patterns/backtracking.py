@@ -98,3 +98,29 @@ def combinationSum(candidates: list[int], target: int) -> list[list[int]]:
         
     backtrack([], 0, 0)
     return ans
+
+
+def generateParenthesis(n: int) -> list[str]:
+    # TC: O(4^n/sqrt(n)) (O(2^n))
+    # SC: O(n)
+    
+    ans = []
+
+    def backtrack(left, right, path):
+        if left == n and right == n:
+            ans.append(''.join(path[:]))
+            return
+    
+        if left < n:
+            # path.append("(")
+            # backtrack(left + 1, right, path)
+            backtrack(left + 1, right, path + ["("])
+            # path.pop()
+        if right < left:
+            # path.append(")")
+            # backtrack(left, right + 1, path)
+            backtrack(left, right + 1, path + [")"])
+            # path.pop()
+
+    backtrack(0, 0, [])
+    return ans 

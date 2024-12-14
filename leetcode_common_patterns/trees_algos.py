@@ -192,3 +192,39 @@ def levelOrder(root: Optional[TreeNode]) -> list[list[int]]:
                 queue.append(node.right)
         ans.append(level)
     return ans
+
+
+def hasPathSum(root: Optional[TreeNode], targetSum: int) -> bool:
+
+    def dfs(root, cur_sum):
+        if root is None:
+            return False
+        
+        cur_sum += root.val
+        if cur_sum == targetSum and root.left is None and root.right is None:
+            return True
+        return dfs(root.left, cur_sum) or dfs(root.right, cur_sum)
+
+    return dfs(root, 0)
+
+
+def pathSumII(root: Optional[TreeNode], targetSum: int) -> list[list[int]]:
+
+    ans = []
+    def dfs(root, cur_sum, path):
+        if root is None:
+            return
+        
+        cur_sum += root.val
+        path.append(root.val)
+        if cur_sum == targetSum and root.left is None and root.right is None:
+            ans.append(path[:])
+            
+        dfs(root.left, cur_sum, path)
+        dfs(root.right, cur_sum, path)
+        path.pop()
+        
+    dfs(root, 0, [])
+    return ans
+    
+    

@@ -1,3 +1,4 @@
+import math
 from collections import OrderedDict
 from typing import Optional
 
@@ -198,3 +199,30 @@ class LRUCacheComplicatd:
             self.remove(lru)
             del self.lru_cache[lru.key]
         
+
+def reverse(x: int) -> int:
+    INT_MAX = 2**31 - 1
+    INT_MIN = -2**31
+    MAX_LAST_DIGIT = int(math.fmod(INT_MAX, 10))
+    MIN_LAST_DIGIT = int(math.fmod(INT_MIN, 10)) # cannot use % 10. Wrong
+    INT_MAX_SAFE = int(INT_MAX / 10) 
+    INT_MIN_SAFE = int(INT_MIN / 10) # cannot use //10. Wrong
+
+    n = x
+    ans = 0
+
+    while n:
+        last_digit = int(math.fmod(n, 10))
+        n = int(n / 10)
+
+        # >INT_MAX_SAFE + last_digit --> overflow
+        # =INT_MAX_SAFE + > MAX_LAST_DIGIT --> overflow
+        if ans > INT_MAX_SAFE or (ans == INT_MAX_SAFE and last_digit > MAX_LAST_DIGIT):
+            return 0
+
+        elif ans < INT_MIN_SAFE or (ans == INT_MIN_SAFE and last_digit < MIN_LAST_DIGIT):
+            return 0
+        ans = ans * 10 + last_digit
+    return ans
+            
+
