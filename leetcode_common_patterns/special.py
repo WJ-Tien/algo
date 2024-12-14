@@ -1,3 +1,9 @@
+from typing import Optional
+
+class ListNode:
+    def __init__(self, val=0, next=None):
+        self.val = val
+        self.next = next  
 
 def addBinary(a: str, b: str) -> str:
 
@@ -14,6 +20,53 @@ def addBinary(a: str, b: str) -> str:
     if carry:
         ans.append(str(carry))
     return ''.join(ans[::-1])
+
+def addTwoNumbers(l1: Optional[ListNode], l2: Optional[ListNode]) -> Optional[ListNode]:
+
+    # total %
+    # carry //
+
+    cur_l1 = l1
+    cur_l2 = l2
+    carry = 0
+    ans = ListNode()
+    cur_ans = ans
+
+    while cur_l1 and cur_l2:
+        digit_l1 = cur_l1.val
+        digit_l2 = cur_l2.val
+        total = (digit_l1 + digit_l2 + carry)
+        cur_ans.val = total % 10
+        carry = total // 10
+        cur_l1 = cur_l1.next
+        cur_l2 = cur_l2.next
+
+        if cur_l1 or cur_l2:
+            cur_ans.next = ListNode()
+            cur_ans = cur_ans.next
+
+    while cur_l1:
+        digit_l1 = cur_l1.val
+        total = digit_l1 + carry
+        cur_ans.val = total % 10 
+        carry = total // 10
+        cur_l1 = cur_l1.next
+        if cur_l1:
+            cur_ans.next = ListNode()
+            cur_ans = cur_ans.next
+
+    while cur_l2:
+        digit_l2 = cur_l2.val
+        total = digit_l2 + carry
+        cur_ans.val = total % 10 
+        carry = total // 10
+        cur_l2 = cur_l2.next
+        if cur_l2:
+            cur_ans.next = ListNode()
+            cur_ans = cur_ans.next
+    if carry:
+        cur_ans.next = ListNode(carry)
+    return ans
 
 
 def reverseBits(n: int) -> int:
