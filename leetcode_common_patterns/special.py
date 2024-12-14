@@ -1,3 +1,4 @@
+from collections import OrderedDict
 from typing import Optional
 
 class ListNode:
@@ -112,3 +113,80 @@ def romanToInt(s: str) -> int:
         else:
             ans += mp[s[i]]
     return ans + mp[s[-1]]
+
+
+class LRUCacheSimple:
+    # production use this
+    def __init__(self, capacity: int):
+        self.lru_cache = OrderedDict()
+        self.capacity = capacity
+        
+
+    def get(self, key: int) -> int:
+        if key in self.lru_cache:
+            self.lru_cache.move_to_end(key)
+            return self.lru_cache[key]
+        return -1
+        
+
+    def put(self, key: int, value: int) -> None:
+        if key in self.lru_cache:
+            self.lru_cache.move_to_end(key)
+        else:
+            if len(self.lru_cache) >= self.capacity:
+                self.lru_cache.popitem(last=False)
+        self.lru_cache[key] = value 
+
+
+class Node:
+    def __init__(self, key: int, val: int) -> None:
+        # doubly linkedlist
+        self.key = key
+        self.val = val
+        self.prev, self.next = None, None
+
+class LRUCacheComplicatd:
+    # interview use this
+
+    def __init__(self, capacity: int):
+        self.capacity = capacity
+        self.lru_cache = dict() # key: Node
+        self.left = Node(0, 0) # dummy
+        self.right = Node(0, 0) # dummy
+        self.left.next = self.right
+        self.right.prev = self.left
+
+    def remove(self, node):
+        prev_node, next_node = node.prev, node.next
+        prev_node.next = next_node
+        next_node.prev = prev_node
+    
+    def insert(self, node):
+        prev_node, next_node = self.right.prev, self.right
+        prev_node.next = node
+        node.prev = prev_node
+        node.next = next_node
+        self.right.prev = node
+        
+
+    def get(self, key: int) -> int:
+        if key in self.lru_cache:
+            self.remove(self.lru_cache[key])
+            self.insert(self.lru_cache[key])
+            # emulate move_to_end
+            return self.lru_cache[key].val
+        return -1
+
+    def put(self, key: int, value: int) -> None:
+        if key in self.lru_cache:
+            self.remove(self.lru_cache[key])
+        self.lru_cache[key] = Node(key, value)
+        self.insert(self.lru_cache[key])
+
+        # remove LRU from the list
+        # and key from hasmap
+        if len(self.lru_cache) > self.capacity:
+            lru = self.left.next
+            self.remove(lru)
+            del self.lru_cache[lru.key]
+        

@@ -8,6 +8,7 @@ from heapq import heappush, heappushpop, heappop
 # use customized class to redefine __lt__ 
 # (please see top K elements)
 # heap only guarantees to store the smallest value at the first node
+# and recursively to the substree root
 # while the others are not sorted
 
 def kClosest(points: list[list[int]], k: int) -> list[list[int]]:
