@@ -1,9 +1,14 @@
 from collections import Counter
 from heapq import heappush, heappushpop, heappop
 
-# heap sort by the first element of the tuple
+# heap sorted by the first element of the tuple
 # and then by the second element and etc
 # so it's always a good idea to store data in a tuple
+# or we can 
+# use customized class to redefine __lt__ 
+# (please see top K elements)
+# heap only guarantees to store the smallest value at the first node
+# while the others are not sorted
 
 def kClosest(points: list[list[int]], k: int) -> list[list[int]]:
 
