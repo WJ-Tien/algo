@@ -1,4 +1,5 @@
 from collections import defaultdict, deque
+from typing import Optional
 
 # Normal DFS
 def canFinish(numCourses: int, prerequisites: list[list[int]]) -> bool:
@@ -97,3 +98,35 @@ def canFinish_topo_sort(numCourses: int, prerequisites: list[list[int]]) -> bool
     return visited == numCourses
 
 
+
+class Node:
+    def __init__(self, val = 0, neighbors = None):
+        self.val = val
+        self.neighbors = neighbors if neighbors is not None else []
+
+    def cloneGraph(self, node: Optional['Node']) -> Optional['Node']:
+        # O(V+E) TS
+
+        if node is None:
+            return None
+        
+        copy_graph = dict()
+        queue = deque()
+
+        # old_node <-> new_node mapping 
+        # push first node of the old_node 
+        # to start the iteration
+        copy_graph[node] = Node(node.val)
+        queue.append(node)
+
+        while queue:
+            vertex = queue.popleft()
+            for neighbor in vertex.neighbors:
+                if neighbor not in copy_graph:
+                    copy_graph[neighbor] = Node(neighbor.val)
+                    queue.append(neighbor)
+                
+                # very critical, should be aware of this
+                copy_graph[vertex].neighbors.append(copy_graph[neighbor])
+        
+        return copy_graph[node]

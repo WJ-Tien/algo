@@ -122,3 +122,42 @@ def generateParenthesis(n: int) -> list[str]:
 
     backtrack(0, 0, [])
     return ans 
+
+
+
+def letterCombinations(digits: str) -> list[str]:
+    # TC: O(4^N * (N+N)) == O(4^N*N). 4^N results * (N recursion stack + N join)
+    # SC: O(N + 4^N * N)
+    # Rule of product 
+    # two digits have 4 and 2 choices, so total = 4 * 2 = 8 choices
+    # since we have 4 at most with N digits, so 4^N combination at most
+    if digits == "":
+        return []
+
+    digit_map = {
+                    "2": "abc",
+                    "3": "def",
+                    "4": "ghi",
+                    "5": "jkl",
+                    "6": "mno",
+                    "7": "pqrs",
+                    "8": "tuv",
+                    "9": "wxyz"
+                }
+
+    ans = []
+    def backtrack(start, path):
+
+        if len(path) == len(digits):
+            ans.append(''.join(path[:]))
+            return
+        
+        # this do the trick !!
+        letters = digit_map[digits[start]]
+        for letter in letters:
+            path.append(letter)
+            backtrack(start + 1, path)
+            path.pop()
+    backtrack(0, [])
+    return ans
+        
