@@ -112,15 +112,13 @@ def generateParenthesis(n: int) -> list[str]:
             return
     
         if left < n:
-            # path.append("(")
-            # backtrack(left + 1, right, path)
-            backtrack(left + 1, right, path + ["("])
-            # path.pop()
+            path.append("(")
+            backtrack(left + 1, right, path)
+            path.pop()
         if right < left:
-            # path.append(")")
-            # backtrack(left, right + 1, path)
-            backtrack(left, right + 1, path + [")"])
-            # path.pop()
+            path.append(")")
+            backtrack(left, right + 1, path)
+            path.pop()
 
     backtrack(0, 0, [])
     return ans 
