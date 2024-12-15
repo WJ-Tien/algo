@@ -159,7 +159,7 @@ def sortedArrayToBST(nums: list[int]) -> Optional[TreeNode]:
     
     return dfs(0, len(nums) - 1)
 
-def lowestCommonAncestor(root: 'TreeNode', p: 'TreeNode', q: 'TreeNode') -> 'TreeNode':
+def lowestCommonAncestor_BST_ONLY(root: 'TreeNode', p: 'TreeNode', q: 'TreeNode') -> 'TreeNode':
 
     cur = root
 
@@ -170,6 +170,35 @@ def lowestCommonAncestor(root: 'TreeNode', p: 'TreeNode', q: 'TreeNode') -> 'Tre
             cur = cur.right
         else:
             return cur
+
+def lowestCommonAncestor_BT_OR_BSR(root: 'TreeNode', p: 'TreeNode', q: 'TreeNode') -> 'TreeNode':
+    # T: O(N), last_line: O((logN)^2))
+    queue = deque()
+    queue.append(root)
+    hmp = dict()
+    hmp[root] = [root]
+
+    while queue:
+        node = queue.popleft()
+
+        if node.left:
+            queue.append(node.left)
+            if node.left not in hmp:
+                hmp[node.left] = []
+            hmp[node.left].extend(hmp[node])
+            hmp[node.left].append(node.left)
+        if node.right:
+            queue.append(node.right)
+            if node.right not in hmp:
+                hmp[node.right] = []
+            hmp[node.right].extend(hmp[node])
+            hmp[node.right].append(node.right)
+
+    for p_dest in hmp[p][::-1]:
+        for q_dest in hmp[q][::-1]:
+            if p_dest.val == q_dest.val:
+                return p_dest
+
 
 def levelOrder(root: Optional[TreeNode]) -> list[list[int]]:
 
