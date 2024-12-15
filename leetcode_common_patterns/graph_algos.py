@@ -1,4 +1,6 @@
+from collections import defaultdict, deque
 
+# Normal DFS
 def canFinish(numCourses: int, prerequisites: list[list[int]]) -> bool:
     """
     時間複雜度（Time Complexity, TC） 
@@ -28,7 +30,7 @@ def canFinish(numCourses: int, prerequisites: list[list[int]]) -> bool:
     status = {i: 0 for i in range(numCourses)} #T: O(V)
 
     for a, b in prerequisites:
-        graph[a].add(b) # O(E)
+        graph[a].add(b) #T: O(E)
 
     # 0: not visited
     # 1: finished (checked OK)
@@ -59,3 +61,39 @@ def canFinish(numCourses: int, prerequisites: list[list[int]]) -> bool:
         if dfs(c):
             return False
     return True
+
+
+# using topological sort
+# in_degree = 0 will be placed into the queue (deque)
+# lower in_degree --> higher in_degree ("sort")
+# if cyclic (no in_degree == 0 vertices), you cannot use topo sort (course schedule)
+# since we cannot proceed by push in_degree == 0 to the queue
+def canFinish_topo_sort(numCourses: int, prerequisites: list[list[int]]) -> bool:
+
+    graph = defaultdict(set)
+    in_degree = [0] * numCourses
+
+    for a, b in prerequisites:
+        # for in_degree, we take b as key
+        # b -> a 
+        graph[b].add(a) # adjacent set
+        in_degree[a] += 1
+    
+    queue = deque()
+    for i in range(len(in_degree)):
+        if in_degree[i] == 0:
+            queue.append(i)
+    
+    visited = 0
+    while queue:
+        vertex = queue.popleft()
+        visited += 1 # for in_degree = 0's node. check OK so add 1
+
+        for neighbor in graph[vertex]:
+            in_degree[neighbor] -= 1 # consume neighbor's in_degree !!
+            if in_degree[neighbor] == 0: # Only add in_degree == 0 to the queue
+                queue.append(neighbor)
+
+    return visited == numCourses
+
+
