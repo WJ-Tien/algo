@@ -224,5 +224,24 @@ def reverse(x: int) -> int:
             return 0
         ans = ans * 10 + last_digit
     return ans
-            
+
+
+def evalRPN(tokens: list[str]) -> int:
+
+    stack = []
+    ans = 0
+    ops = {"+", "-", "*", "/"}
+
+    if len(tokens) == 1:
+        return tokens[0]
+
+    for token in tokens:
+        if token in ops:
+            i1, i2 = stack.pop(), stack.pop()
+            ans = int(eval(i2 + token + i1))
+            stack.append(str(ans))
+        else:
+            # store numbers only
+            stack.append(token)
+    return ans
 
