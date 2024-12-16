@@ -284,5 +284,46 @@ def isValidBST(root: Optional[TreeNode]) -> bool:
     return dfs(root, low, high)
 
 
+def buildTree(self, preorder: list[int], inorder: list[int]) -> Optional[TreeNode]:
+    # O(n) TS
 
+    # 前序遍歷告訴我們根節點在哪裡 [0] = root
+    # 中序遍歷告訴我們如何分割左右子樹 [0] = left_node
+    # 通過計算左子樹的大小，我們能在前序遍歷中找到右子樹的起始位置
+    # 讓我們分析這個公式：pre_start + (root_index - in_start + 1)
+
+    # pre = [根節點, 左子樹的所有節點..., 右子樹的所有節點...]
+    # in  =[左子樹的所有節點...,根節點..., 右子樹的所有節點...] 
+    # root_index - in_start 這部分計算的是左子樹的節點數量
+    # 例如：
+    # 中序遍歷：[9, 3, 15, 20, 7]
+    #         ^  ^
+    #         |  |
+    #     in_start root_index
     
+    # root_index(1) - in_start(0) = 1
+    # 確實，3 左邊只有一個節點(9)
+    # 為什麼要 +1？
+    # 因為還要跳過根節點本身
+    # 所以是：左子樹的節點數 + 1個根節點
+    
+    def helper(pre_start, in_start, in_end):
+        if pre_start >= len(preorder) or in_start > in_end:
+            return None
+    
+        root_val = preorder[pre_start]
+        root = TreeNode(root_val)
+    
+        root_index = inorder_index_map[root_val] # == mid
+    
+        # Left subtree: preorder index + 1, inorder range [in_start, root_index - 1]
+        root.left = helper(pre_start + 1, in_start, root_index - 1)
+    
+        # Right subtree: preorder index + (root_index - in_start + 1), inorder range [root_index + 1, in_end]
+        root.right = helper(pre_start + (root_index - in_start + 1), root_index + 1, in_end)
+    
+        return root
+
+    # Create a map for quick lookup of root indices in the inorder list.
+    inorder_index_map = {val: idx for idx, val in enumerate(inorder)}
+    return helper(0, 0, len(inorder) - 1)

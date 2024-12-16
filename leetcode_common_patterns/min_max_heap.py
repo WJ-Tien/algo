@@ -1,6 +1,8 @@
 from collections import Counter
 from heapq import heappush, heappushpop, heappop
 
+# Python itself implements "min_heap"
+
 # heap sorted by the first element of the tuple
 # and then by the second element and etc
 # so it's always a good idea to store data in a tuple
@@ -125,3 +127,18 @@ class MedianFinder:
         # 1 2 . 3 4
         return (-self.small[0] +self.large[0]) / 2
         
+
+def minMeetingRooms(intervals: list[list[int]]) -> int:
+    # O(n*logn)
+    # O(n)
+
+    # save end to the heap
+    mhp = []
+    intervals.sort(key=lambda x: x[0])
+
+    for start, end in intervals:
+        if mhp and mhp[0] <= start: # end before new -> pop it
+            heappop(mhp)
+        heappush(mhp, end) # push end
+    
+    return len(mhp)
