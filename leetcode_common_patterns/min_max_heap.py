@@ -125,7 +125,7 @@ class MedianFinder:
         if len(self.small) < len(self.large):
             return self.large[0]
         # 1 2 . 3 4
-        return (-self.small[0] +self.large[0]) / 2
+        return (-self.small[0] + self.large[0]) / 2
         
 
 def minMeetingRooms(intervals: list[list[int]]) -> int:
