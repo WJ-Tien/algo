@@ -4,6 +4,8 @@ in-order:   <L> <M> <R>
 post-order: <L> <R> <M>
 """
 
+# AVL > Red-black >> B/BST
+
 class Node:
 	def __init__(self, value, left=None, right=None):
 		self.value = value

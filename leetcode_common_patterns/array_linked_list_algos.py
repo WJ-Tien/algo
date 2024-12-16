@@ -1,3 +1,4 @@
+from typing import Optional
 
 def sortColors(nums: list[int]) -> None:
     """
@@ -37,3 +38,25 @@ def findKthLargest(nums: list[int], k: int) -> int:
             return quick_select(l, p - 1)
         return nums[p]
     return quick_select(0, len(nums)-1)
+
+class ListNode:
+    def __init__(self, val=0, next=None):
+        self.val = val
+        self.next = next
+
+def swapPairs(head: Optional[ListNode]) -> Optional[ListNode]:
+    
+    dummy = ListNode()
+    cur = dummy.next = head
+    prev = dummy
+
+    while cur and cur.next:
+        first, second = cur, cur.next
+        third_node = cur.next.next
+        second.next = first
+        prev.next = second # important !
+        first.next = third_node
+        prev = first
+        cur = third_node
+        
+    return dummy.next 

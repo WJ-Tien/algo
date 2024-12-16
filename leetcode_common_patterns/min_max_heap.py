@@ -99,7 +99,6 @@ class MedianFinder:
         self.small = [] # store smallers', max_heap
         self.large = [] # store largers', min_heap
         
-
     def addNum(self, num: int) -> None:
         heappush(self.small, -num)
         if self.small and self.large:
@@ -116,11 +115,13 @@ class MedianFinder:
             val = heappop(self.large)
             heappush(self.small, -val)
         
-
     def findMedian(self) -> float:
+        # 1 2 3 . 4 5 
         if len(self.small) > len(self.large):
             return -self.small[0]
+        # 1 2 . 3 4 5
         if len(self.small) < len(self.large):
             return self.large[0]
+        # 1 2 . 3 4
         return (-self.small[0] +self.large[0]) / 2
         
