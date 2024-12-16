@@ -88,4 +88,39 @@ class Solution:
     
         # Reverse the result since we want the most frequent first
         return ans[::-1]
-    
+
+
+class MedianFinder:
+
+    def __init__(self):
+        # T: O(logN)
+        # S: O(N)
+        # 1 2(max from max_heap) 3(min from min_heap) 4
+        self.small = [] # store smallers', max_heap
+        self.large = [] # store largers', min_heap
+        
+
+    def addNum(self, num: int) -> None:
+        heappush(self.small, -num)
+        if self.small and self.large:
+            # small always <= large
+            if -self.small[0] > self.large[0]:
+                val = -heappop(self.small)
+                heappush(self.large, val)
+        
+        # balance heaps
+        if len(self.small) > len(self.large) + 1:
+            val = -heappop(self.small)
+            heappush(self.large, val)
+        if len(self.small) + 1 < len(self.large):
+            val = heappop(self.large)
+            heappush(self.small, -val)
+        
+
+    def findMedian(self) -> float:
+        if len(self.small) > len(self.large):
+            return -self.small[0]
+        if len(self.small) < len(self.large):
+            return self.large[0]
+        return (-self.small[0] +self.large[0]) / 2
+        
