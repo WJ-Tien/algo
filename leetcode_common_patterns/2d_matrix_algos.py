@@ -151,3 +151,46 @@ def numIslands(grid: list[list[str]]) -> int:
                 ans += 1
     return ans
     
+
+def orangesRotting(grid: list[list[int]]) -> int:
+
+    rows, cols = len(grid), len(grid[0])
+    queue = deque()
+    visited = set()
+    ans = 0
+    directions = [(0, 1), (1, 0), (0, -1), (-1, 0)]
+    zero_counts = 0
+
+    # multisources BFS
+    for r in range(rows):
+        for c in range(cols):
+            if grid[r][c] == 2:
+                queue.append((r, c))
+            if grid[r][c] == 0:
+                zero_counts += 1
+    
+    while queue:
+        n = len(queue)
+        # the flag is critical here since we might revisit
+        # only rotten_flag is True (fresh got changed to 2)
+        # we add ans by 1
+        rotten_flag = False
+        for _ in range(n):
+            r, c = queue.popleft()
+            visited.add((r, c))
+
+            for dr, dc in directions:
+                nr, nc = r + dr, c + dc
+                if (0 <= nr < rows and 0 <= nc < cols) and ((nr, nc) not in visited) and grid[nr][nc] == 1:
+                    rotten_flag = True
+                    grid[nr][nc] = 2
+                    queue.append((nr, nc))
+        if rotten_flag:
+            ans += 1
+
+    # important edge case
+    if len(visited) + zero_counts != rows * cols:
+        # 1 got isolated
+        return -1
+    return ans
+    
