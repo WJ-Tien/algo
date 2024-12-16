@@ -265,7 +265,8 @@ def pathSumII(root: Optional[TreeNode], targetSum: int) -> list[list[int]]:
     
 
 def isValidBST(root: Optional[TreeNode]) -> bool:
-    # O(N) TS
+    # O(N) T
+    # O(H) S
 
     low, high = float("-inf"), float("inf")
 
