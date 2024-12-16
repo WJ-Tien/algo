@@ -11,6 +11,12 @@ from heapq import heappush, heappushpop, heappop
 # and recursively to the substree root
 # while the others are not sorted
 
+"""
+insert num to a 
+1. max_heap: -num
+2. min_heap:  num
+"""
+
 def kClosest(points: list[list[int]], k: int) -> list[list[int]]:
 
     hp = []

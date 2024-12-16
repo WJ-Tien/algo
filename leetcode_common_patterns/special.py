@@ -267,6 +267,8 @@ def findDuplicate(nums: list[int]) -> int:
     # where n = go through cycle n times
 
     # x = (n-1)(y+z) + z
+    # fast goes (n-1)*(y+z) + z --> go back entry point
+    # slow goes x --> go to the entry point
     slow = nums[0]
     while slow != fast:
         slow = nums[slow]
