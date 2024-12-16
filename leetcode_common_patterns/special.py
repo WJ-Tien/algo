@@ -290,3 +290,23 @@ def findDuplicate(nums: list[int]) -> int:
         slow = nums[slow]
         fast = nums[fast]
     return slow
+
+
+
+def maxProduct(nums: list[int]) -> int:
+
+    max_prod = nums[0]
+    min_prod = nums[0] # handle neg * neg = pos cases
+    ans = nums[0]
+
+    for i in range(1, len(nums)):
+        if nums[i] < 0:
+            # key, swap min max when num < 0
+            min_prod, max_prod = max_prod, min_prod
+        
+        # kinda like kadane's algo !
+        min_prod = min(nums[i], min_prod * nums[i])
+        max_prod = max(nums[i], max_prod * nums[i])
+
+        ans = max(ans, max_prod)
+    return ans
