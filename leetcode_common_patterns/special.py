@@ -245,3 +245,48 @@ def evalRPN(tokens: list[str]) -> int:
             stack.append(token)
     return ans
 
+
+
+"""
+x: 从起点到环入口的距离
+y: 从环入口到相遇点的距离
+z: 从相遇点绕环一圈回到环入口的距离
+
+
+在第一次相遇时：
+
+慢指针走的距离：x + y
+快指针走的距离：x + y + n(y + z)，其中 n 是快指针绕环的圈数
+因为快指针速度是慢指针的两倍，所以：
+
+2(x + y) = x + y + n(y + z)
+x + y = n(y + z)
+x = (n-1)y + nz
+x = (n-1)(y + z) + z
+"""
+def findDuplicate(nums: list[int]) -> int:
+
+    # the key is the nums is in the range [1..n]
+
+    slow = nums[0] # slow pointer
+    fast = nums[0] # fast pointer
+
+    while True:
+        slow = nums[slow] # one step
+        fast = nums[nums[fast]] # two step
+        if slow == fast:
+            # fast now is at meeting point in the cycle
+            break
+    # S to E: x
+    # E to M: y
+    # M to E: z
+    # 2 * slow = fast
+    # 2(x + y) =  x + y + n(y + z) 
+    # where n = go through cycle n times
+
+    # x = (n-1)(y+z) + z
+    slow = nums[0]
+    while slow != fast:
+        slow = nums[slow]
+        fast = nums[fast]
+    return slow
