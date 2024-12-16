@@ -263,4 +263,25 @@ def pathSumII(root: Optional[TreeNode], targetSum: int) -> list[list[int]]:
     dfs(root, 0, [])
     return ans
     
+
+def isValidBST(root: Optional[TreeNode]) -> bool:
+    # O(N) TS
+
+    low, high = float("-inf"), float("inf")
+
+    def dfs(root, low, high):
+        # leaves
+        if root is None:
+            return True
+        
+        # very important here, we must loop until the leaves
+        # so we cannot stop early
+        if not (low < root.val < high):
+            return False
+        return dfs(root.left, low, root.val) and dfs(root.right, root.val, high)
+
+    return dfs(root, low, high)
+
+
+
     
