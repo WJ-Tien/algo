@@ -154,3 +154,125 @@ def productExceptSelf(nums: list[int]) -> list[int]:
         rprod *= nums[i]
 
     return ret
+
+
+def rotateRight(head: Optional[ListNode], k: int) -> Optional[ListNode]:
+
+    if head is None:
+        return None 
+
+    n = 0
+    cur_head = head
+    while cur_head:
+        n += 1
+        prev = cur_head
+        cur_head = cur_head.next
+    
+    prev.next = head # KEY: we have to make it a cycle
+    k = k % n
+    # k will be the new_head
+    # n - k - 1 will be the new head
+    # n - k = dist between head and new_head
+    new_tail = head
+    dist_new_head = n - k
+
+    for _ in range(dist_new_head - 1):
+        new_tail = new_tail.next
+    
+    head = new_tail.next
+    new_tail.next = None
+
+    return head
+
+class Node:
+    def __init__(self, key: int, val: int) -> None:
+        # doubly linkedlist
+        self.key = key
+        self.val = val
+        self.prev, self.next = None, None
+
+class LRUCacheComplicatd:
+    # interview use this
+    # LRU --> get and put will be treated as used
+    # remove least one in case key not in LRU_CACHE and size > capacity
+    # otherwise we set lru_cache[key] = value
+    # hashmap is for fast lookup O(1)
+    # doublelinkedlist is for fast insert and deletion
+
+    def __init__(self, capacity: int):
+        self.capacity = capacity
+        self.lru_cache = dict() # key: Node
+        self.left = Node(0, 0) # dummy
+        self.right = Node(0, 0) # dummy
+        self.left.next = self.right
+        self.right.prev = self.left
+
+    def remove(self, node):
+        prev_node, next_node = node.prev, node.next
+        prev_node.next = next_node
+        next_node.prev = prev_node
+    
+    def insert(self, node):
+        prev_node, next_node = self.right.prev, self.right
+        prev_node.next = node
+        node.prev = prev_node
+        node.next = next_node
+        self.right.prev = node
+        
+
+    def get(self, key: int) -> int:
+        if key in self.lru_cache:
+            self.remove(self.lru_cache[key])
+            self.insert(self.lru_cache[key])
+            # emulate move_to_end
+            return self.lru_cache[key].val
+        return -1
+
+    def put(self, key: int, value: int) -> None:
+        if key in self.lru_cache:
+            self.remove(self.lru_cache[key])
+        self.lru_cache[key] = Node(key, value)
+        self.insert(self.lru_cache[key])
+
+        # remove LRU from the list
+        # and key from hasmap
+        if len(self.lru_cache) > self.capacity:
+            lru = self.left.next
+            self.remove(lru)
+            del self.lru_cache[lru.key]
+
+
+def reorderList(head: Optional[ListNode]) -> None:
+    """
+    Do not return anything, modify head in-place instead.
+    """
+    slow = fast = head
+
+    while fast and fast.next:
+        slow = slow.next
+        fast = fast.next.next
+
+    cur_head = slow
+    prev = None
+
+    while cur_head:
+        next_node = cur_head.next
+        cur_head.next = prev
+        prev = cur_head
+        cur_head = next_node
+    reversed_head = prev
+    # head --> ... --> null <-- slow ... <-- reversed_head 
+    ori_head = head
+    rev_head = reversed_head
+    while rev_head.next: # very tricky !
+        ori_next_node = ori_head.next
+        rev_next_node = rev_head.next
+    
+        ori_head.next = rev_head
+        rev_head.next = ori_next_node
+    
+        ori_head = ori_next_node
+        rev_head = rev_next_node
+
+
+    

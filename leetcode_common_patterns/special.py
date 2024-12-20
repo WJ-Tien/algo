@@ -124,64 +124,6 @@ class LRUCacheSimple:
         self.lru_cache[key] = value 
 
 
-class Node:
-    def __init__(self, key: int, val: int) -> None:
-        # doubly linkedlist
-        self.key = key
-        self.val = val
-        self.prev, self.next = None, None
-
-class LRUCacheComplicatd:
-    # interview use this
-    # LRU --> get and put will be treated as used
-    # remove least one in case key not in LRU_CACHE and size > capacity
-    # otherwise we set lru_cache[key] = value
-    # hashmap is for fast lookup O(1)
-    # doublelinkedlist is for fast insert and deletion
-
-    def __init__(self, capacity: int):
-        self.capacity = capacity
-        self.lru_cache = dict() # key: Node
-        self.left = Node(0, 0) # dummy
-        self.right = Node(0, 0) # dummy
-        self.left.next = self.right
-        self.right.prev = self.left
-
-    def remove(self, node):
-        prev_node, next_node = node.prev, node.next
-        prev_node.next = next_node
-        next_node.prev = prev_node
-    
-    def insert(self, node):
-        prev_node, next_node = self.right.prev, self.right
-        prev_node.next = node
-        node.prev = prev_node
-        node.next = next_node
-        self.right.prev = node
-        
-
-    def get(self, key: int) -> int:
-        if key in self.lru_cache:
-            self.remove(self.lru_cache[key])
-            self.insert(self.lru_cache[key])
-            # emulate move_to_end
-            return self.lru_cache[key].val
-        return -1
-
-    def put(self, key: int, value: int) -> None:
-        if key in self.lru_cache:
-            self.remove(self.lru_cache[key])
-        self.lru_cache[key] = Node(key, value)
-        self.insert(self.lru_cache[key])
-
-        # remove LRU from the list
-        # and key from hasmap
-        if len(self.lru_cache) > self.capacity:
-            lru = self.left.next
-            self.remove(lru)
-            del self.lru_cache[lru.key]
-        
-
 def reverse(x: int) -> int:
     INT_MAX = 2**31 - 1
     INT_MIN = -2**31
