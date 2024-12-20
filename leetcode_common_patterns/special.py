@@ -274,3 +274,47 @@ def findDuplicate(nums: list[int]) -> int:
         slow = nums[slow]
         fast = nums[fast]
     return slow
+
+
+def myPow(x: float, n: int) -> float:
+
+    if n == 0:
+        return 1.0
+    elif n < 0:
+        x = 1 / x
+        n = -n
+    
+    ans = 1
+
+    while n:
+        if n % 2 == 1:
+            ans *= x
+        x *= x
+        n //= 2
+    return ans
+
+def findMaxLength(nums: list[int]) -> int:
+    # O(n) TS
+
+    cur_sum = 0
+    max_len = 0
+    hmp = {0: -1}
+    # 0: minus 1, 1: plus 1
+    # if cur_sum == 0, we have balanced 0 & 1
+    # we substract cur_index from hmp[cur_sum]
+
+    for idx, num in enumerate(nums):
+        if num == 0:
+            cur_sum -= 1
+        else:
+            cur_sum += 1
+        
+        if cur_sum in hmp:
+            # j = hmp[cur_sum]
+            # i = cur_idx
+            # j + 1 ~ i
+            # i - (j + 1) + 1 = i - j
+            max_len = max(max_len, idx - hmp[cur_sum])
+        else:
+            hmp[cur_sum] = idx
+    return max_len

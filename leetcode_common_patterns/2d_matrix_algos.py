@@ -193,4 +193,45 @@ def orangesRotting(grid: list[list[int]]) -> int:
         # 1 got isolated
         return -1
     return ans
+
+
+def setZeroes(matrix: list[list[int]]) -> None:
+    # T: O(mn)
+    # S: O(1)
+    """
+    Do not return anything, modify matrix in-place instead.
+    """
+    rows, cols = len(matrix), len(matrix[0])
+    first_row_has_zero = False
+    first_col_has_zero = False
+
+    for c in range(cols):
+        if matrix[0][c] == 0:
+            first_row_has_zero = True
+    
+    for r in range(rows):
+        if matrix[r][0] == 0:
+            first_col_has_zero = True
+    
+    # mark 1r,1c if r,c has zeroes.
+
+    for r in range(1, rows):
+        for c in range(1, cols):
+            if matrix[r][c] == 0:
+                matrix[0][c] = 0
+                matrix[r][0] = 0
+
+    # zero transition
+    for r in range(1, rows):
+        for c in range(1, cols):
+            if matrix[0][c] == 0 or matrix[r][0] == 0:
+                matrix[r][c] = 0
+    # first row
+    if first_row_has_zero:
+        for c in range(cols):
+            matrix[0][c] = 0
+    
+    if first_col_has_zero:
+        for r in range(rows):
+            matrix[r][0] = 0
     
