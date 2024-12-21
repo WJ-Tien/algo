@@ -235,3 +235,32 @@ def setZeroes(matrix: list[list[int]]) -> None:
         for r in range(rows):
             matrix[r][0] = 0
     
+
+def getFood(grid: List[List[str]]) -> int:
+    # use traditional BFS won't work (TLE @ test case 77th)
+    # mark grid[nr][nc] right after you visited
+    # don't use visited set
+    
+    # BFS
+    rows, cols = len(grid), len(grid[0])
+    directions = [(0, 1), (1, 0), (-1, 0), (0, -1)]
+    # * you
+    # # food
+    for r in range(rows):
+        for c in range(cols):
+            if grid[r][c] == "*":
+                queue = deque()
+                queue.append((r, c, 0))
+                grid[r][c] = "V"
+                while queue:
+                    r, c, dist = queue.popleft()
+                    for dr, dc in directions:
+                        nr, nc = r + dr, c + dc
+                        if (0 <= nr < rows and 0 <= nc < cols) and \
+                            grid[nr][nc] in {"O", "#"}:
+                            if grid[nr][nc] == "#":
+                                return dist + 1
+                            queue.append((nr, nc, dist + 1))
+                            grid[nr][nc] = "V"
+
+    return -1

@@ -57,5 +57,32 @@ def searchMatrix(matrix: list[list[int]], target: int) -> bool:
             low = mid + 1
     return False
 
+def search(nums: list[int], target: int) -> int:
+    # 33. Search in Rotated Sorted Array
 
+    left, right = 0, len(nums) - 1
+
+    while left <= right: 
+        mid = left + (right - left) // 2
+        if nums[mid] == target:
+            return mid
+        
+        # no need to include mid, 
+        # since we check it at the beginning
+        if nums[left] <= nums[mid]:
+            # left part is sorted
+            if nums[left] <= target < nums[mid]:
+                right = mid - 1
+            else:
+                left = mid + 1
+        else:
+            # right part is sorted
+            if nums[mid] < target <= nums[right]:
+                left = mid + 1
+            else:
+                right = mid - 1
+    return -1
+
+
+       
 
