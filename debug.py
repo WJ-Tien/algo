@@ -1,4 +1,5 @@
 from typing import Optional
+from bisect import bisect_left
 
 class ListNode:
     def __init__(self, val=0, next=None):
@@ -62,7 +63,20 @@ def print_linked_list(head):
         current = current.next
     print(" -> None")
 
-head = create_linked_list()
+# head = create_linked_list()
+# s = Solution()
+# s.reorderList(head)
 
-s = Solution()
-s.reorderList(head)
+
+nums = [10, 9, 8, 1, 2, 3]
+ans = [100, 1]
+
+for num in nums:
+    pos = bisect_left(ans, num) 
+    print(pos, num)
+    if pos == len(ans):
+        ans.append(num)
+    else:
+        ans[pos] = num
+
+print(ans)
