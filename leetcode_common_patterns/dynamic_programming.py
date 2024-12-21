@@ -16,3 +16,17 @@ def maximalSquare(matrix: list[list[str]]) -> int:
                 ans = max(ans, dp[r][c])
                 
     return ans * ans
+
+    
+def coinChange(coins: list[int], amount: int) -> int:
+    # greedy algo
+    dp = [float("inf")] * (amount + 1) 
+    dp[0] = 0
+
+    for coin in coins:
+        for x in range(coin , amount + 1):
+            # x = x - "coin" and add one "coin"
+            # dp[x] = min steps to make up x
+            dp[x] = min(dp[x], dp[x - coin] + 1)
+
+    return dp[amount] if dp[amount] != float("inf") else -1
