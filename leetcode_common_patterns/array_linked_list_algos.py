@@ -261,10 +261,14 @@ def reorderList(head: Optional[ListNode]) -> None:
         prev = cur_head
         cur_head = next_node
     reversed_head = prev
-    # head --> ... --> null <-- slow ... <-- reversed_head 
+    # head --> ... --> slow   null <-- slow ... <-- reversed_head 
     ori_head = head
     rev_head = reversed_head
     while rev_head.next: # very tricky !
+        # since ori_head points to slow
+        # the last node is fix
+        # using rev_head will introduce a cycle
+        # which cause infinite loop
         ori_next_node = ori_head.next
         rev_next_node = rev_head.next
     
