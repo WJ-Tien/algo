@@ -161,3 +161,34 @@ def letterCombinations(digits: str) -> list[str]:
     backtrack(0, [])
     return ans
         
+
+def exist(board: list[list[str]], word: str) -> bool:
+    # T: O(rows * cols * 4^len(word))
+    # S: O(len(word))
+
+    rows, cols = len(board), len(board[0])
+    path = set()
+
+    def backtrack(r, c, idx):
+        if idx == len(word):
+            return True
+        
+        if not (0 <= r < rows and 0 <= c < cols) or \
+            word[idx] != board[r][c] or \
+            (r, c) in path:
+            return False
+        
+        path.add((r, c))
+        ans = backtrack(r - 1, c, idx + 1) or \
+                backtrack(r + 1, c, idx + 1) or \
+                backtrack(r, c - 1, idx + 1) or \
+                backtrack(r, c + 1, idx + 1)
+        path.remove((r, c)) 
+        # like path.pop(). To revoke previous choice
+        return ans
+    
+    for r in range(rows):
+        for c in range(cols):
+            if backtrack(r, c, 0):
+                return True
+    return False

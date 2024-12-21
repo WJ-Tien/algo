@@ -269,6 +269,7 @@ def reorderList(head: Optional[ListNode]) -> None:
         # the last node is fix
         # using rev_head will introduce a cycle
         # which cause infinite loop
+        # null <-- 3 (stop at here)
         ori_next_node = ori_head.next
         rev_next_node = rev_head.next
     
@@ -278,5 +279,24 @@ def reorderList(head: Optional[ListNode]) -> None:
         ori_head = ori_next_node
         rev_head = rev_next_node
 
+def oddEvenList(head: Optional[ListNode]) -> Optional[ListNode]:
 
+    if head is None:
+        return None
+
+    if head and not head.next:
+        return head
     
+    odd = head 
+    even = head.next
+    even_head = even
+
+    # 4 in a row
+    while even and even.next:
+        odd.next = even.next
+        odd = odd.next
+        even.next = odd.next
+        even = even.next
+    
+    odd.next = even_head
+    return head 
