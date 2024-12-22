@@ -233,6 +233,7 @@ def findMinHeightTrees(n: int, edges: list[list[int]]) -> list[int]:
     # 310. Minimum Height Trees
 
     # O(V+E) TS or O(V) since E = V - 1 for tree
+    # remove leaves --> remain 1 or 2 nodes --> answer
 
     if n <= 2:
         return [i for i in range(n)]

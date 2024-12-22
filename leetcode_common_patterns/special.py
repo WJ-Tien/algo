@@ -260,3 +260,70 @@ def findMaxLength(nums: list[int]) -> int:
         else:
             hmp[cur_sum] = idx
     return max_len
+
+
+def leastInterval(tasks: list[str], n: int) -> int:
+    # 621 task scheduler
+
+    fhmp = dict()
+    for task in tasks:
+        fhmp[task] = fhmp.get(task, 0) + 1
+    
+    max_freq = max(fhmp.values()) 
+    max_count = 0
+    for value in fhmp.values():
+        if max_freq == value:
+            max_count += 1
+    
+    # max_freq - 1 interval * (n + 1) + max_count (remaining)
+    # e.g. n = 2
+    # AB_|AB_|AB
+    ideal_block_len = (max_freq - 1) * (n + 1) + max_count
+
+    return max(ideal_block_len, len(tasks))
+
+
+def myAtoi(s: str) -> int:
+    if not s:
+        return 0
+    
+    index = 0
+    n = len(s)
+    while index < n and s[index] == ' ':
+        index += 1
+    
+    # 如果都是空白，略過後就沒字元了，直接回傳 0
+    if index == n:
+        return 0
+    
+    # 3. 準備正負號、結果變數，以及上下限
+    sign = 1
+    result = 0
+    INT_MAX = 2**31 - 1
+    INT_MIN = -2**31
+    
+    # 4. 檢查第一個非空白字元是否為正負號
+    if s[index] == '-':
+        sign = -1
+        index += 1
+    elif s[index] == '+':
+        index += 1
+    
+    # 5. 開始讀取後續數字
+    while index < n and s[index].isdigit():
+        digit = int(s[index])
+        
+        if (result > INT_MAX // 10) or \
+            (result == INT_MAX // 10 and digit >= 8):
+            return INT_MAX if sign == 1 else INT_MIN
+        
+        # 7. 組合數字
+        result = result * 10 + digit # implicity exclude the leading zero
+        index += 1
+    
+    # 8. 根據正負號回傳最終數值
+    return sign * result
+    
+        
+    
+        
