@@ -130,3 +130,148 @@ class Node:
                 copy_graph[vertex].neighbors.append(copy_graph[neighbor])
         
         return copy_graph[node]
+
+
+def countComponents(n: int, edges: list[list[int]]) -> int:
+    # O (V+E) TS
+    # number-of-connected-components-in-an-undirected-graph
+
+    graph = {i: set() for i in range(n)} # O(V), O(V+E)
+    visited = set() # O(V)
+
+    for start, end in edges: # O(E)
+        graph[start].add(end)
+        graph[end].add(start)
+
+    
+    def dfs(vertex):
+        # O (V) + O(E)
+        for v in graph[vertex]: # O (V+E)
+            if v not in visited:
+                visited.add(v)
+                dfs(v) #  O(V)
+        
+    ans = 0
+    for vertex in graph.keys():
+        if vertex not in visited:
+            dfs(vertex)
+            ans += 1
+    return ans
+
+
+def validTree(n: int, edges: list[list[int]]) -> bool:
+    # graph valid tree
+
+    if len(edges) != n - 1:
+        return False
+
+    # check cycle
+    # check single component
+    visited = set()
+    graph = {i: set() for i in range(n)}
+
+    for a, b in edges:
+        graph[a].add(b)
+        graph[b].add(a)
+    
+    def dfs(vertex, parent):
+        # check cycle --> False = not valid
+        visited.add(vertex)
+        for neighbor in graph[vertex]:
+            if neighbor in visited and neighbor != parent:
+                return False
+            if neighbor not in visited:
+                if not dfs(neighbor, vertex):
+                    return False
+        return True
+
+    return dfs(0, -1) and len(visited) == n
+
+
+
+def findOrder(numCourses: int, prerequisites: list[list[int]]) -> list[int]:
+    # O(V+E) TS
+
+    graph = {i: set() for i in range(numCourses)}
+
+    # 0 -> 1 - \
+    #    \ -> 2 -> 3
+
+    # 0 - \
+    # 1 - 2
+    # [[1,0],[1,2],[0,1]]
+    # 0 -> <-1
+    # 2 -> /
+    in_degree = [0] * numCourses
+
+    # topological sort
+    for a, b in prerequisites:
+        graph[b].add(a)
+        in_degree[a] += 1
+    
+    queue = deque()
+
+    for i in range(len(in_degree)):
+        if in_degree[i] == 0:
+            queue.append(i)
+
+    visited = 0
+    ans = []
+    while queue:
+        vertex = queue.popleft()
+        visited += 1
+        ans.append(vertex)
+        for neighbor in graph[vertex]:
+            in_degree[neighbor] -= 1
+            if in_degree[neighbor] == 0:
+                queue.append(neighbor)
+    
+    return [] if visited < numCourses else ans 
+
+
+def findMinHeightTrees(n: int, edges: list[list[int]]) -> list[int]:
+    # 310. Minimum Height Trees
+
+    # O(V+E) TS or O(V) since E = V - 1 for tree
+
+    if n <= 2:
+        return [i for i in range(n)]
+
+    graph = {i: set() for i in range(n)}
+    in_degree = [0] * n
+
+    for a, b in edges:
+        graph[b].add(a)
+        graph[a].add(b)
+        in_degree[a] += 1
+        in_degree[b] += 1
+    
+    leaves = deque()
+
+    for i in range(len(in_degree)):
+        if in_degree[i] == 1: # leaf
+            leaves.append(i)
+    
+    node_left = n
+
+    # we keep the last two nodes
+    # O(V+E) ~ O(V-1) ~ O(V) to do whole pruning
+    # en/de queue --> O(V)
+    # visit neighbor --> O(E)
+    while node_left > 2:
+        leaves_count = len(leaves)
+        node_left -= leaves_count
+
+        for _ in range(leaves_count):
+            leaf = leaves.popleft()
+
+            for neighbor in graph[leaf]:
+                in_degree[neighbor] -= 1
+                graph[neighbor].remove(leaf)
+
+                if in_degree[neighbor] == 1:
+                    leaves.append(neighbor)
+
+    return list(leaves)
+
+                    
