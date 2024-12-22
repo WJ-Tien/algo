@@ -324,6 +324,33 @@ def myAtoi(s: str) -> int:
     # 8. 根據正負號回傳最終數值
     return sign * result
     
+
+
+class LargerNumStr(str):
+    # 179. Largest Number
+    # 當 Python 排序需要判斷 self < other 時，就會呼叫這個方法
+    def __lt__(self, other):
+        # 若 self+other > other+self，表示在題目的意義下 "self" 應該放前面
+        # 因為我們想把「拼起來大的」排在前面，
+        # 但 Python 的 sort() 是把 "比較小" 的放前面，
+        # 所以這裡就直接反過來寫：x < y if x+y > y+x
+        # x + y > y + x --> indicates x < y (true for __lt__)
+        return self + other > other + self
+
+class Solution:
+    def largestNumber(self, nums: list[int]) -> str:
+        # 179. Largest Number
+
+        nums = [LargerNumStr(str(num)) for num in nums]
+    
+        # 排序 (預設 ascending)，但因為我們把 __lt__ 反轉過來，實際會把「應放前面的」排在前面
+        nums.sort()
+        
+        # 若排完之後第一個字是 '0'，代表全部都是零
+        if nums[0] == '0':
+            return '0'
+        
+        return ''.join(nums)
         
     
         
