@@ -1,6 +1,12 @@
 from collections import defaultdict, deque
 from typing import Optional
 
+class TreeNode:
+    def __init__(self, x):
+        self.val = x
+        self.left = None
+        self.right = None
+
 # Normal DFS
 def canFinish(numCourses: int, prerequisites: list[list[int]]) -> bool:
     """
@@ -233,7 +239,8 @@ def findMinHeightTrees(n: int, edges: list[list[int]]) -> list[int]:
     # 310. Minimum Height Trees
 
     # O(V+E) TS or O(V) since E = V - 1 for tree
-    # remove leaves --> remain 1 or 2 nodes --> answer
+    # remove leaves --> til remain 1 or 2 nodes --> answer
+    # like peel an onion (from outermost to innermost)
 
     if n <= 2:
         return [i for i in range(n)]
@@ -276,3 +283,38 @@ def findMinHeightTrees(n: int, edges: list[list[int]]) -> list[int]:
     return list(leaves)
 
                     
+def distanceK(root: TreeNode, target: TreeNode, k: int) -> list[int]:
+    # 863. All Nodes Distance K in Binary Tree
+    # O(N) TS
+
+    graph = dict()
+    def dfs(node, parent):
+        # build graph by using dfs
+        # node -> parent
+        if node is None:
+            return
+        
+        graph[node] = parent
+        dfs(node.left, node)
+        dfs(node.right, node)
+    dfs(root, None)
+
+    queue = deque()
+    dist = 0
+    queue.append((target, dist))
+    ans = []
+    visited = set()
+
+    while queue:
+        node, dist = queue.popleft()
+        visited.add(node)
+
+        if dist == k:
+            ans.append(node.val)
+            continue
+        
+        neighbors = [node.left, node.right, graph[node]]
+        for neighbor in neighbors:
+            if neighbor and neighbor not in visited:
+                queue.append((neighbor, dist + 1))
+    return ans
