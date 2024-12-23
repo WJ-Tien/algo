@@ -1,5 +1,20 @@
+
 from collections import deque
 from typing import Optional
+
+"""
+陣列索引
+
+實際用於儲存節點。
+左子節點是 2 * i + 1。
+右子節點是 2 * i + 2。
+位置標記
+
+用於模擬節點在二叉樹層次中的位置。
+左子節點是 2 * 當前位置。
+右子節點是 2 * 當前位置 + 1。
+
+"""
 
 # tree template
 
@@ -284,7 +299,8 @@ def isValidBST(root: Optional[TreeNode]) -> bool:
     return dfs(root, low, high)
 
 
-def buildTree(self, preorder: list[int], inorder: list[int]) -> Optional[TreeNode]:
+def buildTree(preorder: list[int], inorder: list[int]) -> Optional[TreeNode]:
+    # 105. Construct Binary Tree from Preorder and Inorder Traversal
     # O(n) TS
 
     # 前序遍歷告訴我們根節點在哪裡 [0] = root
@@ -327,3 +343,118 @@ def buildTree(self, preorder: list[int], inorder: list[int]) -> Optional[TreeNod
     # Create a map for quick lookup of root indices in the inorder list.
     inorder_index_map = {val: idx for idx, val in enumerate(inorder)}
     return helper(0, 0, len(inorder) - 1)
+
+
+def widthOfBinaryTree(root: Optional[TreeNode]) -> int:
+
+    # O(n) TS
+    # 662. Maximum Width of Binary Tree
+
+    queue = deque()
+    queue.append((root, 0)) # node, pos
+    ans = 0
+
+    while queue:
+        n = len(queue)
+        _, level_start = queue[0]
+
+        for _ in range(n):
+            node, pos = queue.popleft()
+
+            if node.left:
+                queue.append((node.left, 2*pos))
+            if node.right:
+                queue.append((node.right, 2*pos + 1))
+
+        ans = max(ans, pos - level_start + 1)
+
+    return ans 
+
+
+def inorderSuccessor(root: TreeNode, p: TreeNode) -> Optional[TreeNode]:
+
+    found = False
+    successor = None
+
+    def dfs(root):
+        nonlocal found, successor
+        # root is None  or already found successor
+        if not root or successor:
+            return
+        
+        dfs(root.left)
+
+        if found and not successor:
+            successor = root
+            return
+
+        if root == p: 
+            found = True
+        
+        dfs(root.right)
+    dfs(root)
+    return successor
+
+
+def pathSum(root: Optional[TreeNode], targetSum: int) -> int:
+
+    ans = 0
+    prefix_sum = {0: 1} 
+
+    def dfs(root, cur_sum):
+        nonlocal ans
+        if root is None:
+            return
+        
+        cur_sum += root.val
+        if cur_sum - targetSum in prefix_sum:
+            ans += prefix_sum[cur_sum - targetSum]
+        
+        prefix_sum[cur_sum] = prefix_sum.get(cur_sum, 0) + 1
+
+        dfs(root.left, cur_sum)
+        dfs(root.right, cur_sum)
+        prefix_sum[cur_sum] -= 1 # backtrack; to retract decision
+    
+    dfs(root, 0)
+    return ans
+
+
+"""
+ -10
+ /  \
+9    20
+    /  \
+   15   7
+
+1. 通過該節點計算完整路徑和
+定義：完整路徑和是以當前節點為「樞紐」的總路徑，可以包含左右子樹的路徑和。
+應用：用於更新全域變數 max_sum，記錄整棵樹中可能的最大路徑和。
+例如：在節點 20，完整路徑和是 15 → 20 → 7，這條路徑的和為 20 + 15 + 7 = 42。
+2. 回傳父節點的貢獻值
+定義：當節點作為其父節點路徑的一部分時，只能選擇「左子樹」或「右子樹」之一（加上自身節點值），因為路徑不能分叉。
+應用：用於讓父節點繼續計算其完整路徑和。
+例如：在節點 20，回傳值是 20 + max(15, 7) = 35，表示節點 20 只能選擇一個方向，然後加上自身，提供給父節點使用。
+"""
+
+def maxPathSum(root: Optional[TreeNode]) -> int:
+    # 124. Binary Tree Maximum Path Sum
+    max_sum = float("-inf")
+
+    def dfs(root):
+        nonlocal max_sum
+        if not root:
+            return 0
+        
+        left_max = max(dfs(root.left), 0)
+        right_max = max(dfs(root.right), 0)
+
+        max_sum = max(max_sum, root.val + left_max + right_max)
+
+        return root.val + max(left_max, right_max)
+    
+    dfs(root)
+    return max_sum
+
+        
+

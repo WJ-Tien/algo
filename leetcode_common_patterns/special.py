@@ -150,27 +150,6 @@ def reverse(x: int) -> int:
     return ans
 
 
-def evalRPN(tokens: list[str]) -> int:
-
-    stack = []
-    ans = 0
-    ops = {"+", "-", "*", "/"}
-
-    if len(tokens) == 1:
-        return tokens[0]
-
-    for token in tokens:
-        if token in ops:
-            i1, i2 = stack.pop(), stack.pop()
-            ans = int(eval(i2 + token + i1))
-            stack.append(str(ans))
-        else:
-            # store numbers only
-            stack.append(token)
-    return ans
-
-
-
 """
 x: 从起点到环入口的距离
 y: 从环入口到相遇点的距离
@@ -353,4 +332,29 @@ class Solution:
         return ''.join(nums)
         
     
-        
+class Codec:
+    def encode(self, strs: list[str]) -> str:
+        """Encodes a list of strings to a single string.
+        """
+        enc = []
+        for s in strs:
+            enc.append(str(len(s)))
+            enc.append("/:")
+            enc.append(s)
+        return ''.join(enc)
+
+
+    def decode(self, s: str) -> list[str]:
+        """Decodes a single string to a list of strings.
+        """
+        dec = []
+        i = 0
+
+        # "5/:Hello5/:World"
+        # T: amortized O(n)
+        while i < len(s):
+            delim = s.find("/:", i)
+            length = int(s[i:delim])
+            dec.append(s[delim+2:delim+2+length])
+            i = delim + 2 + length
+        return dec

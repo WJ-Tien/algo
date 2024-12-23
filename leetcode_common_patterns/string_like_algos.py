@@ -1,7 +1,9 @@
 from bisect import bisect_left
+from collections import Counter
 
 """
-Put all the longest OOO here
+Tips: hashmap + sliding window, and two_pointers
+Also Put all the longest OOO here
 """
 def longestPalindrome(s: str) -> int:
     hmp = dict()
@@ -152,3 +154,29 @@ def characterReplacement(s: str, k: int) -> int:
         
         max_len = max(max_len, end - start + 1)
     return max_len
+
+
+def findAnagrams(s: str, p: str) -> list[int]:
+    # 438. Find All Anagrams in a String
+    # sliding windows + hashmap
+    ns, np = len(s), len(p)
+    if ns < np:
+        return []
+
+    p_count = Counter(p)
+    s_count = Counter()
+
+    ans = []
+
+    for i in range(ns):
+        s_count[s[i]] += 1
+
+        if i >= np:
+            if s_count[s[i-np]] == 1:
+                del s_count[s[i-np]]
+            else:
+                s_count[s[i-np]] -= 1
+
+        if p_count == s_count:
+            ans.append(i + 1 - np)
+    return ans

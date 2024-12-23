@@ -58,3 +58,28 @@ def evalRPN(tokens: list[str]) -> int:
     return ans
 
 
+def asteroidCollision(asteroids: list[int]) -> list[int]:
+
+    stack = [] 
+
+    for asteroid in asteroids:
+        should_add = True
+        while stack and stack[-1] > 0 and asteroid < 0: # critical
+            prev_asteroid = stack[-1]
+            if abs(prev_asteroid) < abs(asteroid):
+                stack.pop()
+                # critical
+                # not yet to be added
+                # need to check in another round
+                continue
+            elif abs(prev_asteroid) == abs(asteroid):
+                stack.pop()
+                should_add = False
+                break
+            else:
+                should_add = False
+                break
+
+        if should_add:
+            stack.append(asteroid)
+    return stack
