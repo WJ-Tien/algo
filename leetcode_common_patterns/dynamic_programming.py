@@ -66,3 +66,21 @@ def canJump(nums: list[int]) -> bool:
         if max_reach >= len(nums) - 1:
             return True
     return False
+
+
+def canPartition(nums: list[int]) -> bool:
+    # 416. Partition Equal Subset Sum
+    # compared with Coin change
+
+    target = sum(nums)
+    if target % 2:
+        return False
+    target //= 2
+
+    dp = [False] * (target + 1)
+    dp[0] = True
+
+    for num in nums:
+        for i in range(target, num-1, -1):
+            dp[i] = dp[i] or dp[i - num]
+    return dp[target]
