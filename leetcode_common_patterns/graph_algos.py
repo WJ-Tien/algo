@@ -328,6 +328,8 @@ class DSU:
     def find(self, x):
         if x not in self.parent:
             self.parent[x] = x
+
+        # path compression
         if x != self.parent[x]: 
             self.parent[x] = self.find(self.parent[x])
         return self.parent[x]
