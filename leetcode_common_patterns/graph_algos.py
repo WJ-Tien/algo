@@ -318,3 +318,64 @@ def distanceK(root: TreeNode, target: TreeNode, k: int) -> list[int]:
             if neighbor and neighbor not in visited:
                 queue.append((neighbor, dist + 1))
     return ans
+
+
+
+class DSU:
+    def __init__(self):
+        self.parent = dict()
+    
+    def find(self, x):
+        if x not in self.parent:
+            self.parent[x] = x
+        if x != self.parent[x]: 
+            self.parent[x] = self.find(self.parent[x])
+        return self.parent[x]
+    
+    def union(self, x, y):
+        # x --> y
+        self.parent[self.find(x)] = self.find(y)
+
+class Solution:
+    def accountsMerge(self, accounts: list[list[str]]) -> list[list[str]]:
+        # 假設有 n 個帳戶，每個帳戶平均有 k 個電子郵件
+        # per find/union operation is α(N) -> we have nk --> nka(nk)
+        # Here, α(N) is the inverse Ackermann function that grows so slowly, that it doesn't exceed 4 for all reasonable N 
+        # approximately N<10^600
+        # a(N) = ackermann
+        # NK = total emails
+
+        # T: O(NKlogNK)
+        # S: O(NK) worst case
+
+        dsu = DSU()
+        email_to_name = dict()
+
+        for account in accounts:
+            name = account[0]
+
+            for email in account[1:]:
+                email_to_name[email] = name
+                dsu.union(account[1], email) 
+        
+        merge = dict()
+
+        for email in email_to_name:
+            root = dsu.find(email)
+            if root not in merge:
+                merge[root] = []
+            merge[root].append(email)
+        
+        # {'john00@mail.com': 
+        # ['johnsmith@mail.com', 'john_newyork@mail.com', 'john00@mail.com'], 
+        # 'mary@mail.com': ['mary@mail.com'], 
+        # 'johnnybravo@mail.com': ['johnnybravo@mail.com']}
+        ans = []
+        for email in merge: 
+            ret = [email_to_name[email]]
+            ret.extend(sorted(merge[email]))
+            ans.append(ret)
+        return ans
+        
+
+

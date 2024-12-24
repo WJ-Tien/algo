@@ -36,3 +36,23 @@ def has_cycle_undirected(graph):
                 return True
                 
     return False
+
+
+class DSU:
+    def __init__(self):
+        self.parent = dict()
+    
+    # O(a(N))
+    # a = ackermann function
+    # very small --> O(1)
+    def find(self, x):
+        if x not in self.parent:
+            self.parent[x] = x
+        if x != self.parent[x]: 
+            self.parent[x] = self.find(self.parent[x])
+        return self.parent[x]
+    
+    # O(a(N))
+    def union(self, x, y):
+        # x --> y
+        self.parent[self.find(x)] = self.find(y)

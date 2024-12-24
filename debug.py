@@ -67,16 +67,6 @@ def print_linked_list(head):
 # s = Solution()
 # s.reorderList(head)
 
-
-nums = [10, 9, 8, 1, 2, 3]
-ans = [100, 1]
-
-for num in nums:
-    pos = bisect_left(ans, num) 
-    print(pos, num)
-    if pos == len(ans):
-        ans.append(num)
-    else:
-        ans[pos] = num
-
-print(ans)
+a = {"A":1, "B":2}
+for i in a:
+	print(i)
