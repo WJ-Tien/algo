@@ -84,3 +84,23 @@ def canPartition(nums: list[int]) -> bool:
         for i in range(target, num-1, -1):
             dp[i] = dp[i] or dp[i - num]
     return dp[target]
+
+
+def wordBreak(s: str, wordDict: list[str]) -> bool:
+
+    # T: O(n * m * k)
+    # S: O(n)
+
+    n = len(s)
+    dp = [False] * (n+1)
+    dp[0] = True
+
+
+    for i in range(n):
+        if not dp[i]:
+            continue
+        
+        for word in wordDict:
+            if s[i:].startswith(word):
+                dp[i + len(word)] = True
+    return dp[n]

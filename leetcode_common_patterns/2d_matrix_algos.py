@@ -264,3 +264,35 @@ def getFood(grid: List[List[str]]) -> int:
                             grid[nr][nc] = "V"
 
     return -1
+
+
+def pacificAtlantic(heights: List[List[int]]) -> List[List[int]]:
+
+    # multi-sources bfs, start from ocean
+
+    rows, cols = len(heights), len(heights[0])
+
+    pacific_reached = set()
+    atlantic_reached = set()
+
+    pacific_start = [(0, c) for c in range(cols)] + [(r, 0) for r in range(1, rows)]
+    atlantic_start = [(r, cols-1) for r in range(rows)] + [(rows-1, c) for c in range(cols-1)] 
+
+    def bfs(start, reached):
+        queue = deque(start)
+        directions = [(0, 1), (1, 0), (0, -1), (-1, 0)]
+        while queue:
+            r, c = queue.popleft()
+            reached.add((r, c))
+            for dr, dc in directions:
+                nr, nc = r + dr, c + dc
+                if (0 <= nr < rows and 0 <= nc < cols) and \
+                    (nr, nc) not in reached and \
+                    heights[r][c] <= heights[nr][nc]:
+                    queue.append((nr, nc))
+                    reached.add((r, c))
+    
+    bfs(pacific_start, pacific_reached)
+    bfs(atlantic_start, atlantic_reached)
+
+    return list(pacific_reached & atlantic_reached)

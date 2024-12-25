@@ -83,3 +83,32 @@ def asteroidCollision(asteroids: list[int]) -> list[int]:
         if should_add:
             stack.append(asteroid)
     return stack
+
+
+
+def calculate(s: str) -> int:
+    # deal with * / immediately
+    # for +/-, save it to stack only
+    # store prev_op when char in +-*/ or idx == len(s) - 1
+
+    num_stack = []
+    cur_num = 0
+    prev_op = "+"
+
+    for idx, char in enumerate(s):
+        if char.isdigit():
+            cur_num = cur_num * 10 + int(char)
+        
+        if (char != " " and not char.isdigit()) or idx == len(s) - 1:
+            if prev_op == "+":
+                num_stack.append(cur_num)
+            elif prev_op == "-":                    
+                num_stack.append(-cur_num)
+            elif prev_op == "*":
+                num_stack.append(num_stack.pop() * cur_num)
+            elif prev_op == "/":
+                num_stack.append(int(num_stack.pop() / cur_num))
+            cur_num = 0
+            prev_op = char
+    
+    return sum(num_stack)
