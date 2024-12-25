@@ -104,3 +104,24 @@ def wordBreak(s: str, wordDict: list[str]) -> bool:
             if s[i:].startswith(word):
                 dp[i + len(word)] = True
     return dp[n]
+
+
+"""
+外層遍歷硬幣 → Coin Change
+避免重複計算相同的組合。
+保證不考慮排列順序，只關注最優解。
+
+外層遍歷目標金額 → Combination Sum IV
+允許考慮排列順序。
+確保每個金額可以累計所有排列數量。
+"""
+def combinationSum4(nums: list[int], target: int) -> int:
+
+    dp = [0] * (target + 1)
+    dp[0] = 1
+
+    for t in range(1, target+1):
+        for num in nums:
+            if t >= num:
+                dp[t] += dp[t-num]
+    return dp[target]

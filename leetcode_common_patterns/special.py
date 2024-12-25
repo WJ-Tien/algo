@@ -1,4 +1,5 @@
 import math
+import random
 from collections import OrderedDict
 from typing import Optional
 
@@ -388,3 +389,40 @@ def calculate(s: str) -> int:
     # deal with */ results 
     ans += last_number
     return ans
+
+
+class SolutionRandom:
+
+    def __init__(self, w: list[int]):
+        self.w = w
+        self.prefix_sum = []
+        self.total_sum = 0
+
+        cur_sum = 0
+        for weight in w:
+            cur_sum += weight
+            self.prefix_sum.append(cur_sum)
+        self.total_sum = cur_sum 
+
+    def pickIndex(self) -> int:
+        # you are finding a region, not a specific number !
+        # 1 3 2
+        # 1 4 6
+        # 0 1 2
+        """ 
+        假設累積權重是 [1, 4, 6]，self.total_sum = 6：
+        random.random() 產生一個隨機數 0.5。
+        target = 0.5 * 6 = 3.0。
+        在 [1, 4, 6] 中，3.0 落在 (1, 4] 的範圍，對應索引 1。
+        """
+        target = random.random() * self.total_sum
+        low, high = 0, len(self.prefix_sum) - 1
+        result = 0
+        while low <= high:
+            mid = low + (high - low) // 2
+            if self.prefix_sum[mid] > target:
+                result = mid 
+                high = mid - 1
+            else:
+                low = mid + 1
+        return result
