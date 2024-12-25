@@ -358,3 +358,33 @@ class Codec:
             dec.append(s[delim+2:delim+2+length])
             i = delim + 2 + length
         return dec
+
+
+def calculate(s: str) -> int:
+    last_number = 0
+    cur_num = 0
+    prev_op = "+"
+    ans = 0
+
+    for idx, char in enumerate(s):
+        if char.isdigit():
+            cur_num = cur_num * 10 + int(char)
+        
+        if (char != " " and not char.isdigit()) or idx == len(s) - 1:
+            if prev_op == "+":
+                ans += last_number  
+                last_number = cur_num  
+            elif prev_op == "-":
+                ans += last_number
+                last_number = -cur_num  
+            elif prev_op == "*":
+                last_number = last_number * cur_num  
+            elif prev_op == "/":
+                last_number = int(last_number / cur_num) 
+            
+            cur_num = 0
+            prev_op = char
+            
+    # deal with */ results 
+    ans += last_number
+    return ans
