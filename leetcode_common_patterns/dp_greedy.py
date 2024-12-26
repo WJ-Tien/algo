@@ -125,3 +125,35 @@ def combinationSum4(nums: list[int], target: int) -> int:
             if t >= num:
                 dp[t] += dp[t-num]
     return dp[target]
+
+
+
+# greedy
+def canCompleteCircuit(gas: list[int], cost: list[int]) -> int:
+    """
+    為什麼需要更新到 i + 1？ 當前油量不足，無法繼續?
+    
+    如果在第 i 個加油站時，current_tank < 0，
+    說明從目前的起點一直到第 i 個加油站的累計油量無法支撐到達下一個加油站。
+    這意味著從當前起點 start 到第 i 個加油站的所有加油站，都不可能作為有效的起點，因為：
+    如果 start 到 
+    i 這段路都無法繼續，那麼任何起點在這段路中間的情況下，
+    剩餘油量只會更少，依然無法到達。
+    下一站可能有更好的機會：
+    當 current_tank < 0 時，我們直接跳到下一個加油站 
+    i+1，將其作為新的起點，重新開始累積油量。
+    這是因為剩下的油量不足以到達下一個加油站，因此嘗試從 
+    i+1 開始重新累積油量。
+    """
+    total_tank = 0
+    cur_tank = 0
+    start = 0
+
+    for i in range(len(gas)):
+        total_tank += gas[i] - cost[i]
+        cur_tank += gas[i] - cost[i]
+
+        if cur_tank < 0:
+            cur_tank = 0
+            start = i + 1
+    return start if total_tank >= 0 else -1
