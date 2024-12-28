@@ -56,3 +56,29 @@ class DSU:
     def union(self, x, y):
         # x --> y
         self.parent[self.find(x)] = self.find(y)
+
+
+# dijkstra: greedy-like algo, unweighted graph. single source shortest path.
+#           Find the shortest path from a source to another vertex
+# bellman ford: acyclic & postive weight (sum) cyclic graph
+#           single source shortest path
+
+def bellman_ford(graph, vertices, source):
+    # T: O(EV)
+    # S: O(V)
+    # 步驟1：初始化距離
+    distance = [float("inf")] * vertices
+    distance[source] = 0
+    
+    # 步驟2：重複鬆弛所有邊 V-1 次 # edge relaxation --> find min distance
+    for _ in range(vertices - 1):
+        for u, v, w in graph:  # 每個邊 (u到v的權重為w)
+            if distance[u] != float("inf") and distance[u] + w < distance[v]:
+                distance[v] = distance[u] + w
+    
+    # 步驟3：檢查負權重循環
+    for u, v, w in graph:
+        if distance[u] != float("inf") and distance[u] + w < distance[v]:
+            return False  # 存在負權重循環
+    
+    return distance

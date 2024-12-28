@@ -380,4 +380,50 @@ class Solution:
         return ans
         
 
+def findCheapestPrice(n: int, flights: list[list[int]], src: int, dst: int, k: int) -> int:
+    """
 
+    distances[u] + w < new_distances[v] 的目的是進行
+    放鬆操作」（Relaxation）
+    保找到從起點經過某條邊到達目的地的更短路徑。
+    如果條件成立，就更新到達節點 v 的最短距離。
+    """
+
+    prices = [float("inf")] * n
+    prices[src] = 0
+
+    for i in range(k+1): # k stops --> at most k + 1 edges
+        temp_prices = prices.copy()
+        for start, end, price in flights:
+            if prices[start] == float("inf"):
+                continue
+            new_price = prices[start] + price
+            if new_price < temp_prices[end]:
+                temp_prices[end] = new_price
+
+        prices = temp_prices.copy()
+    
+    return prices[dst] if prices[dst] != float("inf") else -1
+
+
+def minKnightMoves(x: int, y: int) -> int:
+    # lru_cache(maxsize=None) can replace memo by decorating dfs func
+
+    memo = dict()
+
+    def dfs(x, y):
+        # only consider left-down or down-left
+        # since these two are the minimum ways to reach (0, 0)
+        x, y = abs(x), abs(y)
+        if x + y == 0:
+            return 0
+        elif x + y == 2:
+            return 2
+        
+        if (x, y) in memo:
+            return memo[(x, y)]
+        
+        result = min(dfs(x-1, y-2), dfs(x-2, y-1)) + 1
+        memo[(x, y)] = result
+        return result
+    return dfs(x, y)
