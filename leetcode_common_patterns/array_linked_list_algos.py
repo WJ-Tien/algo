@@ -300,3 +300,33 @@ def oddEvenList(head: Optional[ListNode]) -> Optional[ListNode]:
     
     odd.next = even_head
     return head 
+
+
+def reverseList_recur(head: Optional[ListNode]) -> Optional[ListNode]:
+    # 基本情況：如果是空鏈表或只有一個節點，直接返回
+    if not head or not head.next:
+        return head
+    
+    # 遞迴調用：先反轉後面的部分
+    # newHead 將是原始鏈表的最後一個節點（反轉後的新頭節點）
+    new_head = reverseList_recur(head.next)
+    
+    # 處理當前節點
+    # head.next 是當前節點指向的下一個節點
+    # 將下一個節點的 next 指向當前節點
+    head.next.next = head
+    
+    # 斷開當前節點原本的 next 指針
+    head.next = None
+
+    return new_head
+
+def reverseList_iter(head: Optional[ListNode]) -> Optional[ListNode]:
+    prev = None
+    curr = head
+    while curr:
+        next_temp = curr.next  # 保存下一個節點
+        curr.next = prev      # 改變指針方向
+        prev = curr          # 移動 prev
+        curr = next_temp    # 移動 curr
+    return prev
