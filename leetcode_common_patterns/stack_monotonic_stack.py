@@ -87,6 +87,7 @@ def asteroidCollision(asteroids: list[int]) -> list[int]:
 
 
 def calculate(s: str) -> int:
+    # 227. basic calculator II
     # deal with * / immediately
     # for +/-, save it to stack only
     # store prev_op when char in +-*/ or idx == len(s) - 1
@@ -112,3 +113,40 @@ def calculate(s: str) -> int:
             prev_op = char
     
     return sum(num_stack)
+
+
+def basic_calculate(s: str) -> int:
+    # 224 basic calculator
+    """
+    遇到數字 → 存起來
+    遇到 +/- → 把之前數字加到結果中
+    遇到 ( → 把目前結果存到 stack
+    遇到 ) → 把 stack 的結果拿出來繼續算
+    """
+
+    stack = [] # store the previously calculated results (before ( )
+    current_num = 0
+    current_result = 0
+    sign = 1
+
+    for char in s:
+        if char.isdigit():
+            current_num = current_num * 10 + int(char) 
+
+        elif char in {"+", "-"}:
+            current_result += sign * current_num
+            current_num = 0
+            sign = 1 if char == "+" else -1
+        elif char == "(":
+            stack.append(current_result)
+            stack.append(sign)
+            current_result = 0
+            sign = 1
+        elif char == ")":
+            current_result += sign * current_num
+            current_num = 0
+            current_result *= stack.pop()
+            current_result += stack.pop()
+    
+    current_result += sign * current_num
+    return current_result

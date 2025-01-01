@@ -296,3 +296,38 @@ def pacificAtlantic(heights: List[List[int]]) -> List[List[int]]:
     bfs(atlantic_start, atlantic_reached)
 
     return list(pacific_reached & atlantic_reached)
+
+
+def longestIncreasingPath(matrix: List[List[int]]) -> int:
+    # DFS + memoization
+    # O(rows*cols) TS
+
+    rows, cols = len(matrix), len(matrix[0])
+    directions = [(0, 1), (1, 0), (-1, 0), (0, -1)]
+    memo = dict()
+
+    def dfs(r, c):
+        if (r, c) in memo:
+            return memo[(r, c)]
+        
+        max_depth = 1
+
+        for dr, dc in directions:
+            nr, nc = r + dr, c + dc
+            if (0 <= nr < rows and 0 <= nc < cols) and\
+                (matrix[nr][nc] > matrix[r][c]):
+                cur_path = 1 + dfs(nr, nc) 
+                # r, c -> nr, nc
+                # dfs(r, c) := max length start from r, c
+                # hence if we start from r, c to nr, nc
+                # the max possible length = 1 + dfs(nr, nc)
+                max_depth = max(max_depth, cur_path)
+        memo[(r, c)] = max_depth
+        return max_depth
+    
+    max_depth = float("-inf")
+    for r in range(rows):
+        for c in range(cols):
+            cur_max_depth = dfs(r, c)
+            max_depth = max(max_depth, cur_max_depth)
+    return max_depth
