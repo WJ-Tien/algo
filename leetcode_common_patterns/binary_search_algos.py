@@ -105,5 +105,36 @@ def findMin(nums: list[int]) -> int:
             right = mid - 1
 
 
-       
+def findMedianSortedArrays(self, nums1: list[int], nums2: list[int]) -> float:
+    # T: O(log(min(m+n)))
+    # S: O(1)
+    if len(nums1) > len(nums2):
+        return self.findMedianSortedArrays(nums2, nums1)
+    
+    # search the shorter
+    m, n = len(nums1), len(nums2)
+    left, right = 0, m
 
+    while left <= right:
+        # very hard = =""
+        # fixed amount of numbers should be in the left side
+        # and in the right
+        # we have partitionA in the left side
+        # we still need (m+n+1)//2 - partitionA in the left side
+        partitionA = left + (right - left) // 2
+        partitionB = (m+n+1) // 2 - partitionA
+        max_left_A = float("-inf") if partitionA == 0 else nums1[partitionA - 1]
+        min_right_A = float("inf") if partitionA == m else nums1[partitionA]
+        max_left_B = float("-inf") if partitionB == 0 else nums2[partitionB - 1]
+        min_right_B = float("inf") if partitionB == n else nums2[partitionB]
+
+        # all in left
+        if max_left_A <= min_right_B and max_left_B <= min_right_A:
+            if (m+n) % 2 == 0:
+                return (max(max_left_A, max_left_B) + min(min_right_A, min_right_B))/2
+            else:
+                return max(max_left_A, max_left_B)
+        elif max_left_A > min_right_B:
+            right = partitionA - 1
+        elif max_left_B > min_right_A:
+            left = partitionA + 1

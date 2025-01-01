@@ -192,3 +192,48 @@ def exist(board: list[list[str]], word: str) -> bool:
             if backtrack(r, c, 0):
                 return True
     return False
+
+    
+def solveNQueens(n: int) -> list[list[str]]:
+    # T: O(n!) -> n * n-2 * n-4 ....
+    # S: O(S(n)*n^2) ~ O(n^2) 
+    # --> S(n) := OEIS A000170, S(9) = 352
+
+    def create_board(state: list[list[str]]) -> list[str]:
+        board = []
+        for row in state:
+            board.append("".join(row))
+        return board
+    
+    # loop over row
+    def backtrack(row, diags, antidiags, cols, state):
+        if row == n:
+            ans.append(create_board(state))
+            return
+        
+        for col in range(n):
+            cur_diag = row - col
+            cur_anti_diag = row + col
+
+            # not placeable
+            if (
+                col in cols
+                or cur_diag in diags
+                or cur_anti_diag in antidiags
+            ):
+                continue
+            cols.add(col)
+            diags.add(cur_diag)
+            antidiags.add(cur_anti_diag)
+            state[row][col] = "Q"
+            backtrack(row+1, diags, antidiags, cols, state)
+            # revoke selection
+            cols.remove(col)
+            diags.remove(cur_diag)
+            antidiags.remove(cur_anti_diag)
+            state[row][col] = "."
+    
+    ans = []
+    init_board = [["."] * n for _ in range(n)]
+    backtrack(0, set(), set(), set(), init_board)
+    return ans
