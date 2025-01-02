@@ -1,3 +1,4 @@
+from collections import deque
 from typing import Optional
 
 def sortColors(nums: list[int]) -> None:
@@ -330,3 +331,42 @@ def reverseList_iter(head: Optional[ListNode]) -> Optional[ListNode]:
         prev = curr          # 移動 prev
         curr = next_temp    # 移動 curr
     return prev
+
+
+def firstMissingPositive(nums: list[int]) -> int:
+
+    n = len(nums)
+    i = 0
+    while i < n:
+        # 1 at idx = 0
+        # 2 at idx = 1
+        act_pos = nums[i] - 1
+
+        if 0 < nums[i] <= n and nums[i] != nums[act_pos]:
+            nums[i], nums[act_pos] = nums[act_pos], nums[i]
+        else:
+            i += 1
+
+    for i in range(n):
+        if nums[i] != i + 1:
+            return i + 1
+    return n + 1
+
+
+def maxSlidingWindow(nums: list[int], k: int) -> list[int]:
+    # 239. Sliding Window Maximum
+
+    queue = deque()
+    ans = []
+
+    for i in range(len(nums)):
+        while queue and nums[queue[-1]] < nums[i]:
+            queue.pop()
+
+        queue.append(i)
+
+        if queue[0] <= i - k:
+            queue.popleft()
+        if i >= k - 1:
+            ans.append(nums[queue[0]])
+    return ans

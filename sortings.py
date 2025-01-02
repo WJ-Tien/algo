@@ -2,6 +2,7 @@
     DESC: swap when arr[j+1] > arr[j]
     ASC: swap when arr[j+1] < arr[j]
 """
+import random #noqa
 from math import log10, floor, pow
 
 def bubble(arr: list) -> None:
@@ -144,6 +145,10 @@ def merge(arr: list) -> None:
 
 def _partition(arr: list, left: int, right: int) -> int:
     # return end index
+    # if random pivot
+    # pivot_idx = random.randint(left, right)
+    # arr[pivot_idx], arr[right] = arr[right], arr[pivot_idx]
+
     i = left
     j = right - 1
     pivot = arr[right]

@@ -66,6 +66,74 @@ def print_linked_list(head):
 # s = Solution()
 # s.reorderList(head)
 
-a = {"A":1, "B":2}
-for i in a:
-	print(i)
+# a = {"A":1, "B":2}
+# for i in a:
+# 	print(i)
+import time # noqa
+from functools import lru_cache # noqa
+
+memo = dict()
+def fib_good(n):
+    if n in memo:
+        return memo[n]
+    if n == 0 or n == 1:
+        return n
+
+    result = fib_good(n-1) + fib_good(n-2)
+    memo[n] = result
+    return result
+
+def fib_bad(n):
+    if n == 0 or n == 1:
+        return n
+    return fib_bad(n-1) + fib_bad(n-2)
+
+
+@lru_cache(maxsize=None)
+def fib_best(n):
+    if n == 0 or n == 1:
+        return n
+    return fib_good(n - 1) + fib_good(n - 2)
+
+
+def merge(arr: list) -> None:
+    # TC: O(nlogn)
+    # SC: O(n)
+    # split till the array contains only 1 element
+    # sort it (this does merge as well)
+    # do above steps recursively
+    
+    if len(arr) <= 1:
+        return
+
+    # split
+    left_arr = arr[:len(arr)//2]
+    right_arr = arr[len(arr)//2:]
+    merge(left_arr)
+    merge(right_arr)
+
+    # merge 
+    # with order implicitly 
+    i = j = k = 0
+    while i < len(left_arr) and j < len(right_arr):
+        if left_arr[i] < right_arr[j]:
+            arr[k] = left_arr[i] 
+            i += 1
+        else:
+            arr[k] = right_arr[j]
+            j += 1
+        k += 1
+    
+    while i < len(left_arr):
+        arr[k] = left_arr[i]
+        k += 1
+        i += 1
+
+    while j < len(right_arr):
+        arr[k] = right_arr[j]
+        k += 1
+        j += 1
+
+arr = [5,4,3,1,2]
+
+merge(arr)
