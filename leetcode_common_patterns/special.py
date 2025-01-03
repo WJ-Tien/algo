@@ -434,6 +434,11 @@ def nextPermutation(nums: list[int]) -> None:
     """
     Do not return anything, modify nums in-place instead.
     """
+    # 74561
+    # 5
+    # 6
+    # 74651
+    # 74615
     if len(nums) == 1:
         return
     i = len(nums) - 2
@@ -457,3 +462,35 @@ def nextPermutation(nums: list[int]) -> None:
         nums[left], nums[right] = nums[right], nums[left]
         left += 1
         right -= 1
+
+
+def longestValidParentheses(s: str) -> int:
+
+    max_len = 0
+    left = right = 0
+
+    # start from the left
+    for i in range(len(s)):
+        if s[i] == "(":
+            left += 1
+        else:
+            right += 1
+        
+        if left == right:
+            max_len = max(max_len, 2*right)
+        elif right > left:
+            left = right = 0
+    
+    left = right = 0
+
+    for i in range(len(s) - 1, -1, -1):
+        if s[i] == "(":
+            left += 1
+        else:
+            right += 1
+        
+        if left == right:
+            max_len = max(max_len, 2*left)
+        elif left > right: 
+            left = right = 0
+    return max_len

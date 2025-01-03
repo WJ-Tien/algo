@@ -334,6 +334,7 @@ def reverseList_iter(head: Optional[ListNode]) -> Optional[ListNode]:
 
 
 def firstMissingPositive(nums: list[int]) -> int:
+    # cyclic sort
 
     n = len(nums)
     i = 0
@@ -355,6 +356,7 @@ def firstMissingPositive(nums: list[int]) -> int:
 
 def maxSlidingWindow(nums: list[int], k: int) -> list[int]:
     # 239. Sliding Window Maximum
+    # sliding window + monotonic stack
 
     queue = deque()
     ans = []
@@ -365,8 +367,11 @@ def maxSlidingWindow(nums: list[int], k: int) -> list[int]:
 
         queue.append(i)
 
+        # out of k-bound
         if queue[0] <= i - k:
             queue.popleft()
+
+        # finish k-bound
         if i >= k - 1:
             ans.append(nums[queue[0]])
     return ans

@@ -150,3 +150,25 @@ def basic_calculate(s: str) -> int:
     
     current_result += sign * current_num
     return current_result
+
+
+def longestValidParentheses(s: str) -> int:
+    # stack store indices
+    # pop --> pop to match left
+    # if stack is none, which means we just pop for right
+    # current right's index as new starting point
+    # calculate length
+
+    stack = [-1]
+    max_len = 0
+
+    for i in range(len(s)): 
+        if s[i] == "(":
+            stack.append(i)
+        else:
+            stack.pop()
+            if not stack:
+                stack.append(i)
+            max_len = max(max_len, i - stack[-1])
+    return max_len
+    
