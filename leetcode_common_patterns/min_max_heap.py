@@ -174,3 +174,78 @@ def mergeKLists(lists: list[Optional[ListNode]]) -> Optional[ListNode]:
             heappush(hp, (cur_list.next.val, idx, cur_list.next))
 
     return new_head
+
+class Interval:
+    def __init__(self, start: int = None, end: int = None):
+        self.start = start
+        self.end = end
+
+def employeeFreeTime(schedule: list[list[Interval]]) -> list[Interval]:
+    # merge intervals + merge k sorted lists
+    # O(Nlogk)
+    # O(N)
+    hp = []
+
+    for emp_id, employee in enumerate(schedule):
+        heappush(hp, (employee[0].start, employee[0].end, emp_id, 0))
+        # 0 = employee 0's schedule 
+    
+    ans = []
+    prev_end = None
+    while hp:
+        start, end, emp_idx, interval_idx = heappop(hp)
+
+        if prev_end is not None and start > prev_end:
+            ans.append(Interval(prev_end, start))
+
+        if prev_end is not None:
+            prev_end = max(prev_end, end)
+        else:
+            prev_end = end
+        
+        if interval_idx + 1 < len(schedule[emp_idx]):
+            next_interval = schedule[emp_idx][interval_idx + 1]
+            heappush(hp, (next_interval.start, next_interval.end, emp_idx, interval_idx+1))
+    return ans
+
+def smallestRange(nums: list[list[int]]) -> list[int]:
+    # min_heap + sliding window
+    """
+    A = [1, 4, 7]
+    B = [2, 5, 8]
+    我們現在有 1 和 2
+    如果我們移動 2（較大的數），新範圍會是 [1, 5]，差距變大了
+    如果我們移動 1（較小的數），新範圍會是 [2, 4]，這可能會更好
+    這就是為什麼我們總是移動最小的數字！因為：
+    保持最小值不變，範圍只會變得更大
+    移動較大的值，範圍一定會變大
+
+    """
+
+    hp = []
+    max_value = float("-inf")
+
+    for i in range(len(nums)):
+        # hp: value, num_idx, n_th element in num[i]
+        heappush(hp, (nums[i][0], i, 0))
+        max_value = max(max_value, nums[i][0])
+    
+    start, end = float("-inf"), float("inf")
+
+    while hp:
+        # this is moving min to the left
+        # sliding window like mechanism
+        min_value, num_idx, i = heappop(hp)
+        if max_value - min_value < end - start:
+            start, end = min_value, max_value
+        
+        if i + 1 == len(nums[num_idx]):
+            break
+        
+        
+        if i + 1 < len(nums[num_idx]): # non-empty
+            next_value = nums[num_idx][i+1]
+            heappush(hp, (next_value, num_idx, i+1))
+            max_value = max(max_value, next_value)
+    
+    return [start, end]

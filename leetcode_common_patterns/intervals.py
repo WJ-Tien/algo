@@ -96,4 +96,37 @@ def eraseOverlapIntervals(intervals: list[list[int]]) -> int:
             # the earlier we keep the smaller end instead of larger end
             # the more likely we can remove less intervals
     return ans
-        
+
+class Interval:
+    def __init__(self, start: int = None, end: int = None):
+        self.start = start
+        self.end = end
+
+
+def employeeFreeTime(schedule: list[list[Interval]]) -> list[Interval]:
+    # O(NlogN))
+    # O(N)
+    # refer to merge intervals
+
+    intervals = []
+    for employee in schedule:
+        for interval in employee:
+            intervals.append([interval.start, interval.end])
+    
+    intervals.sort(key=lambda x: x[0])
+
+
+    merge = [intervals[0]]
+
+    for interval in intervals[1:]:
+        if merge[-1][1] >= interval[0]:
+            merge[-1][1] = max(merge[-1][1], interval[1])
+        else:
+            merge.append(interval)
+    
+    ans = []
+    for i in range(1, len(merge)):
+        if merge[i][0] > merge[i-1][1]:
+            # key: append Interval not arrays/lists !!!
+            ans.append(Interval(merge[i-1][1], merge[i][0]))
+    return ans 
