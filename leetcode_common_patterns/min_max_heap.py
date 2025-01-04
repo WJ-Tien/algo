@@ -1,5 +1,11 @@
 from collections import Counter
 from heapq import heappush, heappushpop, heappop
+from typing import Optional
+
+class ListNode:
+    def __init__(self, val=0, next=None):
+        self.val = val
+        self.next = next
 
 # Python itself implements "min_heap"
 
@@ -142,3 +148,29 @@ def minMeetingRooms(intervals: list[list[int]]) -> int:
         heappush(mhp, end) # push end
     
     return len(mhp)
+
+
+def mergeKLists(lists: list[Optional[ListNode]]) -> Optional[ListNode]:
+    new_head = None 
+    cur_head = new_head
+    hp = []
+
+    # only keep k items in the hp
+    # since we can utilize the asc nature
+    for idx, cur_list in enumerate(lists):
+        if cur_list:
+            heappush(hp, (cur_list.val, idx, cur_list))
+    
+    while hp: 
+        val, idx, cur_list = heappop(hp)
+        if new_head is None:
+            new_head = ListNode(val)
+            cur_head = new_head
+        else:
+            cur_head.next = ListNode(val)
+            cur_head = cur_head.next
+
+        if cur_list.next:
+            heappush(hp, (cur_list.next.val, idx, cur_list.next))
+
+    return new_head

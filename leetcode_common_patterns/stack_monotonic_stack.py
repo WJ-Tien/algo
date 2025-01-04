@@ -171,4 +171,54 @@ def longestValidParentheses(s: str) -> int:
                 stack.append(i)
             max_len = max(max_len, i - stack[-1])
     return max_len
+
+
+def largestRectangleArea(heights: list[int]) -> int:
+    stack = [] # idx, height
+    max_area = 0
+
+    for i, cur_height in enumerate(heights):
+        start = i
+        while stack and stack[-1][1] > cur_height:
+            # h(6) > h(2) --> stack.pop() --> 6 got popped
+            idx, latest_height = stack.pop()
+            max_area = max(max_area, latest_height * (i - idx))
+            start = idx
+        stack.append((start, cur_height)) # extend backward
     
+    while stack:
+        idx, latest_height = stack.pop()
+        # can extend till the end (inclusive)
+        max_area = max(max_area, latest_height * (len(heights) - idx))
+    return max_area
+ 
+
+class FreqStack:
+    # T: O(1)
+    # S: O(N)
+
+    def __init__(self):
+        self.freq = dict() # val: freq
+        # very critical (stack of stack)
+        # use freq to group cur val
+        # while keep the order (top elements are placed later)
+        self.groups = dict() # freq: [val1, val2 ...]
+
+        self.max_freq = 0
+
+    def push(self, val: int) -> None:
+        self.freq[val] = self.freq.get(val, 0) + 1
+        cur_freq = self.freq[val]
+        if cur_freq >= self.max_freq:
+            self.max_freq = cur_freq
+        if cur_freq not in self.groups:
+            self.groups[cur_freq] = [val]
+        else:
+            self.groups[cur_freq].append(val)
+
+    def pop(self) -> int:
+        ret = self.groups[self.max_freq].pop()
+        self.freq[ret] -= 1
+        if not self.groups[self.max_freq]:
+            self.max_freq -= 1
+        return ret

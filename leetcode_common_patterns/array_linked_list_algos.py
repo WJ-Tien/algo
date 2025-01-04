@@ -1,6 +1,11 @@
 from collections import deque
 from typing import Optional
 
+class ListNode:
+    def __init__(self, val=0, next=None):
+        self.val = val
+        self.next = next
+
 def sortColors(nums: list[int]) -> None:
     """
     Do not return anything, modify nums in-place instead.
@@ -40,10 +45,6 @@ def findKthLargest(nums: list[int], k: int) -> int:
         return nums[p]
     return quick_select(0, len(nums)-1)
 
-class ListNode:
-    def __init__(self, val=0, next=None):
-        self.val = val
-        self.next = next
 
 def swapPairs(head: Optional[ListNode]) -> Optional[ListNode]:
     
