@@ -36,7 +36,7 @@ def longestCommonPrefix(strs: list[str]) -> str:
         ans += strs[0][i]
     return ''.join(ans)
 
-def lengthOfLongestSubstring(self, s: str) -> int:
+def lengthOfLongestSubstring(s: str) -> int:
     # 3. Longest Substring Without Repeating Characters
     # sliding window + hashmap
     """

@@ -427,3 +427,38 @@ def minKnightMoves(x: int, y: int) -> int:
         memo[(x, y)] = result
         return result
     return dfs(x, y)
+
+
+def ladderLength(beginWord: str, endWord: str, wordList: list[str]) -> int:
+    # O(M^2N) TS
+
+    # for space, we have n words, each with M comb
+    # and for comb, we might have M combs from other words
+    # so it's N*M * M = M^2*N
+    # *ot = {dot, hot, bot...}
+
+    wordList.append(beginWord)
+    # graph search
+    graph = defaultdict(set)
+
+    for word in wordList:
+        for i in range(len(word)):
+            pattern = word[:i] + "*" + word[i+1:]
+            graph[pattern].add(word)
+    
+    queue = deque([(beginWord, 1)])
+    visited = set(beginWord)
+
+    while queue:
+        cur_word, steps = queue.popleft()
+
+        for i in range(len(cur_word)):
+            pattern = cur_word[:i] + "*" + cur_word[i+1:]
+
+            for neighbor in graph[pattern]:
+                if neighbor == endWord:
+                    return steps + 1
+                if neighbor not in visited:
+                    visited.add(neighbor)
+                    queue.append((neighbor, steps+1))
+    return 0

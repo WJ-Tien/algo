@@ -163,6 +163,7 @@ def letterCombinations(digits: str) -> list[str]:
         
 
 def exist(board: list[list[str]], word: str) -> bool:
+    # word search
     # T: O(rows * cols * 4^len(word))
     # S: O(len(word))
 
