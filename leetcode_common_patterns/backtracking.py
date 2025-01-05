@@ -237,3 +237,48 @@ def solveNQueens(n: int) -> list[list[str]]:
     init_board = [["."] * n for _ in range(n)]
     backtrack(0, set(), set(), set(), init_board)
     return ans
+
+
+
+class Solution:
+    def solveSudoku(self, board: list[list[str]]) -> None:
+        # C++ would pass, while python gave TLE T.T
+        # T: O(9^(n^2))
+        # S: O(n^2)
+        # assume that no all the init board is valid
+        """
+        Do not return anything, modify board in-place instead.
+        """
+        def is_valid(row, col, num):
+            # 檢查行
+            for c in range(9):
+                if board[row][c] == num:
+                    return False
+            # 檢查列
+            for r in range(9):
+                if board[r][col] == num:
+                    return False
+            # 檢查 3x3 小方格
+            start_row, start_col = 3 * (row // 3), 3 * (col // 3)
+            for r in range(start_row, start_row + 3):
+                for c in range(start_col, start_col + 3):
+                    if board[r][c] == num:
+                        return False
+            return True
+    
+        def backtrack():
+            for row in range(9):
+                for col in range(9):
+                    if board[row][col] == '.':
+                        for num in map(str, range(1, 10)):  # 嘗試填入 1-9
+                            if is_valid(row, col, num):
+                                board[row][col] = num  # 暫時填入
+                                if backtrack():  # 遞迴處理下一步
+                                    return True
+                                board[row][col] = '.'  # 回溯
+                        return False  # 無法填入任何有效數字
+            return True  # 全部填滿，成功解出
+    
+        backtrack()
+    
+            

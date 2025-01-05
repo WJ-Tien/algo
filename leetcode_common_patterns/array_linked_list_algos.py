@@ -376,3 +376,35 @@ def maxSlidingWindow(nums: list[int], k: int) -> list[int]:
         if i >= k - 1:
             ans.append(nums[queue[0]])
     return ans
+
+
+def reverseKGroup(head: Optional[ListNode], k: int) -> Optional[ListNode]:
+    if not head or not head.next or k == 1:
+        return head
+    
+    dummy = ListNode(0)
+    dummy.next = head
+    group_prev = dummy
+
+    while True:
+
+        # check if k
+        cur = group_prev
+        for _ in range(k):
+            cur = cur.next
+            if not cur:
+                return dummy.next
+
+        cur_anchor = group_prev.next  # First node in the group
+        next_node = cur_anchor.next  # Second node in the group
+
+        for _ in range(k-1):  # Perform k-1 swaps to reverse the group
+            cur_anchor.next = next_node.next  # Point current node to next's next
+            next_node.next = group_prev.next  # Move `next_node` to the front
+            group_prev.next = next_node  # Update group_prev's next to the new head
+            next_node = cur_anchor.next  # Update next_node to the next in the group
+
+        # Step 3: Move group_prev to the end of the reversed group
+        group_prev = cur_anchor
+        
+    return dummy.next
