@@ -1,3 +1,4 @@
+from bisect import bisect_right
 
 def maximalSquare(matrix: list[list[str]]) -> int:
 
@@ -157,3 +158,24 @@ def canCompleteCircuit(gas: list[int], cost: list[int]) -> int:
             cur_tank = 0
             start = i + 1
     return start if total_tank >= 0 else -1
+
+
+def jobScheduling(startTime: list[int], endTime: list[int], profit: list[int]) -> int:
+    # T: O(NlogN)
+    # S: O(N)
+    jobs = sorted(zip(startTime, endTime, profit), key=lambda x: x[1])
+    dp = [(0, 0)] # end, cur_max_profit
+    
+    # dp[i] 表示考慮到第 i 個工作時，最大可獲得的利潤。
+    for start, end, profit in jobs:
+        # ol_end --> new_start
+        idx = bisect_right(dp, (start, float("inf"))) - 1
+        if idx < 0:
+            continue
+
+        cur_profit = dp[idx][1] + profit
+
+        if cur_profit > dp[-1][1]:
+            dp.append((end, cur_profit))
+    
+    return dp[-1][1]

@@ -282,4 +282,60 @@ class Solution:
     
         backtrack()
     
-            
+
+class TrieNode:
+    def __init__(self):
+        self.children = dict()
+        self.is_end_of_word = False
+
+class Trie:
+    def __init__(self):
+        self.root = TrieNode()
+    
+    def add_word(self, word):
+        node = self.root
+        for char in word:
+            if char not in node.children:
+                node.children[char] = TrieNode()
+            node = node.children[char]
+        node.is_end_of_word = True
+
+def findWords(board: list[list[str]], words: list[str]) -> list[str]:
+    # T: O(MN*4^L) # 4 (l1) x 4(l2) x 4(l3)
+    # S: O(W*L) (mostly contributed by Trie)
+    trie = Trie()
+    for word in words:
+        trie.add_word(word)
+    
+    rows, cols = len(board), len(board[0])
+    directions = [(0, 1), (1, 0), (-1, 0), (0, -1)]
+    visited = set()
+    ans = set()
+    
+    def backtrack(r, c, node, path):
+        char = board[r][c]
+        if char not in node.children:
+            # early stop
+            return
+        
+        path.append(char)
+        # critical -> must loop til the end
+        # and get is_end_of_word (should be True)
+        node = node.children[char]
+        if node.is_end_of_word:
+            ans.add(''.join(path))
+
+        visited.add((r, c))
+
+        for dr, dc in directions:
+            nr, nc = r + dr, c + dc
+            if (0 <= nr < rows and 0 <= nc < cols) and \
+                (nr, nc) not in visited:
+                backtrack(nr, nc, node, path)
+        path.pop()
+        visited.remove((r, c))
+    
+    for r in range(rows):
+        for c in range(cols):
+            backtrack(r, c, trie.root, [])
+    return list(ans)

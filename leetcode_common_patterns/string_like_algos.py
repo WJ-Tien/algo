@@ -180,3 +180,31 @@ def findAnagrams(s: str, p: str) -> list[int]:
         if p_count == s_count:
             ans.append(i + 1 - np)
     return ans
+
+
+def palindromePairs(words: list[str]) -> list[list[int]]:
+    # T: O(n*k^2)
+    # S: O(n*k + n^2)
+    # 建立字典，存儲每個字串的反轉及其索引
+    word_dict = {word[::-1]: i for i, word in enumerate(words)}
+    result = []
+
+    for i, word in enumerate(words):
+        for j in range(len(word) + 1):  # 分割點，包含整個字串和空字串
+            left, right = word[:j], word[j:]
+            
+            # 如果左邊是回文，檢查右邊的反轉是否在字典中且索引不同
+            # left = ""
+            # right = "abc"
+            # 要讓 "" + "abc" 變回文，得在「整個字串」左邊補上 "abc" 的反轉 → "cba"。
+            # "cba" + "" + "abc"
+            if left == left[::-1] and right in word_dict and word_dict[right] != i:
+                result.append([word_dict[right], i])
+            
+            # 如果右邊是回文，檢查左邊的反轉是否在字典中且索引不同
+            # 確保避免重複，當右邊長度不為 0 時才檢查
+            # j = len(word)，left = word（整個字串）
+            if j != len(word) and right == right[::-1] and left in word_dict and word_dict[left] != i:
+                result.append([i, word_dict[left]])
+
+    return result
