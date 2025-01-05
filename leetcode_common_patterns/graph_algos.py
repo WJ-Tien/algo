@@ -1,4 +1,4 @@
-from collections import defaultdict, deque
+from collections import defaultdict, deque, Counter
 from typing import Optional
 
 class TreeNode:
@@ -462,3 +462,47 @@ def ladderLength(beginWord: str, endWord: str, wordList: list[str]) -> int:
                     visited.add(neighbor)
                     queue.append((neighbor, steps+1))
     return 0
+
+
+def alienOrder(words: list[str]) -> str:
+    # T: O(N*M + V + E) ~ O(N*M)
+    # S: O(26) 
+    graph = defaultdict(set)
+    in_degree = Counter()
+
+    # kahn's algo for indegree
+
+    for word in words:
+        for char in word:
+            in_degree[char] = 0
+    
+    for i in range(len(words)-1):
+        w1, w2 = words[i], words[i+1]
+        if len(w1) > len(w2) and w1[:len(w2)] == w2:
+            return ""
+        
+        for c1, c2 in zip(w1, w2):
+            if c1 != c2:
+                if c2 not in graph[c1]:
+                    # c1 -> c2
+                    graph[c1].add(c2)
+                    in_degree[c2] += 1
+                break
+    result = []
+
+    # kahn's algo
+    queue = deque([c for c in in_degree if in_degree[c] == 0])
+
+    while queue:
+        node = queue.popleft()
+        result.append(node)
+        # graph stores c1 -> c2
+        for neighbor in graph[node]:
+            in_degree[neighbor] -= 1
+            if in_degree[neighbor] == 0:
+                queue.append(neighbor)
+    
+    if len(result) != len(in_degree):
+        return ""
+
+    return ''.join(result)
