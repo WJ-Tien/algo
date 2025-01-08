@@ -6,6 +6,40 @@ class ListNode:
         self.val = val
         self.next = next
 
+def find_length(s):
+    # sliding window classic pattern
+    # curr is the current number of zeros in the window
+    left = curr = ans = 0 
+    for right in range(len(s)):
+        if s[right] == "0":
+            curr += 1
+        while curr > 1:
+            if s[left] == "0":
+                curr -= 1
+            left += 1
+        ans = max(ans, right - left + 1)
+    
+    return ans
+
+def numSubarrayProductLessThanK(nums: list[int], k: int) -> int:
+
+    # sliding window classic pattern
+
+    if k <= 0:
+        return 0
+
+    left = 0
+    ans = 0
+    prod = 1
+    for right in range(len(nums)):
+        prod *= nums[right]
+        while prod >= k and left <= right: 
+            prod //= nums[left]
+            left += 1
+        ans += (right - left + 1) # key here !
+        # window size n == n combinations
+    return ans
+
 def sortColors(nums: list[int]) -> None:
     """
     Do not return anything, modify nums in-place instead.

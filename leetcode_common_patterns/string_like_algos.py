@@ -208,3 +208,75 @@ def palindromePairs(words: list[str]) -> list[list[int]]:
                 result.append([i, word_dict[left]])
 
     return result
+
+
+def stringMatching(words: list[str]) -> list[str]:
+    # 1408. String Matching in an Array
+    # O(m*n^2), m = average word length
+    # O(m*n)
+    # Longest Proper Prefix which is also Suffix
+    """
+    前綴(Prefix)和後綴(Suffix)的定義：
+    前綴：字串從開頭到某個位置的子字串（不包含完整字串本身）
+    後綴：字串從某個位置到結尾的子字串（不包含完整字串本身）
+    以字串 "ABAB" 為例：
+    前綴集合：{"A", "AB", "ABA"}
+    後綴集合：{"B", "AB", "BAB"}
+    共同前後綴就是同時出現在前綴集合和後綴集合中的字串。
+    在這個例子中，"AB" 就是一個共同前後綴。
+    """
+
+
+    def kmp_lps(pattern):
+        """
+        建立 LPS 表，用於加速 KMP 演算法。
+        """
+        lps = [0] * len(pattern)
+        length = 0  # 目前的部分匹配長度
+        i = 1
+    
+        while i < len(pattern):
+            if pattern[i] == pattern[length]:
+                length += 1
+                lps[i] = length
+                i += 1
+            else:
+                if length != 0:
+                    length = lps[length - 1]
+                else:
+                    lps[i] = 0
+                    i += 1
+    
+        return lps
+    
+    def kmp_search(text, pattern):
+        """
+        使用 KMP 演算法檢查 pattern 是否為 text 的子字串。
+        """
+        lps = kmp_lps(pattern)
+        i = 0  # text 的索引
+        j = 0  # pattern 的索引
+    
+        while i < len(text):
+            if text[i] == pattern[j]:
+                i += 1
+                j += 1
+    
+            if j == len(pattern):  # 完整匹配
+                return True
+            elif i < len(text) and text[i] != pattern[j]:
+                if j != 0:
+                    j = lps[j - 1]
+                else:
+                    i += 1
+    
+        return False
+
+    ans = []
+    for i in range(len(words)):
+        for j in range(len(words)):
+            if i != j and kmp_search(words[j], words[i]):
+                ans.append(words[i])
+                break
+
+    return ans
