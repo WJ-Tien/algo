@@ -1,24 +1,71 @@
-"""
-前綴和（Prefix Sum）的概念：
-「前綴和」是指從陣列的起始位置到目前位置的元素總和。
-若兩個位置的前綴和分別為 prefix_sum[i] 和 prefix_sum[j] 並且 prefix_sum[j] - prefix_sum[i] == k，則說明從第 i+1 到第 j 的子陣列和為 k。
-利用哈希表快速查找前綴和：
-設計一個字典 prefix_count，記錄每個前綴和出現的次數。
-當遍歷到某個位置時，計算 prefix_sum - k，如果該值已經存在於字典中，代表存在某個前綴和，可以構成和為 k 的子陣列。
-    
-    
-"""
+from collections import defaultdict
 
 def subarraySum(nums: list[int], k: int) -> int:
+    """
+    nums =    [1,  2,  3,  4]
+    index:     0   1   2   3
+    preSum:    1   3   6   10
+    k = 5
+    prefix[2] - prefix[0] = 6 - 1 = 5
+    # curr - (curr-k) = k
+    代表：nums[1] + nums[2] = 2 + 3 = 5
+    prefix[j] = sum[0, j] #inclusive
+    """
 
-    prefix_sum = 0
-    prefix_count = {0: 1}
-    ans = 0
+    # from index j to i
+    # nums[j+1] + ... + nums[i] = preSum[i] - preSum[j]
+    # nums[j] + ... + nums[i]  = preSum[i] - preSum[j-1]
+    #                          = preSum[i] - preSum[j] + nums[j]
+    # prefix[j] - prefix[i] = k 
+    counts = defaultdict(int)
+    counts[0] = 1 # prefix==k edge case k-k=0
+    ans = curr = 0
 
     for num in nums:
-        prefix_sum += num
-        if prefix_sum - k in prefix_count:
-            ans += prefix_count[prefix_sum - k]
-        prefix_count[prefix_sum] = prefix_count.get(prefix_sum, 0) + 1
-    return ans
+        curr += num
+        ans += counts[curr-k]
+        counts[curr] += 1
     
+    return ans 
+
+def numberOfSubarrays(nums: list[int], k: int) -> int:
+    # odd counts
+    counters = defaultdict(int)
+    counters[0] = 1
+    ans = 0
+    curr = 0
+    for num in nums:
+        curr += num % 2
+        ans += counters[curr - k]
+        counters[curr] += 1
+
+    return ans
+
+
+    
+def waysToSplitArray(nums: list[int]) -> int:
+    # 2270. Number of Ways to Split Array
+
+    ans = 0
+    prefix = [nums[0]]
+
+    for i in range(1, len(nums)):
+        prefix.append(nums[i] + prefix[-1])
+    
+    for i in range(len(prefix)-1):
+        if prefix[i] >= prefix[-1] - prefix[i]:
+            ans += 1
+    return ans
+
+def waysToSplitArray_OPT(nums: list[int]) -> int:
+    ans = 0
+    total = sum(nums)
+    left_sum = 0
+    right_sum = total
+
+    for i in range(len(nums)-1):
+        left_sum += nums[i]
+        right_sum -= nums[i]
+        if left_sum >= right_sum:
+            ans += 1
+    return ans

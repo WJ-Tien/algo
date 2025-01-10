@@ -280,3 +280,28 @@ def stringMatching(words: list[str]) -> list[str]:
                 break
 
     return ans
+
+
+def wordSubsets(words1: list[str], words2: list[str]) -> list[str]:
+    # T: O(N2*k + N1*L)
+    # S: O(26)
+    # we only need to collect max freq
+    # as long as you meet max_freq
+    # then the remaining chars will fit 
+    max_freq = Counter()
+    for word in words2:
+        cur_word = Counter(word)
+        for char, count in cur_word.items():
+            max_freq[char] = max(max_freq[char], count)
+    
+    ans = []
+    for word in words1:
+        cur_word = Counter(word)
+        flag = True
+        for char, count in max_freq.items():
+            if cur_word[char] < max_freq[char]:
+                flag = False
+                break
+        if flag:
+            ans.append(word)
+    return ans

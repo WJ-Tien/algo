@@ -6,19 +6,21 @@ class ListNode:
         self.val = val
         self.next = next
 
-def find_length(s):
-    # sliding window classic pattern
-    # curr is the current number of zeros in the window
-    left = curr = ans = 0 
-    for right in range(len(s)):
-        if s[right] == "0":
-            curr += 1
-        while curr > 1:
-            if s[left] == "0":
-                curr -= 1
+def longestOnes(nums: list[int], k: int) -> int:
+    # 1004. Max Consecutive Ones III
+    left = 0
+    ans = 0
+    cur_sum = 0
+
+    for right in range(len(nums)):
+        if nums[right] == 0:
+            cur_sum += 1
+        while cur_sum > k and left <= right:
+            # >= k+1's 0 --> reset to <= k's 0
+            if nums[left] == 0:
+                cur_sum -= 1
             left += 1
         ans = max(ans, right - left + 1)
-    
     return ans
 
 def numSubarrayProductLessThanK(nums: list[int], k: int) -> int:
@@ -38,6 +40,20 @@ def numSubarrayProductLessThanK(nums: list[int], k: int) -> int:
             left += 1
         ans += (right - left + 1) # key here !
         # window size n == n combinations
+    return ans
+
+def find_best_subarray(nums, k):
+    curr = 0
+    for i in range(k):
+        curr += nums[i]
+    
+    ans = curr
+    for i in range(k, len(nums)):
+        curr += nums[i] - nums[i - k] 
+        # 1 2 3 4 5, k = 4
+        # s = 1+2+3+4 --> s + 5 - 1 --> sliding window
+        ans = max(ans, curr)
+    
     return ans
 
 def sortColors(nums: list[int]) -> None:
@@ -442,3 +458,27 @@ def reverseKGroup(head: Optional[ListNode], k: int) -> Optional[ListNode]:
         group_prev = cur_anchor
         
     return dummy.next
+
+
+def findWinners(matches: list[list[int]]) -> list[list[int]]:
+    # 2225. Find Players With Zero or One Losses
+    # couting sort 
+    # edge case: 一個選手已經出現過且沒輸過
+    lose_counts = [-1] * (100001)
+    # + 1 because 1 <= winner_i, loser_i <= 1e5
+    ans = [[], []]
+
+    for winner, loser in matches:
+        if lose_counts[winner] == -1:
+            lose_counts[winner] = 0 # this is the edge case
+        if lose_counts[loser] == -1:
+            lose_counts[loser] = 1
+        else:
+            lose_counts[loser] += 1
+    
+    for i in range(1, 100001): 
+        if lose_counts[i] == 0:
+            ans[0].append(i)
+        if lose_counts[i] == 1:
+            ans[1].append(i)
+    return ans
