@@ -1,5 +1,12 @@
 from collections import defaultdict
 
+"""
+nums[j+1] + ... + nums[i] = prefix_sum[i] - prefix_sum[j]
+convert certain problems to prefix_sum
+nums[j+1] + .. + nums[i] = some properties within this subarray
+
+"""
+
 def subarraySum(nums: list[int], k: int) -> int:
     """
     nums =    [1,  2,  3,  4]
@@ -41,7 +48,6 @@ def numberOfSubarrays(nums: list[int], k: int) -> int:
 
     return ans
 
-
     
 def waysToSplitArray(nums: list[int]) -> int:
     # 2270. Number of Ways to Split Array
@@ -68,4 +74,34 @@ def waysToSplitArray_OPT(nums: list[int]) -> int:
         right_sum -= nums[i]
         if left_sum >= right_sum:
             ans += 1
+    return ans
+
+def findMaxLength(nums: list[int]) -> int:
+    # 525. contiguous array
+
+    # if sum of a subarray = 0 --> same 0's and 1's
+
+    prefix_sum = {0: -1} # prefix_sum : idx
+    cur_sum = 0
+    ans = 0
+
+    for idx, num in enumerate(nums):
+        if num == 0:
+            cur_sum -= 1
+        elif num == 1:
+            cur_sum += 1
+        
+        if cur_sum in prefix_sum:
+            # keep the oldest 
+            # so that we can get longer length 
+            # if cur_sum in prefix_sum
+            # means from that idx
+            # to the current idx
+            # the sum of these items are zero
+            # prefix[i] - prefix[j]
+            # = nums[j+1] ~ nums[i] 
+            # = 0
+            ans = max(ans, idx - prefix_sum[cur_sum])
+        else:
+            prefix_sum[cur_sum] = idx
     return ans

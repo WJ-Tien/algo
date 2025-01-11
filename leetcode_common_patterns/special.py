@@ -215,33 +215,6 @@ def myPow(x: float, n: int) -> float:
         n //= 2
     return ans
 
-def findMaxLength(nums: list[int]) -> int:
-    # O(n) TS
-
-    cur_sum = 0
-    max_len = 0
-    hmp = {0: -1}
-    # 0: minus 1, 1: plus 1
-    # if cur_sum == 0, we have balanced 0 & 1
-    # we substract cur_index from hmp[cur_sum]
-
-    for idx, num in enumerate(nums):
-        if num == 0:
-            cur_sum -= 1
-        else:
-            cur_sum += 1
-        
-        if cur_sum in hmp:
-            # j = hmp[cur_sum]
-            # i = cur_idx
-            # j + 1 ~ i
-            # i - (j + 1) + 1 = i - j
-            max_len = max(max_len, idx - hmp[cur_sum])
-        else:
-            hmp[cur_sum] = idx
-    return max_len
-
-
 def leastInterval(tasks: list[str], n: int) -> int:
     # 621 task scheduler
 

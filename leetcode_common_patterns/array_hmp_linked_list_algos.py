@@ -457,8 +457,6 @@ def reverseKGroup(head: Optional[ListNode], k: int) -> Optional[ListNode]:
         # Step 3: Move group_prev to the end of the reversed group
         group_prev = cur_anchor
         
-    return dummy.next
-
 
 def findWinners(matches: list[list[int]]) -> list[list[int]]:
     # 2225. Find Players With Zero or One Losses
@@ -470,7 +468,9 @@ def findWinners(matches: list[list[int]]) -> list[list[int]]:
 
     for winner, loser in matches:
         if lose_counts[winner] == -1:
-            lose_counts[winner] = 0 # this is the edge case
+            # this is the edge case
+            # imagine the player only win !
+            lose_counts[winner] = 0 
         if lose_counts[loser] == -1:
             lose_counts[loser] = 1
         else:
@@ -482,3 +482,39 @@ def findWinners(matches: list[list[int]]) -> list[list[int]]:
         if lose_counts[i] == 1:
             ans[1].append(i)
     return ans
+
+
+def canConstruct(s: str, k: int) -> bool:
+    # odd numbers dominate
+    # one char: a, b
+    # all even: abba, bb
+    # 1 odd, others even:  aabcc
+
+    if len(s) < k:
+        return False
+    
+    hmp = dict()
+
+    for char in s:
+        hmp[char] = hmp.get(char, 0) + 1
+    
+    odd_count = 0
+    for count in hmp.values():
+        if count % 2:
+            odd_count += 1
+
+    return odd_count <= k
+
+
+def minimumCardPickup(cards: list[int]) -> int:
+    # 2260. Minimum Consecutive Cards to Pick Up
+
+    hmp = dict()
+    ans = float("inf")
+
+    for idx, card in enumerate(cards):
+        if card in hmp:
+            ans = min(ans, idx - hmp[card] + 1)
+        hmp[card] = idx
+
+    return -1 if ans == float("inf") else ans
