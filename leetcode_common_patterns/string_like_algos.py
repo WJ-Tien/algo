@@ -45,12 +45,22 @@ def lengthOfLongestSubstring(s: str) -> int:
     更新字符位置：
 
     無論是否有重複字符，將當前字符的索引存入 str_map，表示它的最新位置。
+
+    假設 s = "abba"，當我們處理到最後一個 a 時：
+    此時，start = 2，right = 3，而 hmp['a'] = 0（第一個 a 的位置）。
+    如果沒有檢查 hmp[s[right]] >= start，我們會錯誤地將 start 移動到 hmp['a'] + 1 = 1，但其實 start 已經在 1 後面了，這樣會影響子字串的正確性。
+    只有當 hmp[s[right]] 大於等於 start 時，才需要更新 start。
     """
     start = 0
     max_len = float("-inf") 
     hmp = dict()
 
     for idx, char in enumerate(s):
+        # we need "hmp[char] >= start"
+        # because start might go faster than hmp[char]
+        # e.g., abba case
+        # only within valid range, we update start
+        # for =, we can see abca
         if char in hmp and hmp[char] >= start:
             start = hmp[char] + 1
         hmp[char] = idx

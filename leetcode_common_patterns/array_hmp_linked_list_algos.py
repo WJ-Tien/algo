@@ -518,3 +518,29 @@ def minimumCardPickup(cards: list[int]) -> int:
         hmp[card] = idx
 
     return -1 if ans == float("inf") else ans
+
+
+def maximumSum(nums: list[int]) -> int:
+    # 2342. Max Sum of a Pair With Equal Sum of Digits
+    hmp = dict()
+
+    def get_digits_sum(num):
+        acc = 0
+        while num:
+            acc += num % 10
+            num //= 10
+        return acc
+    
+    ans = float("-inf")
+    for num in nums:
+        ds = get_digits_sum(num)
+        if ds not in hmp:
+            hmp[ds] = num 
+        else:
+            # store max value of the ds
+            # x + 最大值 一定比 x + 其他小值 要大
+            # 第一行：拍照記錄當前找到的配對
+            # 第二行：為之後的配對挑選最佳人選
+            ans = max(ans, hmp[ds] + num)
+            hmp[ds] = max(hmp[ds], num)
+    return -1 if ans == float("-inf") else ans
