@@ -310,3 +310,21 @@ def canBeValid_stack(s: str, locked: str):
         return False
 
     return True
+
+
+def minAddToMakeValid(s: str) -> int:
+    # 921. Minimum Add to Make Parentheses Valid
+    stack = []
+    ans = 0
+
+    for char in s:
+        if char == "(":
+            stack.append(")")
+        else:
+            if stack:
+                stack.pop()
+            else:
+                ans += 1
+    if stack:
+        ans += len(stack)
+    return ans
