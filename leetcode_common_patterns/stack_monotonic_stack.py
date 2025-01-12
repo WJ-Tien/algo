@@ -222,3 +222,56 @@ class FreqStack:
         if not self.groups[self.max_freq]:
             self.max_freq -= 1
         return ret
+
+
+def canBeValid(s: str, locked: str) -> bool:
+    # stack S: O(n)
+    # this sol: S: O(1)
+    """
+    檢查在含有未鎖定字符 (locked[i] == '0') 的情況下，
+    字串 s 能否透過適當地將未鎖定字符視為 '(' 或 ')'，
+    成為有效的括號序列。
+    """
+
+    # 1. 長度為奇數，不可能成為有效括號，直接 False
+    if len(s) % 2 != 0:
+        return False
+
+    # ---------------------------
+    #  2. 前向遍歷：檢查「右括號是否過多」
+    #  目的：確保從左到右的任何位置都不會出現 ')' 超過 '(' 的狀況
+    #  作法：將「未鎖定字符」優先視為 '(' (balance += 1)
+    # ---------------------------
+    balance = 0
+    for i in range(len(s)):
+        if locked[i] == '0' or s[i] == '(':
+            # locked[i] == '0' 表示未鎖定，當成 '('；或本身就是 '('
+            balance += 1
+        else:
+            # 剩下只能是 locked[i] == '1' 且 s[i] == ')'
+            balance -= 1
+
+        # 隨時檢查：若 balance < 0 表示 ')' 過多
+        if balance < 0:
+            return False
+
+    # ---------------------------
+    #  3. 後向遍歷：檢查「左括號是否過多」
+    #  目的：確保從右到左的任何位置都不會出現 '(' 超過 ')' 的狀況
+    #  作法：將「未鎖定字符」優先視為 ')' (balance += 1)
+    # ---------------------------
+    balance = 0
+    for i in range(len(s) - 1, -1, -1):
+        if locked[i] == '0' or s[i] == ')':
+            # locked[i] == '0' 表示未鎖定，當成 ')'；或本身就是 ')'
+            balance += 1
+        else:
+            # 剩下只能是 locked[i] == '1' 且 s[i] == '('
+            balance -= 1
+
+        # 若 balance < 0 表示 '(' 過多（在後向視角下）
+        if balance < 0:
+            return False
+
+    # 4. 若前、後向遍歷都沒問題，代表字串可以成為有效括號
+    return True

@@ -315,3 +315,27 @@ def wordSubsets(words1: list[str], words2: list[str]) -> list[str]:
         if flag:
             ans.append(word)
     return ans
+
+
+def maxScore(s: str) -> int:
+    # 1422. Maximum Score After Splitting a String
+    """
+    (左邊0的數量 + 右邊1的數量) 
+        = (左邊0的數量 + 總1的數量 - 左邊1的數量)
+        = (左邊0的數量 - 左邊1的數量) + 總1的數量
+    """
+    ones = 0
+    zeroes = 0
+    ans = float("-inf")
+
+    for num in s[:-1]:
+        if num == "1":
+            ones += 1
+        else:
+            zeroes += 1
+        
+        ans = max(ans, zeroes - ones)
+    
+    if s[-1] == "1":
+        ones += 1
+    return ans + ones
