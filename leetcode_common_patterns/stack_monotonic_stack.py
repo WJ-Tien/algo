@@ -224,7 +224,7 @@ class FreqStack:
         return ret
 
 
-def canBeValid(s: str, locked: str) -> bool:
+def canBeValid_opt(s: str, locked: str) -> bool:
     # stack S: O(n)
     # this sol: S: O(1)
     """
@@ -274,4 +274,39 @@ def canBeValid(s: str, locked: str) -> bool:
             return False
 
     # 4. 若前、後向遍歷都沒問題，代表字串可以成為有效括號
+    return True
+
+
+def canBeValid_stack(s: str, locked: str):
+    length = len(s)
+
+    # If length of string is odd, return false.
+    if length % 2 == 1:
+        return False
+
+    open_brackets = []
+    unlocked = []
+
+    # Iterate through the string to handle '(' and ')'
+    for i in range(length):
+        if locked[i] == "0":
+            unlocked.append(i)
+        elif s[i] == "(":
+            open_brackets.append(i)
+        elif s[i] == ")":
+            if open_brackets:
+                open_brackets.pop()
+            elif unlocked:
+                unlocked.pop()
+            else:
+                return False
+
+    # Match remaining open brackets and the unlocked characters
+    while open_brackets and unlocked and open_brackets[-1] < unlocked[-1]:
+        open_brackets.pop()
+        unlocked.pop()
+
+    if open_brackets:
+        return False
+
     return True
