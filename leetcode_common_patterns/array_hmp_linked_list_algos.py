@@ -6,6 +6,20 @@ class ListNode:
         self.val = val
         self.next = next
 
+def find_node(head, k):
+    # find kth node from the end
+    # using slow/fast pointers
+    slow = head
+    fast = head
+    for _ in range(k):
+        fast = fast.next
+    
+    while fast:
+        slow = slow.next
+        fast = fast.next
+    
+    return slow
+
 def longestOnes(nums: list[int], k: int) -> int:
     # 1004. Max Consecutive Ones III
     left = 0
@@ -95,23 +109,31 @@ def findKthLargest(nums: list[int], k: int) -> int:
         return nums[p]
     return quick_select(0, len(nums)-1)
 
-
 def swapPairs(head: Optional[ListNode]) -> Optional[ListNode]:
-    
-    dummy = ListNode()
-    cur = dummy.next = head
-    prev = dummy
 
+    # the key is to use dummy node
+    # while dummy.next will always be the same 
+    # which points to the first group head
+    # and prev to trace the new group head
+    dummy = ListNode(0)
+    cur = dummy.next = head
+    prev = dummy # to revise head
+
+    # 1 -> 2 -> 3 -> 4
     while cur and cur.next:
-        first, second = cur, cur.next
+        next_node = cur.next
         third_node = cur.next.next
-        second.next = first
-        prev.next = second # important !
-        first.next = third_node
-        prev = first
+        # 2 -> 1; 1-> 2
+        next_node.next = cur
+        # dummy -> 2 -> 1
+        prev.next = next_node # critical
+        # prev = last item before the reversed group 
+        prev = cur # critical
+        # dummy -> 2 -> 1 -> 3
+        cur.next = third_node
+        # move cur to the next group head
         cur = third_node
-        
-    return dummy.next 
+    return dummy.next
 
 
 def rotate(nums: list[int], k: int) -> None:
