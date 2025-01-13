@@ -485,6 +485,7 @@ def findWinners(matches: list[list[int]]) -> list[list[int]]:
 
 
 def canConstruct(s: str, k: int) -> bool:
+    # 1400. Construct K Palindrome Strings
     # odd numbers dominate
     # one char: a, b
     # all even: abba, bb

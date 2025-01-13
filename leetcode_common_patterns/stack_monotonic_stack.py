@@ -278,6 +278,8 @@ def canBeValid_opt(s: str, locked: str) -> bool:
 
 
 def canBeValid_stack(s: str, locked: str):
+    # 921. Minimum Add to Make Parentheses Valid
+    # greedy algo
     length = len(s)
 
     # If length of string is odd, return false.
