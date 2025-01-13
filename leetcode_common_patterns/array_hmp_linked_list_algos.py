@@ -489,6 +489,34 @@ def canConstruct(s: str, k: int) -> bool:
     # one char: a, b
     # all even: abba, bb
     # 1 odd, others even:  aabcc
+    """
+    例如："aaaabbcc" 
+    初始回文單位：["aa", "aa", "bb", "cc"]
+    我們知道：
+    每個回文單位都可以拆分成兩個更小的回文串
+    每個回文單位也可以和其他單位合併
+    而奇數一定要有搭配，或者是自己 --> very critical
+    關鍵公式：
+    如果目標是 k 個回文串：
+    令 n = len(s)，n 一定是偶數（因為都是偶數次字符）
+    令 p = 初始回文單位數量（每單位長度為2）
+    所以 p = n/2
+    我們可以得到：
+    最少可以合併成 1 個回文串
+    最多可以拆分成 n 個回文串（每個字符一個）--> very critical 
+    因此：
+    如果 1 ≤ k ≤ n，我們一定能通過適當的拆分/合併得到 k 個回文串
+    這就是為什麼只需要檢查 k ≤ len(s)
+    例如：n = 6 的情況
+    Copys = "aaabbb"
+    1個回文串：   ["aaabbb"]
+    2個回文串：   ["aaa", "bbb"]
+    3個回文串：   ["aa", "a", "bbb"]
+    4個回文串：   ["aa", "a", "bb", "b"]
+    5個回文串：   ["a", "a", "a", "bb", "b"]
+    6個回文串：   ["a", "a", "a", "b", "b", "b"]
+    這就是完整的數學解釋！任何 k 在 [1, n] 範圍內，我們都能構造出對應數量的回文串。 CopyRetryClaude can make mistakes. Please double-check responses.
+    """
 
     if len(s) < k:
         return False
