@@ -115,6 +115,8 @@ def swapPairs(head: Optional[ListNode]) -> Optional[ListNode]:
     # while dummy.next will always be the same 
     # which points to the first group head
     # and prev to trace the new group head
+    # if head is somehow dynamic
+    # then you must use dummy node approach
     dummy = ListNode(0)
     cur = dummy.next = head
     prev = dummy # to revise head
@@ -404,6 +406,23 @@ def reverseList_iter(head: Optional[ListNode]) -> Optional[ListNode]:
         prev = curr          # 移動 prev
         curr = next_temp    # 移動 curr
     return prev
+
+
+def reverseList_dummy(head: Optional[ListNode]) -> Optional[ListNode]:
+
+    dummy = ListNode(0)
+    cur = dummy.next = head
+    new_head = dummy
+    prev = None
+
+    while cur:
+        next_node = cur.next
+        cur.next = prev
+        prev = cur
+        cur = next_node
+        new_head.next = prev
+    
+    return dummy.next
 
 
 def firstMissingPositive(nums: list[int]) -> int:
