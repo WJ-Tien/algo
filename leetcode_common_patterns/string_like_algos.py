@@ -339,3 +339,44 @@ def maxScore(s: str) -> int:
     if s[-1] == "1":
         ones += 1
     return ans + ones
+
+
+def backspaceCompare(s: str, t: str) -> bool:
+    # T: O(N)
+    # O(N) space using stack is trivial
+    # O(1) space solution is tricky 
+
+    def next_valid_idx(string, idx):
+        skip = 0
+
+        while idx >= 0:
+            if string[idx] == "#":
+                skip += 1
+            elif skip > 0: 
+                # valid char
+                skip -= 1
+            else: 
+                # valid char and skip == 0
+                return idx
+            idx -= 1
+        return -1
+    
+    i = len(s) - 1
+    j = len(t) - 1
+
+    # using and here cause errors a, a#a
+    while i >= 0 or j >= 0: 
+        i = next_valid_idx(s, i)
+        j = next_valid_idx(t, j)
+
+        if i >= 0 and j >= 0 and s[i] != t[j]:
+            return False
+
+        # check if both of them has remaining chars 
+        # within valid range
+        if (i >= 0) != (j >= 0):
+            return False
+        i -= 1
+        j -= 1
+
+    return True

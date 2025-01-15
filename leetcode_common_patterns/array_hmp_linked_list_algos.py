@@ -412,7 +412,7 @@ def reverseList_dummy(head: Optional[ListNode]) -> Optional[ListNode]:
 
     dummy = ListNode(0)
     cur = dummy.next = head
-    new_head = dummy
+    new_head = dummy # key for using dummy node !
     prev = None
 
     while cur:
@@ -420,7 +420,7 @@ def reverseList_dummy(head: Optional[ListNode]) -> Optional[ListNode]:
         cur.next = prev
         prev = cur
         cur = next_node
-        new_head.next = prev
+        new_head.next = prev # remember to update dummy/new_head
     
     return dummy.next
 
