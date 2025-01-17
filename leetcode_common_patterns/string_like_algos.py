@@ -349,6 +349,11 @@ def backspaceCompare(s: str, t: str) -> bool:
     def next_valid_idx(string, idx):
         skip = 0
 
+        # moving backward allow us to use only
+        # skip vairiable to trace the #
+        # without using two stacks
+        # tricky but amazing solution here
+
         while idx >= 0:
             if string[idx] == "#":
                 skip += 1

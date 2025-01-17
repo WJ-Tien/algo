@@ -330,3 +330,22 @@ def minAddToMakeValid(s: str) -> int:
     if stack:
         ans += len(stack)
     return ans
+
+
+
+def simplifyPath(path: str) -> str:
+
+    stack = []
+    path_sp = path.split("/")
+
+    for path in path_sp:
+        # .. start
+        if not stack and path == "..":
+            continue
+        elif stack and path == "..":
+            stack.pop()
+        else:
+            if path not in {".", ""}:
+                stack.append(path)
+
+    return "/" + '/'.join(stack)
