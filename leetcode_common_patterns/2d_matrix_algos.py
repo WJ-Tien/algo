@@ -331,3 +331,33 @@ def longestIncreasingPath(matrix: List[List[int]]) -> int:
             cur_max_depth = dfs(r, c)
             max_depth = max(max_depth, cur_max_depth)
     return max_depth
+
+
+def minCost(grid: List[List[int]]) -> int:
+    
+    m, n = len(grid), len(grid[0])
+    directions = [(0, 1), (0, -1), (1, 0), (-1, 0)]  # 右、左、下、上
+    queue = deque([(0, 0, 0)])  # (row, col, cost)
+    costs = [[float('inf')] * n for _ in range(m)]  # 儲存最小成本
+    costs[0][0] = 0
+
+    while queue:
+        x, y, cost = queue.popleft()
+
+        # 如果當前成本大於記錄的最小成本，跳過
+        if cost > costs[x][y]:
+            continue
+
+        for i, (dx, dy) in enumerate(directions):
+            nx, ny = x + dx, y + dy
+            if 0 <= nx < m and 0 <= ny < n:
+                # 計算移動成本
+                new_cost = cost if grid[x][y] == i + 1 else cost + 1
+                if new_cost < costs[nx][ny]:
+                    costs[nx][ny] = new_cost
+                    if grid[x][y] == i + 1:
+                        queue.appendleft((nx, ny, new_cost))  # 成本為 0，加入佇列前端
+                    else:
+                        queue.append((nx, ny, new_cost))  # 成本為 1，加入佇列後端
+
+    return costs[m-1][n-1]

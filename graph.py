@@ -1,3 +1,16 @@
+
+# dijkstra: greedy-like algo, unweighted graph. single source shortest path.
+#           Find the shortest path from a source to another vertex
+# bellman ford: acyclic & postive weight (sum) cyclic graph
+#           single source shortest path
+
+# TODO
+# A*
+# kruscal
+# Prim
+
+import heapq
+
 def has_cycle_undirected(graph):
     """
     graph: dict[node, set[node]]
@@ -58,10 +71,6 @@ class DSU:
         self.parent[self.find(x)] = self.find(y)
 
 
-# dijkstra: greedy-like algo, unweighted graph. single source shortest path.
-#           Find the shortest path from a source to another vertex
-# bellman ford: acyclic & postive weight (sum) cyclic graph
-#           single source shortest path
 
 def bellman_ford(graph, vertices, source):
     # T: O(EV)
@@ -82,3 +91,26 @@ def bellman_ford(graph, vertices, source):
             return False  # 存在負權重循環
     
     return distance
+
+def dijkstra(graph, start):
+    # Initialize distances with infinity
+    distances = {node: float('inf') for node in graph}
+    distances[start] = 0  # Distance to the start node is 0
+    priority_queue = [(0, start)]  # (distance, node)
+    visited = set()
+
+    while priority_queue:
+        current_distance, current_node = heapq.heappop(priority_queue)
+
+        if current_node in visited:
+            continue
+        visited.add(current_node)
+
+        for neighbor, weight in graph[current_node].items():
+            distance = current_distance + weight
+
+            if distance < distances[neighbor]:
+                distances[neighbor] = distance
+                heapq.heappush(priority_queue, (distance, neighbor))
+
+    return distances
