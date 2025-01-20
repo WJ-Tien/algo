@@ -25,21 +25,16 @@ def nextGreaterElementsII(nums: list[int]) -> list[int]:
     extended_nums = nums * 2
     stack = []
     ans = [-1] * len(nums)
-
     for idx, num in enumerate(extended_nums):
         while stack and extended_nums[stack[-1]] < num:
             prev_idx = stack.pop()
-
-            # key here
-            prev_idx %= len(nums)
             ans[prev_idx] = num
-
-        # prevent duplicated work
-        if idx < len(extended_nums):
+        # we only consider idx < len(nums)
+        # since it's symmetric
+        if idx < len(nums):
             stack.append(idx)
-    
-    return ans
-
+     
+        return ans
 
 def dailyTemperatures(temperatures: list[int]) -> list[int]:
 
