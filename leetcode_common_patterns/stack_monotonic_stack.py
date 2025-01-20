@@ -86,6 +86,35 @@ class StockSpanner:
         
         return self.stack[-1][-1]
 
+def longestSubarray(nums: list[int], limit: int) -> int:
+    increasing = deque()
+    decreasing = deque()
+    left = ans = 0
+    
+    for right in range(len(nums)):
+        # 1. 維持單調佇列
+        while increasing and increasing[-1] > nums[right]:
+            increasing.pop()
+        while decreasing and decreasing[-1] < nums[right]:
+            decreasing.pop()
+            
+        increasing.append(nums[right])
+        decreasing.append(nums[right])
+        
+        # 2. 檢查目前子陣列是否符合條件，若不符合就縮小左邊界
+        while decreasing[0] - increasing[0] > limit:
+            if nums[left] == decreasing[0]:
+                decreasing.popleft()
+            if nums[left] == increasing[0]:
+                increasing.popleft()
+            left += 1
+        
+        # 3. 更新答案
+        ans = max(ans, right - left + 1)
+
+    return ans    
+
+
 
 def maxSlidingWindow(nums: list[int], k: int) -> list[int]:
 
