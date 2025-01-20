@@ -1,4 +1,3 @@
-from collections import deque
 from typing import Optional
 
 class ListNode:
@@ -444,29 +443,6 @@ def firstMissingPositive(nums: list[int]) -> int:
         if nums[i] != i + 1:
             return i + 1
     return n + 1
-
-
-def maxSlidingWindow(nums: list[int], k: int) -> list[int]:
-    # 239. Sliding Window Maximum
-    # sliding window + monotonic stack
-
-    queue = deque()
-    ans = []
-
-    for i in range(len(nums)):
-        while queue and nums[queue[-1]] < nums[i]:
-            queue.pop()
-
-        queue.append(i)
-
-        # out of k-bound
-        if queue[0] <= i - k:
-            queue.popleft()
-
-        # finish k-bound
-        if i >= k - 1:
-            ans.append(nums[queue[0]])
-    return ans
 
 
 def reverseKGroup(head: Optional[ListNode], k: int) -> Optional[ListNode]:

@@ -1,20 +1,72 @@
+from collections import deque
+
+def nextGreaterElement(nums1: list[int], nums2: list[int]) -> list[int]:
+
+    hmp = dict()
+    for idx, num in enumerate(nums2):
+        hmp[num] = idx
+    
+    stack = [] # idx
+    ans = [-1] * len(nums2)
+
+    for idx, num in enumerate(nums2):
+        while stack and nums2[stack[-1]] < num:
+            prev_idx = stack.pop()
+            ans[prev_idx] = num 
+        stack.append(idx)
+
+    return [ans[hmp[num]] for num in nums1]
 
 
 def dailyTemperatures(temperatures: list[int]) -> list[int]:
 
-    # O(n) TS
+    # stack stores idx
+    # if stack[-1] < temperatures
+    # start to pop and calculate day diff
+    # monotonically desc
 
-    ans = [0] * len(temperatures)
-    stack = [] # store (temp, idx)
+    stack = []
+    ans = [0] * len(temperatures) 
 
     for idx, temperature in enumerate(temperatures):
-        # key using while since we might have multiples 
-        # that is smaller than this temperature
-        while stack and temperature > stack[-1][0]:
-            stack_temp, stack_idx = stack.pop()
-            ans[stack_idx] = idx - stack_idx
-        stack.append((temperature, idx))
+        while stack and temperatures[stack[-1]] < temperature:
+            prev_idx = stack.pop()
+            ans[prev_idx] = idx - prev_idx
+        
+        stack.append(idx)
     return ans
+
+def maxSlidingWindow(nums: list[int], k: int) -> list[int]:
+
+    # max(window) = overall O(n^2) --> TLE
+    # we use monotonic queue to make the whole algo O(n)
+    # pop/popleft first and finally get max
+
+    ans = []
+    queue = deque() # monotonic desc queue; store idx
+
+    for idx, num in enumerate(nums):
+
+        # trace max value
+        while queue and nums[queue[-1]] < num: 
+            queue.pop()
+
+        queue.append(idx)
+        
+        # out-of-bound
+        if queue[0] <= idx - k:
+            queue.popleft()
+        
+        # every k, we can calculate a max
+        # since each iteration we increase idx by 1
+        # so we guarantee at each iteration
+        # we can calculate a max
+        # so we use >= k - 1 (0-indexed, we get a k size window)
+        if idx >= k - 1:
+            ans.append(nums[queue[0]])
+        
+    return ans
+
 
 
 def decodeString(s: str) -> str:
@@ -349,3 +401,18 @@ def simplifyPath(path: str) -> str:
                 stack.append(path)
 
     return "/" + '/'.join(stack)
+
+
+class StockSpanner:
+    def __init__(self):
+        self.stack = [] # (price, span)
+
+    def next(self, price: int) -> int:
+        cur_span = 1 # default 1
+        while self.stack and self.stack[-1][0] <= price:
+            prev_price, prev_span = self.stack.pop()
+            cur_span += prev_span
+        
+        self.stack.append((price, cur_span))
+        
+        return self.stack[-1][-1]
