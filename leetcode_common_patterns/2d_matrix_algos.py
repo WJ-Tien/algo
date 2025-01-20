@@ -334,6 +334,8 @@ def longestIncreasingPath(matrix: List[List[int]]) -> int:
 
 
 def minCost(grid: List[List[int]]) -> int:
+    # 1368. Minimum Cost to Make at Least One Valid Path in a Grid
+    # 0-1 BFS or dijstra (not optimal)
     
     m, n = len(grid), len(grid[0])
     directions = [(0, 1), (0, -1), (1, 0), (-1, 0)]  # 右、左、下、上

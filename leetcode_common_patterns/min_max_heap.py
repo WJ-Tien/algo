@@ -249,3 +249,55 @@ def smallestRange(nums: list[list[int]]) -> list[int]:
             max_value = max(max_value, next_value)
     
     return [start, end]
+
+
+def trapRainWater(heightMap: list[list[int]]) -> int:
+    # 407. Trapping Rain Water II
+
+    m, n = len(heightMap), len(heightMap[0])
+    
+    # 初始化訪問數組和優先隊列
+    visited = [[False] * n for _ in range(m)]
+    heap = []
+    
+    # 將邊界放入優先隊列
+    # 添加第一行和最後一行
+    for j in range(n):
+        heappush(heap, (heightMap[0][j], 0, j))
+        heappush(heap, (heightMap[m-1][j], m-1, j))
+        visited[0][j] = visited[m-1][j] = True
+    
+    # 添加第一列和最後一列
+    for i in range(1, m-1):
+        heappush(heap, (heightMap[i][0], i, 0))
+        heappush(heap, (heightMap[i][n-1], i, n-1))
+        visited[i][0] = visited[i][n-1] = True
+    
+    # 四個方向的移動
+    directions = [(1,0), (-1,0), (0,1), (0,-1)]
+    result = 0
+    max_height = 0
+    
+    # 從外向内遍歷
+    while heap:
+        height, row, col = heappop(heap)
+        max_height = max(max_height, height)
+        
+        # 檢查四個相鄰的格子
+        for dx, dy in directions:
+            new_row, new_col = row + dx, col + dy
+            
+            # 檢查是否在邊界內且未訪問
+            if (0 <= new_row < m and 0 <= new_col < n 
+                and not visited[new_row][new_col]):
+                
+                visited[new_row][new_col] = True
+                curr_height = heightMap[new_row][new_col]
+                
+                # 如果當前格子高度小於最大高度，可以積水
+                if curr_height < max_height:
+                    result += max_height - curr_height
+                
+                heappush(heap, (curr_height, new_row, new_col))
+    
+    return result
