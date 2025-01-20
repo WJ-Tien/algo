@@ -1,5 +1,6 @@
 from collections import deque
 
+
 def nextGreaterElement(nums1: list[int], nums2: list[int]) -> list[int]:
 
     hmp = dict()
@@ -16,6 +17,28 @@ def nextGreaterElement(nums1: list[int], nums2: list[int]) -> list[int]:
         stack.append(idx)
 
     return [ans[hmp[num]] for num in nums1]
+
+
+def nextGreaterElementsII(nums: list[int]) -> list[int]:
+
+    # simulate circular
+    extended_nums = nums * 2
+    stack = []
+    ans = [-1] * len(nums)
+
+    for idx, num in enumerate(extended_nums):
+        while stack and extended_nums[stack[-1]] < num:
+            prev_idx = stack.pop()
+
+            # key here
+            prev_idx %= len(nums)
+            ans[prev_idx] = num
+
+        # prevent duplicated work
+        if idx < len(extended_nums):
+            stack.append(idx)
+    
+    return ans
 
 
 def dailyTemperatures(temperatures: list[int]) -> list[int]:
@@ -35,6 +58,39 @@ def dailyTemperatures(temperatures: list[int]) -> list[int]:
         
         stack.append(idx)
     return ans
+
+
+def finalPrices(prices: list[int]) -> list[int]:
+    # 1475. Final Prices With a Special Discount in a Shop
+
+    ans = prices.copy()
+    stack = []
+
+    for idx, price in enumerate(prices):
+        while stack and prices[stack[-1]] >= price:
+            prev_idx = stack.pop()
+            ans[prev_idx] = prices[prev_idx] - price
+        stack.append(idx)
+    
+    return ans 
+
+
+class StockSpanner:
+    # 901. Online Stock Span
+
+    def __init__(self):
+        self.stack = [] # (price, span)
+
+    def next(self, price: int) -> int:
+        cur_span = 1 # default 1
+        while self.stack and self.stack[-1][0] <= price:
+            prev_price, prev_span = self.stack.pop()
+            cur_span += prev_span
+        
+        self.stack.append((price, cur_span))
+        
+        return self.stack[-1][-1]
+
 
 def maxSlidingWindow(nums: list[int], k: int) -> list[int]:
 
@@ -66,7 +122,6 @@ def maxSlidingWindow(nums: list[int], k: int) -> list[int]:
             ans.append(nums[queue[0]])
         
     return ans
-
 
 
 def decodeString(s: str) -> str:
@@ -401,18 +456,3 @@ def simplifyPath(path: str) -> str:
                 stack.append(path)
 
     return "/" + '/'.join(stack)
-
-
-class StockSpanner:
-    def __init__(self):
-        self.stack = [] # (price, span)
-
-    def next(self, price: int) -> int:
-        cur_span = 1 # default 1
-        while self.stack and self.stack[-1][0] <= price:
-            prev_price, prev_span = self.stack.pop()
-            cur_span += prev_span
-        
-        self.stack.append((price, cur_span))
-        
-        return self.stack[-1][-1]
