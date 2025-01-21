@@ -115,6 +115,7 @@ def gridGame(grid: list[list[int]]) -> int:
 
     # NOTICE: second robot have to wait for first robot's action
     # So that's why we update second_row_sum after min_sum calc
+    # the second robot either go top or bottom
 
     # 2 5 4
     # 1 5 1
