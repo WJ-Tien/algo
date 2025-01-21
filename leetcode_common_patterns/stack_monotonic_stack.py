@@ -100,6 +100,11 @@ def longestSubarray(nums: list[int], limit: int) -> int:
             
         increasing.append(nums[right])
         decreasing.append(nums[right])
+
+        # left determines for [left, right]
+        # we have
+        # max = decreasing[0]
+        # min = increasing[0
         
         # 2. 檢查目前子陣列是否符合條件，若不符合就縮小左邊界
         while decreasing[0] - increasing[0] > limit:
@@ -113,7 +118,6 @@ def longestSubarray(nums: list[int], limit: int) -> int:
         ans = max(ans, right - left + 1)
 
     return ans    
-
 
 
 def maxSlidingWindow(nums: list[int], k: int) -> list[int]:

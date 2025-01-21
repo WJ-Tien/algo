@@ -105,3 +105,30 @@ def findMaxLength(nums: list[int]) -> int:
         else:
             prefix_sum[cur_sum] = idx
     return ans
+
+
+def gridGame(grid: list[list[int]]) -> int:
+
+    first_row_sum = sum(grid[0])
+    second_row_sum = 0
+    min_sum = float("inf")
+
+    # NOTICE: second robot have to wait for first robot's action
+    # So that's why we update second_row_sum after min_sum calc
+
+    # 2 5 4
+    # 1 5 1
+    # turn at 0-idx
+    # 0 5 4 first_row_sum = 5 + 4 = 9
+    # 0 5 1 second_row_sum = 0 (not even started)
+    # turn at 1-idx
+    # 0 0 4 first_row_sum = 4
+    # 1 0 1 second_row = 1
+
+
+    for turn_idx in range(len(grid[0])):
+        first_row_sum -= grid[0][turn_idx]
+        min_sum = min(min_sum, max(first_row_sum, second_row_sum))
+        second_row_sum += grid[1][turn_idx]
+    
+    return min_sum
