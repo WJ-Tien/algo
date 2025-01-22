@@ -457,4 +457,60 @@ def maxPathSum(root: Optional[TreeNode]) -> int:
     return max_sum
 
         
+def countUnivalSubtrees(root: Optional[TreeNode]) -> int:
+
+    # bottom up dfs
+    # check left all uni and right all uni
+    # and compare value
+
+    ans = 0
+    def dfs(root):
+        nonlocal ans
+        if root is None:
+            return True
+
+        is_left = dfs(root.left)
+        is_right = dfs(root.right)
+
+        if is_left and is_right:
+            # check if false is simpler
+            # negative list
+            if root.left and root.val != root.left.val:
+                return False
+            if root.right and root.val != root.right.val:
+                return False
+            ans += 1
+            return True
+        return False
+
+    dfs(root)
+    return ans
+
+
+def minDepth(root: Optional[TreeNode]) -> int:
+    # 111. Minimum Depth of Binary Tree
+
+    def dfs(root):
+        if root is None:
+            return 0
+        
+        ld = dfs(root.left)
+        rd = dfs(root.right)
+
+        # two edge cases, single-sided tree
+        """
+        Example:
+         5
+          \
+           3
+            \
+             2
+        """
+        if root.left and not root.right:
+            return 1 + ld
+        if not root.left and root.right:
+            return 1 + rd
+        return 1 + min(ld, rd)
+    
+    return dfs(root)
 
