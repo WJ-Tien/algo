@@ -475,6 +475,7 @@ def countUnivalSubtrees(root: Optional[TreeNode]) -> int:
         if is_left and is_right:
             # check if false is simpler
             # negative list
+            # not exist or val is the same --> True
             if root.left and root.val != root.left.val:
                 return False
             if root.right and root.val != root.right.val:
