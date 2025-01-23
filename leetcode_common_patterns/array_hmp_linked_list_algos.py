@@ -590,3 +590,29 @@ def maximumSum(nums: list[int]) -> int:
             ans = max(ans, hmp[ds] + num)
             hmp[ds] = max(hmp[ds], num)
     return -1 if ans == float("-inf") else ans
+
+
+
+def countServers(grid: list[list[int]]) -> int:
+    # 1267. Count Servers that Communicate
+    # T: O(m*n)
+    # S: O(m+n)
+
+    # array grouping
+    rows, cols = len(grid), len(grid[0])
+    row_counts = [0] * rows
+    col_counts = [0] * cols
+    ans = 0
+
+    for r in range(rows):
+        for c in range(cols):
+            if grid[r][c] == 1:
+                row_counts[r] += 1
+                col_counts[c] += 1
+    
+    for r in range(rows):
+        for c in range(cols):
+            if grid[r][c] == 1 and (row_counts[r] > 1 or col_counts[c] > 1):
+                ans += 1
+
+    return ans
