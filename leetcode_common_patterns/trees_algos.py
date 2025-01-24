@@ -186,33 +186,39 @@ def lowestCommonAncestor_BST_ONLY(root: 'TreeNode', p: 'TreeNode', q: 'TreeNode'
         else:
             return cur
 
-def lowestCommonAncestor_BT_OR_BSR(root: 'TreeNode', p: 'TreeNode', q: 'TreeNode') -> 'TreeNode':
-    # T: O(N), last_line: O((logN)^2))
+def lowestCommonAncestor(root: 'TreeNode', p: 'TreeNode', q: 'TreeNode') -> 'TreeNode':
+
+    # 236. Lowest Common Ancestor of a Binary Tree
+    # general version of binary tree (or BST)
+    # O(N) TS
+
+    parent = dict() # cur_node to parent mapping
     queue = deque()
     queue.append(root)
-    hmp = dict()
-    hmp[root] = [root]
+    parent[root] = None # root has no parent
 
     while queue:
         node = queue.popleft()
 
         if node.left:
+            parent[node.left] = node
             queue.append(node.left)
-            if node.left not in hmp:
-                hmp[node.left] = []
-            hmp[node.left].extend(hmp[node])
-            hmp[node.left].append(node.left)
         if node.right:
+            parent[node.right] = node
             queue.append(node.right)
-            if node.right not in hmp:
-                hmp[node.right] = []
-            hmp[node.right].extend(hmp[node])
-            hmp[node.right].append(node.right)
 
-    for p_dest in hmp[p][::-1]:
-        for q_dest in hmp[q][::-1]:
-            if p_dest.val == q_dest.val:
-                return p_dest
+    p_ancestors = set()
+    while p:
+        p_ancestors.add(p)
+        p = parent[p]
+    
+    # bottom to top
+    while q:
+        if q in p_ancestors:
+            return q
+        q = parent[q]
+
+    return None
 
 
 def levelOrder(root: Optional[TreeNode]) -> list[list[int]]:
@@ -514,4 +520,32 @@ def minDepth(root: Optional[TreeNode]) -> int:
         return 1 + min(ld, rd)
     
     return dfs(root)
+
+
+def maxAncestorDiff(root: Optional[TreeNode]) -> int:
+
+    ans = float("-inf")
+
+    def dfs(root):
+        nonlocal ans
+        if root is None:
+            # min, max
+            return (float("-inf"), float("inf"))
+
+        left_min, left_max = dfs(root.left)
+        right_min, right_max = dfs(root.right)
+
+        if left_min == float("-inf") and left_max == float("inf"):
+            left_min = left_max = root.val
+        if right_min == float("-inf") and right_max == float("inf"):
+            right_min = right_max = root.val
+
+        new_min = min(root.val, left_min, right_min)
+        new_max = max(root.val, left_max, right_max)
+        ans = max(ans, abs(root.val - new_min), abs(root.val - new_max))
+
+        return new_min, new_max 
+    
+    dfs(root)
+    return ans
 
