@@ -506,3 +506,52 @@ def alienOrder(words: list[str]) -> str:
         return ""
 
     return ''.join(result)
+
+
+def eventualSafeNodes(graph: list[list[int]]) -> list[int]:
+
+    # 802. Find Eventual Safe States
+    # topological sort
+
+    # we build a rev_graph to have
+    # easier access to nodes
+    # u -> v ===> v -> u
+    # then we collect out_degree
+    # put out_degree == 0 to deque (if any)
+    # as long as we reach out_degree == 0
+    # put it in the queue
+    # iterate over and over again
+    # finally we check if the node is safe
+
+    # O(V+E) TS
+
+    rev_graph = [[] for _ in range(len(graph))] # easier access
+    out_degree = [0] * len(graph) # ori graph
+    queue = deque()
+
+    for u in range(len(graph)):
+        out_degree[u] = len(graph[u])
+        for v in graph[u]:
+            rev_graph[v].append(u)
+    
+    # 5 --> 6
+    # 6 out_degree == 0
+    # then 5's out_degree == 1  --> -1 --> == 0
+    # 5 is safe as well
+    # iterate over and over again
+    for i in range(len(out_degree)):
+        if out_degree[i] == 0:
+            queue.append(i)
+        
+    safe = [False] * len(graph)
+    while queue:
+        # v
+        node = queue.popleft()
+        safe[node] = True
+
+        for prev_node in rev_graph[node]:
+            out_degree[prev_node] -= 1
+            if out_degree[prev_node] == 0:
+                queue.append(prev_node)
+
+    return [i for i in range(len(graph)) if safe[i]] 

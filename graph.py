@@ -1,4 +1,8 @@
 
+# topological sort --> check dependency (e.g., num of courses)
+# and check if cycles exist
+# in_degree (or sometimes out_degree) == 0, put them in a deque()
+
 # dijkstra: greedy-like algo, unweighted graph. single source shortest path.
 #           Find the shortest path from a source to another vertex
 # bellman ford: acyclic & postive weight (sum) cyclic graph
@@ -114,3 +118,5 @@ def dijkstra(graph, start):
                 heapq.heappush(priority_queue, (distance, neighbor))
 
     return distances
+
+
