@@ -549,3 +549,43 @@ def maxAncestorDiff(root: Optional[TreeNode]) -> int:
     dfs(root)
     return ans
 
+def deleteNode(self, root: Optional[TreeNode], key: int) -> Optional[TreeNode]:
+    """
+    節點沒有子節點（葉子節點）： 直接刪除該節點。
+    節點有一個子節點： 用其子節點取代該節點。
+    節點有兩個子節點： 找到右子樹中最小值節點（或左子樹中最大值節點），將該節點值替換到目標節點，然後刪除替換節點。
+    """
+    # T: O(H1+H2)
+    # S: O(H)
+    if not root:
+        return root
+    
+    if key < root.val:
+        root.left = self.deleteNode(root.left, key)
+    elif key > root.val:
+        root.right = self.deleteNode(root.right, key)
+    else:
+        # found the position
+        # case 1
+        if not root.left and not root.right:
+            return None
+        
+        # case 2
+        if not root.left and root.right:
+            return root.right
+        if root.left and not root.right:
+            return root.left
+        
+        # case 3
+        # either left or right, > 1 solutions 
+        # here we choose leftmost in right subtree
+        min_node = self.find_min(root.right)
+        root.val = min_node.val
+        root.right = self.deleteNode(root.right, min_node.val)
+    return root
+
+def find_min(self, node):
+    while node.left:
+        node = node.left
+    return node
+
