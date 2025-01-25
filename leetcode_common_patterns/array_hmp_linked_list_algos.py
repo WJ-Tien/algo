@@ -616,3 +616,40 @@ def countServers(grid: list[list[int]]) -> int:
                 ans += 1
 
     return ans
+
+
+def lexicographicallySmallestArray(nums: list[int], limit: int) -> list[int]:
+    # 2948. Make Lexicographically Smallest Array by Swapping Elements
+    # [1, 2, 1] < [1, 2, 2] # compare num by idx
+    # 1 == 1,  2 == 2, 1 < 2 
+    # [1,2,1] < [1,2,2]
+    n = len(nums)
+    # 將數值和位置配對並排序
+    pairs = sorted((num, i) for i, num in enumerate(nums))
+    
+    groups = []
+    curr_group = [pairs[0]]
+    
+    # 分組：差距不超過 limit 的數字歸為一組
+    for i in range(1, n):
+        if pairs[i][0] - pairs[i-1][0] <= limit:
+            curr_group.append(pairs[i])
+        else:
+            groups.append(curr_group)
+            curr_group = [pairs[i]]
+    groups.append(curr_group)
+    
+    # 建立結果陣列
+    result = [0] * n
+    
+    # 處理每個群組
+    for group in groups:
+        # 獲取位置和數值
+        positions = sorted(p[1] for p in group)
+        values = sorted(p[0] for p in group)
+        
+        # 按照排序後的位置放入對應的值
+        for pos, val in zip(positions, values):
+            result[pos] = val
+    
+    return result
