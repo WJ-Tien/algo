@@ -595,6 +595,9 @@ def n_ary_maxDepth(root: TreeNode) -> int:
     def dfs(root):
         if root is None:
             return 0
+
+        # remember this should be local var
+        # instead of global var
         max_c_depth = 0
         for c in root.children:
             max_c_depth = max(max_c_depth, dfs(c)) 
