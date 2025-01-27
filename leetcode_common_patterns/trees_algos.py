@@ -589,3 +589,48 @@ def find_min(self, node):
         node = node.left
     return node
 
+
+def n_ary_maxDepth(root: TreeNode) -> int:
+
+    def dfs(root):
+        if root is None:
+            return 0
+        max_c_depth = 0
+        for c in root.children:
+            max_c_depth = max(max_c_depth, dfs(c)) 
+        return 1 + max_c_depth
+
+    return dfs(root)
+
+def n_ary_postorder(root: TreeNode) -> list[int]:
+
+    ans = []
+    def dfs(root):
+        if root is None:
+            return 
+        
+        for c in root.children:
+            dfs(c)
+        ans.append(root.val)
+        return
+    
+    dfs(root)
+    return ans
+
+
+def preorder(root: TreeNode) -> list[int]:
+
+    ans = []
+
+    def dfs(root):
+        if root is None:
+            return
+        
+        ans.append(root.val)
+        for c in root.children:
+            dfs(c)
+        
+        return
+
+    dfs(root)
+    return ans
