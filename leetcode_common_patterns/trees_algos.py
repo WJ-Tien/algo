@@ -351,6 +351,50 @@ def buildTree(preorder: list[int], inorder: list[int]) -> Optional[TreeNode]:
     return helper(0, 0, len(inorder) - 1)
 
 
+def buildTree_opt(preorder, inorder):
+    # 建立字典(哈希表)，記錄inorder中每個值對應的索引位置，方便O(1)查找
+    in_map = {}
+    for i, val in enumerate(inorder):
+        in_map[val] = i
+    
+    # 定義遞迴函式
+    def helper(pre_left, pre_right, in_left, in_right):
+        # 若區間無效，表示子樹為空，返回 None
+        if pre_left > pre_right or in_left > in_right:
+            return None
+        
+        # 前序遍歷的第一個位置就是root
+        root_val = preorder[pre_left]
+        root = TreeNode(root_val)
+        
+        # 在inorder中找到root的位置
+        in_root_index = in_map[root_val]
+        
+        # 左子樹的大小 (根在inorder中的索引 - 當前inorder的起始位置)
+        left_size = in_root_index - in_left
+        
+        # 建立左子樹
+        root.left = helper(
+            pre_left + 1,               # 左子樹在preorder的起點 (root往後一格)
+            pre_left + left_size,       # 左子樹在preorder的終點
+            in_left,                    # 左子樹在inorder的起始
+            in_root_index - 1           # 左子樹在inorder的終點 (根位置往前一格)
+        )
+        
+        # 建立右子樹
+        root.right = helper(
+            pre_left + left_size + 1,   # 右子樹在preorder的起點
+            pre_right,                  # 右子樹在preorder的終點
+            in_root_index + 1,          # 右子樹在inorder的起點 (根位置往後一格)
+            in_right                    # 右子樹在inorder的終點
+        )
+        
+        return root
+    
+    # 呼叫遞迴函式，索引涵蓋整個序列範圍
+    return helper(0, len(preorder) - 1, 0, len(inorder) - 1)
+
+
 def widthOfBinaryTree(root: Optional[TreeNode]) -> int:
 
     # O(n) TS
@@ -605,6 +649,7 @@ def n_ary_maxDepth(root: TreeNode) -> int:
 
     return dfs(root)
 
+
 def n_ary_postorder(root: TreeNode) -> list[int]:
 
     ans = []
@@ -637,3 +682,21 @@ def preorder(root: TreeNode) -> list[int]:
 
     dfs(root)
     return ans
+
+
+def removeLeafNodes(root: Optional[TreeNode], target: int) -> Optional[TreeNode]:
+
+    # post order traversal
+
+    def dfs(root):
+        if root is None:
+            return
+        
+        root.left = dfs(root.left)
+        root.right = dfs(root.right)
+
+        if not root.left and not root.right and root.val == target:
+            root = None
+        return root
+
+    return dfs(root) 
