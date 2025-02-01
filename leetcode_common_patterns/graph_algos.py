@@ -555,3 +555,60 @@ def eventualSafeNodes(graph: list[list[int]]) -> list[int]:
                 queue.append(prev_node)
 
     return [i for i in range(len(graph)) if safe[i]] 
+
+
+def minReorder(n: int, connections: list[list[int]]) -> int:
+
+    # 1466. Reorder Routes to Make All Paths Lead to the City Zero
+    # start from zero and think
+    """
+
+    為什麼可以確定沒有 cycle？
+    在這個題目中，給定的輸入通常滿足這樣的條件：
+    有 n 個城市（節點）。
+    connections 中的邊數恰好為 n-1。
+    從任一城市都可以通往其他城市（也就是無向圖下是連通的）。
+    這正好符合樹的定義：一個連通且無循環的圖，其邊數必定為節點數 - 1。
+    因此，我們可以知道底層的無向結構是一棵樹，自然不存在 cycle。
+
+    --> what if n verticies with n edges
+    --> must have a cycle
+
+    這樣設計的直覺在於：
+
+    !!! DFS 從 0 出發 !!!：我們希望模擬從 0 到其他城市的「反向」過程。
+    當 DFS 遇到一條標記為 1 的邊時，表示這條邊的原始方向和我們需要的方向相反，必須反轉，所以累加 flip 次數。
+    當 DFS 遇到一條標記為 0 的虛擬邊時，則表示該路徑已經符合讓節點最終能夠通往 0，不需要反轉。
+
+    """
+
+    ans = 0
+    graph = {i: set() for i in range(n)}
+    visited = set()
+
+    for a, b in connections:
+        graph[a].add((b, 1)) # original: need to flip
+        graph[b].add((a, 0)) # artificial: no need to flip
+    
+    def dfs(vertex):
+        nonlocal ans
+        visited.add(vertex)
+        for neighbor, need_flip in graph[vertex]:
+            if neighbor not in visited:
+                ans += need_flip
+                dfs(neighbor)
+
+    dfs(0)
+    return ans
+
+
+def findSmallestSetOfVertices(n: int, edges: list[list[int]]) -> list[int]:
+    # 1557. Minimum Number of Vertices to Reach All Nodes
+    # in-degree
+    # directed-acyclic
+    in_degree = [0] * n
+
+    for u, v in edges:
+        in_degree[v] += 1
+    
+    return [v for v in range(len(in_degree)) if in_degree[v] == 0]
