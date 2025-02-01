@@ -105,6 +105,8 @@ def dijkstra(graph, start):
     # Initialize distances with infinity
     # Dijkstra 使用 最小堆（Min Heap），確保每次從優先隊列取出的節點 一定是當前所有未處理節點中，距離起點最短的那個。
     # 一旦某個節點被取出，它的最短距離就不會再被更改
+    # 不斷從尚未確定最短路徑的節點中選擇當前距離起點最近的節點，
+    # 然後更新（鬆弛）其相鄰節點的路徑長度。
     distances = {node: float('inf') for node in graph}
     distances[start] = 0  # Distance to the start node is 0
     priority_queue = [(0, start)]  # (distance, node)
@@ -117,7 +119,7 @@ def dijkstra(graph, start):
             continue
         visited.add(current_node)
 
-        for neighbor, weight in graph[current_node].items():
+        for neighbor, weight in graph[current_node]:
             distance = current_distance + weight
 
             if distance < distances[neighbor]:
