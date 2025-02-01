@@ -1,4 +1,5 @@
 from collections import defaultdict, deque, Counter
+from heapq import heappop, heappush
 from typing import Optional
 
 class TreeNode:
@@ -612,3 +613,39 @@ def findSmallestSetOfVertices(n: int, edges: list[list[int]]) -> list[int]:
         in_degree[v] += 1
     
     return [v for v in range(len(in_degree)) if in_degree[v] == 0]
+
+
+def networkDelayTime(times: list[list[int]], n: int, k: int) -> int:
+    # 743. Network Delay Time
+    # pq stores (distance, node)
+    # T:O((V+E)logV)
+    # S: O(V+E)
+    # Dijkstra 使用 最小堆（Min Heap），確保每次從優先隊列取出的節點 一定是當前所有未處理節點中，距離起點最短的那個。
+    # 一旦某個節點被取出，它的最短距離就不會再被更改
+
+    distances = {i: float("inf") for i in range(1, n+1)}
+    distances[k] = 0
+    pq = [(0, k)]
+    visited = set()
+
+    graph = {i: set() for i in range(1, n+1)}
+    for u, v, w in times:
+        graph[u].add((v, w))
+    
+    max_dist = 0
+    
+    while pq:
+        cur_dist, u = heappop(pq)
+        if u in visited:
+            continue
+            
+        visited.add(u)
+        max_dist = max(max_dist, cur_dist)
+
+        for v, w in graph[u]:
+            new_dist = cur_dist + w
+            if new_dist < distances[v]:
+                distances[v] = new_dist
+                heappush(pq, (new_dist, v)) 
+
+    return max_dist if len(visited) == n else -1

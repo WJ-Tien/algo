@@ -3,7 +3,10 @@
 # and check if cycles exist
 # in_degree (or sometimes out_degree) == 0, put them in a deque()
 
-# dijkstra: greedy-like algo, unweighted graph. single source shortest path.
+# BFS: start from a source and to another vertex, it will find the shortest path in between
+# but the it should be applied to an unweighted graph.
+
+# dijkstra: greedy-like algo, weighted graph. single source shortest path.
 #           Find the shortest path from a source to another vertex
 # bellman ford: acyclic & postive weight (sum) cyclic graph
 #           single source shortest path
@@ -97,7 +100,11 @@ def bellman_ford(graph, vertices, source):
     return distance
 
 def dijkstra(graph, start):
+    # T: O((V+E)logV)
+    # S: O(V+E)
     # Initialize distances with infinity
+    # Dijkstra 使用 最小堆（Min Heap），確保每次從優先隊列取出的節點 一定是當前所有未處理節點中，距離起點最短的那個。
+    # 一旦某個節點被取出，它的最短距離就不會再被更改
     distances = {node: float('inf') for node in graph}
     distances[start] = 0  # Distance to the start node is 0
     priority_queue = [(0, start)]  # (distance, node)
