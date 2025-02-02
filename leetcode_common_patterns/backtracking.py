@@ -16,8 +16,9 @@ backtrack開始就是一個tree的 root
 """
 
 def permute(nums: list[int]) -> list[list[int]]:
+    # 46. Permutations
     # TC: O(N* N!) --> N depths * N! leaves
-    # SC: O(N) --> recursion call stacks
+    # SC: O(N + N!) --> recursion call stacks + N! results
 
     ans = []
     visited = [False] * len(nums) 
@@ -39,9 +40,10 @@ def permute(nums: list[int]) -> list[list[int]]:
     return ans
 
 def combine(n: int, k: int) -> list[list[int]]:
+    # 77. Combinations
     # [1..n]
     # TC: O(k * C(n, k)) --> k depth * C(n, k) leaves
-    # SC: O(k) --> recursion call stacks
+    # SC: O(k + C(n, k)) --> recursion call stacks + path + ans
 
     ans = []
     def backtrack(start, path):
