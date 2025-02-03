@@ -34,7 +34,7 @@ Prim:
 # https://mycollegenotebook.medium.com/%E7%94%9F%E6%88%90%E6%A8%B9-spanning-tree-fa19df652efb
 
 # https://ithelp.ithome.com.tw/articles/10277930
-# kruscal (find MST). sort
+# kruscal (find MST). greedy, sort
 # Prim (find MST): random choose a start, and pick min
 
 # A* (sort of like dijkstra, but a heuristic func is needed: f(n) = g(n) + c(n))
@@ -196,3 +196,57 @@ def astar_manhattan(grid, start, goal):
                     # A* consider f(n)
 
     return -1  # No path found
+
+
+def kruskal(n, edges):
+    """
+    Kruskal 最小生成樹演算法
+    :param n: 節點數
+    :param edges: [(權重, 頂點1, 頂點2), ...] 格式的邊列表
+    :return: (MST 邊集合, 最小生成樹的總權重)
+    """
+    edges.sort()  # 按照邊的權重從小到大排序
+    dsu = DSU()  # 使用提供的 DSU -> O(1) after path compression
+    mst = []  # 存儲最小生成樹的邊
+    total_weight = 0  # 總權重
+
+    for weight, u, v in edges:
+        if dsu.find(u) != dsu.find(v):  # 檢查是否形成環
+            # find(u) == find(v)，代表 u 和 v 已經連接在同一個集合，再加入這條邊就會形成環，因此不選擇這條邊。
+            dsu.union(u, v)  # 合併集合 to build MST
+            mst.append((u, v, weight))  # 將邊加入 MST
+            total_weight += weight  # 更新總權重
+
+    return mst, total_weight
+
+
+def prim(n, graph):
+    """
+    Prim's 演算法求最小生成樹（MST）
+    :param n: 節點數
+    :param graph: 鄰接表表示的加權無向圖 {節點: [(權重, 連接節點), ...]}
+    :return: (MST 邊集合, 最小生成樹的總權重)
+    """
+    visited = set()  # 記錄已加入 MST 的節點
+    mst = []  # 儲存最小生成樹的邊
+    total_weight = 0  # 最小生成樹的總權重
+    min_heap = [(0, 0, -1)]  # (權重, 當前節點, 來源節點)，初始化從節點 0 開始
+
+    while len(visited) < n and min_heap:
+        weight, u, parent = heapq.heappop(min_heap)  # 取出權重最小的邊
+        
+        if u in visited:
+            continue  # 若節點已加入 MST，則跳過
+
+        visited.add(u)  # 標記節點 u 為已訪問
+        if parent != -1:  # 排除第一個起點
+            mst.append((parent, u, weight))
+            total_weight += weight
+        
+        # 將 u 的鄰居加入最小堆（只加入未訪問的節點）
+        for w, v in graph[u]:
+            if v not in visited:
+                heapq.heappush(min_heap, (w, v, u))
+
+    return mst, total_weight
+
