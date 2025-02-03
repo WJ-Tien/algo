@@ -1,4 +1,4 @@
-
+# Graph Theory
 # topological sort --> check dependency (e.g., num of courses)
 # and check if cycles exist
 # in_degree (or sometimes out_degree) == 0, put them in a deque()
@@ -6,15 +6,30 @@
 # BFS: start from a source and to another vertex, it will find the shortest path in between
 # but the it should be applied to an unweighted graph.
 
-# dijkstra: greedy-like algo, weighted graph. single source shortest path.
-#           Find the shortest path from a source to another vertex
-# bellman ford: acyclic & postive weight (sum) cyclic graph
+# dijkstra: greedy-like algo, positive weighted/cyclic graph. single source shortest path.
+#           Find the shortest path from a source to another vertex. minimize g(n)
+# bellman ford: acyclic & postive/negative weight (sum) cyclic graph
 #           single source shortest path
 
-# TODO
-# A*
-# kruscal
-# Prim
+# A spanning tree is a connected subgraph in an undirected graph 
+# where all vertices are connected with the minimum number of edges
+# 1. 一個圖(Graph)不只會有一個生成樹(Spanning Tree)
+# 2. 同一個圖的生成樹，會有相同的點 (Vertex), 邊(Edge)的個數。
+# 3. 所有的生成數，不會出現 Cycle, loop的結構。
+# 4. 如果把其中一個「邊(Edge)」拿掉就會成為無連通圖(Disconnected Graph)我們可以說生成樹是最小的連接(minimally connected)
+# 5. 只要多加一個邊，就會形成cycle, Loop，所以也可以成生成樹是maximally acyclic(最大無環)
+# A - B
+# |   |
+# C   D
+# MST: spanning tree that gives the min edges weight sum
+# https://mycollegenotebook.medium.com/%E7%94%9F%E6%88%90%E6%A8%B9-spanning-tree-fa19df652efb
+
+# https://ithelp.ithome.com.tw/articles/10277930
+# kruscal (MST)
+# Prim (MST)
+
+# A* (sort of like dijkstra, but a heuristic func is needed: f(n) = g(n) + c(n))
+# --> minimize f(n) (total estimate func)
 
 import heapq
 
@@ -127,3 +142,48 @@ def dijkstra(graph, start):
                 heapq.heappush(priority_queue, (distance, neighbor))
 
     return distances
+
+
+# A* algorithm
+def manhattan_heuristic(x, y, goal_x, goal_y):
+    return abs(goal_x - x) + abs(goal_y - y)
+
+def astar_manhattan(grid, start, goal):
+    # T: best O(E), average/worst O(E+V)logV
+    # S: O(V+E)
+    # g(n) = number of steps taken so far
+    # h(n) = Manhattan Distance heuristic (estimate func)
+    # f(n) = g(n) + h(n). Total estimate cost function
+    rows, cols = len(grid), len(grid[0])
+    directions = [(0, 1), (1, 0), (0, -1), (-1, 0)]  # Right, Down, Left, Up
+
+    start_x, start_y = start
+    goal_x, goal_y = goal
+    
+    pq = [(0 + manhattan_heuristic(start_x, start_y, goal_x, goal_y), 0, start_x, start_y)]
+    # (f(n), g(n), x, y)
+    visited = set()
+    g_costs = { (start_x, start_y): 0 }  # Stores the best cost found so far
+
+    while pq:
+        _, g, x, y = heapq.heappop(pq)
+
+        if (x, y) == goal:
+            return g  # Found shortest path
+
+        if (x, y) in visited:
+            continue
+        visited.add((x, y))
+
+        for dx, dy in directions:
+            nx, ny = x + dx, y + dy
+            if 0 <= nx < rows and 0 <= ny < cols and grid[nx][ny] == 0:
+                new_g = g + 1
+                if (nx, ny) not in g_costs or new_g < g_costs[(nx, ny)]:
+                    g_costs[(nx, ny)] = new_g
+                    f_cost = new_g + manhattan_heuristic(nx, ny, goal_x, goal_y)
+                    heapq.heappush(pq, (f_cost, new_g, nx, ny))
+                    # dijkstra only consider g(n)
+                    # A* consider f(n)
+
+    return -1  # No path found
