@@ -1,3 +1,12 @@
+"""
+BFS: 1091. Shortest Path in Binary Matrix
+DFS: 200. number of islands 
+Dijkstra: 743. network delay time
+A*: 1091. Shortest Path in Binary Matrix
+Bellman-Ford: 787. Cheapest Flights Within K Stops
+Kruska: 
+Prim:
+"""
 # Graph Theory
 # topological sort --> check dependency (e.g., num of courses)
 # and check if cycles exist
@@ -25,8 +34,8 @@
 # https://mycollegenotebook.medium.com/%E7%94%9F%E6%88%90%E6%A8%B9-spanning-tree-fa19df652efb
 
 # https://ithelp.ithome.com.tw/articles/10277930
-# kruscal (MST)
-# Prim (MST)
+# kruscal (find MST). sort
+# Prim (find MST): random choose a start, and pick min
 
 # A* (sort of like dijkstra, but a heuristic func is needed: f(n) = g(n) + c(n))
 # --> minimize f(n) (total estimate func)

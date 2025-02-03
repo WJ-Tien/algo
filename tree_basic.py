@@ -4,6 +4,13 @@ in-order:   <L> <M> <R>
 post-order: <L> <R> <M>
 """
 
+"""
+DFS: 543. Diameter of Binary Tree
+BFS: 102. Binary Tree Level Order Traversal 
+N-ary: 589. N-ary Tree Preorder Traversal (DFS)
+
+"""
+
 # AVL > Red-black >> B/BST
 
 class Node:
