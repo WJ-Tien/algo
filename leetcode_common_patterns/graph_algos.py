@@ -622,6 +622,8 @@ def networkDelayTime(times: list[list[int]], n: int, k: int) -> int:
     # S: O(V+E)
     # Dijkstra 使用 最小堆（Min Heap），確保每次從優先隊列取出的節點 一定是當前所有未處理節點中，距離起點最短的那個。
     # 一旦某個節點被取出，它的最短距離就不會再被更改
+    # 不斷從尚未確定最短路徑的節點中選擇當前距離起點最近的節點，
+    # 然後更新（鬆弛）其相鄰節點的路徑長度。
 
     distances = {i: float("inf") for i in range(1, n+1)}
     distances[k] = 0
@@ -649,3 +651,81 @@ def networkDelayTime(times: list[list[int]], n: int, k: int) -> int:
                 heappush(pq, (new_dist, v)) 
 
     return max_dist if len(visited) == n else -1
+
+
+
+class Solution_Kruskal:
+    def minCostConnectPoints(self, points: list[list[int]]) -> int:
+        # T: O(N^2log(N^2)) ~ O(N^2log(N))
+        # S: O(N^2)
+
+        # build weighted graph
+        # apply kruskal
+        # edges = [(u, v, w)]
+        edges = [] 
+        for u in range(len(points)-1):
+            for v in range(u+1, len(points)):
+                x1 = points[u][0]
+                y1 = points[u][1]
+                x2 = points[v][0]
+                y2 = points[v][1]
+                w = self.manhattan(x1, y1, x2, y2)
+                edges.append((w, u, v))
+
+        edges.sort(key=lambda x:x[0])
+        dsu = DSU()
+        total_weight = 0
+        for w, u, v in edges:
+            if dsu.find(u) != dsu.find(v):
+                dsu.union(u, v)
+                total_weight += w
+
+        return total_weight
+
+    def manhattan(self, x1, y1, x2, y2):
+        return abs(x1 - x2) + abs(y1 - y2)
+    
+
+class Solution_Prim:
+    def minCostConnectPoints(self, points: list[list[int]]) -> int:
+        # T: O(N^2log(N^2))
+        # S: O(N^2)
+
+        # build weighted graph
+        # apply Prim 
+        # edges = [(u, v, w)]
+        graph = {i: set() for i in range(len(points))}
+        for u in range(len(points)-1):
+            for v in range(u+1, len(points)):
+                x1 = points[u][0]
+                y1 = points[u][1]
+                x2 = points[v][0]
+                y2 = points[v][1]
+                w = self.manhattan(x1, y1, x2, y2)
+                graph[u].add((w, v))
+                graph[v].add((w, u))
+        pq = []
+        visited = set()
+        total_weight = 0
+
+        def add_edges(node):
+            visited.add(node)
+            for w, v in graph[node]:
+                if v not in visited:
+                    heappush(pq, (w, node, v))
+        
+        # start from vertex 0
+        add_edges(0)
+        while pq:
+            # E * log(E)
+            # E = N^2
+            # N^2log(N^2) ~ N^2log(N)
+            w, u, v = heappop(pq)
+            if v in visited:
+                continue
+            total_weight += w
+            add_edges(v)
+        return total_weight
+
+    def manhattan(self, x1, y1, x2, y2):
+        return abs(x1 - x2) + abs(y1 - y2)
