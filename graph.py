@@ -3,15 +3,19 @@ DSU: undirected
 Prim: undirected (or nodes are not fully reachable)
 Kruskal: undirected (otherwise it would fail to detect cycle)
 Topological: DAG (directed acyclic graph)
-Dijkstra/A*: non-negative weights
+Dijkstra/A*: non-negative weighted graph
+Belmman-Ford: positive/negative weighted grpah (NO negative cycle. But it can be detected)
+Floyd-Warshall: positive/negative weighted graph (not negative cycle)
+Kosaraju: 強連通分量（Strongly Connected Components, SCC） (graph + rev_graph + stack0)
 
 BFS: 1091. Shortest Path in Binary Matrix
 DFS: 200. number of islands 
 Dijkstra: 743. network delay time
 A*: 1091. Shortest Path in Binary Matrix
 Bellman-Ford: 787. Cheapest Flights Within K Stops
-Kruska: 
-Prim:
+Kruska (DSU): 1584. Min Cost to Connect All Points
+Prim (heap): 1584. Min Cost to Connect All Points
+Floyd-Warshall: 1334. Find the City With the Smallest Number of Neighbors at a Threshold Distance0    
 """
 # 弱連通weakly connected component, WCC：只要對於任意兩個點 u 和 v，至少有 "u 能走得到 v" 或 "v 能走得到 u”，就稱為弱連通。
 # 強連通strongly connected component, SCC：對於任意兩個點 u 和 v，必須同時滿足 “u 能走得到 v” 以及 “v 能走得到 u”。
@@ -26,9 +30,9 @@ Prim:
 # BFS: start from a source and to another vertex, it will find the shortest path in between
 # but the it should be applied to an unweighted graph.
 
-# dijkstra: greedy-like algo, positive weighted/cyclic graph. single source shortest path.
+# dijkstra: greedy-like algo, positive weighted. single source shortest path.
 #           Find the shortest path from a source to another vertex. minimize g(n)
-# bellman ford: acyclic & postive/negative weight (sum) cyclic graph
+# bellman ford: postive/negative weight (sum) cyclic graph
 #           single source shortest path
 
 # A spanning tree is a connected subgraph in an undirected graph 
@@ -287,84 +291,132 @@ def prim(n, edges):
 
     return mst_edges, total_weight
 
-# Test case with the same graph
-edges = [
-    (1, 0, 1),  # (weight 1, from vertex 0 to vertex 1)
-    (3, 1, 2),  # (weight 3, from vertex 1 to vertex 2)
-    (2, 0, 2),  # (weight 2, from vertex 0 to vertex 2)
-    (4, 2, 3),  # (weight 4, from vertex 2 to vertex 3)
-    (5, 1, 3)   # (weight 5, from vertex 1 to vertex 3)
-]
-n = 4  # Number of vertices
-mst_edges, total_weight = prim(n, edges)
-print("Minimum Spanning Tree (MST) edges: (weight, n_1, n_2)", mst_edges)
-print("Total weight of MST using prim:", total_weight)
+# # Test case with the same graph
+# edges = [
+#     (1, 0, 1),  # (weight 1, from vertex 0 to vertex 1)
+#     (3, 1, 2),  # (weight 3, from vertex 1 to vertex 2)
+#     (2, 0, 2),  # (weight 2, from vertex 0 to vertex 2)
+#     (4, 2, 3),  # (weight 4, from vertex 2 to vertex 3)
+#     (5, 1, 3)   # (weight 5, from vertex 1 to vertex 3)
+# ]
+# n = 4  # Number of vertices
+# mst_edges, total_weight = prim(n, edges)
+# print("Minimum Spanning Tree (MST) edges: (weight, n_1, n_2)", mst_edges)
+# print("Total weight of MST using prim:", total_weight)
 
 
-def kosaraju(graph):
-    """
-    使用 Kosaraju 演算法找出有向圖中所有的強連通分量 (Strongly Connected Components, SCC)
-    
-    :param graph: 字典表示的有向圖，格式為 {節點: [鄰居節點, ...]}
-    :return: 一個列表，其中每個元素為一個強連通分量（以節點列表表示）
-    """
-    # 第一步：對原始圖進行一次 DFS，並在 DFS 結束後將節點推入堆疊中
-    stack = []
-    visited = set()
+def kosaraju(graph, rev_graph):
+    # 第一階段：對原圖 graph 執行 DFS，記錄每個節點的「完成順序」
+    visited = set()   # 記錄已拜訪的節點
+    order = []        # 用來儲存 DFS 完成時的順序
 
-    def dfs(v):
-        visited.add(v)
-        for neighbor in graph.get(v, []):
-            if neighbor not in visited:
-                dfs(neighbor)
-        stack.append(v)  # 當節點 v 的所有鄰居都探索完後，將 v 推入堆疊
+    def dfs(u):
+        visited.add(u)
+        for v in graph[u]:
+            if v not in visited:
+                dfs(v)
+        order.append(u)  # 當 u 的所有鄰接點都拜訪完畢後，再加入 order
 
-    # 對圖中所有節點進行 DFS（處理可能非連通的圖）
-    for v in graph:
-        if v not in visited:
-            dfs(v)
+    # 對圖中所有節點進行 DFS（確保沒有遺漏孤立的節點）
+    for node in graph:
+        if node not in visited:
+            dfs(node)
 
-    # 第二步：反轉圖（將每條邊的方向反過來）
-    reversed_graph = {}
-    for v in graph:
-        reversed_graph.setdefault(v, [])
-        for neighbor in graph[v]:
-            reversed_graph.setdefault(neighbor, []).append(v)
+    # 第二階段：對反向圖 rev_graph 執行 DFS，
+    # 依據在第一階段所得的 order（反向順序）找出各個強連通分量 (SCC)
+    visited.clear()   # 清空 visited 以便重複使用
+    scc_list = []     # 用來儲存所有的強連通分量
 
-    # 第三步：以堆疊中的順序在反轉圖上進行 DFS，找出所有強連通分量
-    visited.clear()  # 清空訪問紀錄，準備在反轉圖上進行新的 DFS
-    sccs = []  # 用來存放所有強連通分量
+    def reverse_dfs(u, component):
+        visited.add(u)
+        component.append(u)
+        for v in rev_graph[u]:
+            if v not in visited:
+                reverse_dfs(v, component)
 
-    def reverse_dfs(v, component):
-        visited.add(v)
-        component.append(v)
-        for neighbor in reversed_graph.get(v, []):
-            if neighbor not in visited:
-                reverse_dfs(neighbor, component)
-
-    # 從堆疊中彈出節點，若尚未訪問則從該節點開始探索一個新的 SCC
-    while stack:
-        v = stack.pop()
-        if v not in visited:
+    # 依照第一階段 DFS 完成順序的反向順序進行第二次 DFS
+    for node in reversed(order):
+        if node not in visited:
             component = []
-            reverse_dfs(v, component)
-            sccs.append(component)
+            reverse_dfs(node, component)
+            scc_list.append(component)
 
-    return sccs
+    return scc_list
 
-# # 測試例子
+
+# # 測試範例
 # if __name__ == "__main__":
-#     # 節點與邊的表示方法：每個節點對應一個鄰居節點的列表
+#     # 定義原圖 (graph) 與反向圖 (rev_graph)
 #     graph = {
-#         0: [1],
-#         1: [2, 4, 5],
-#         2: [3, 6],
-#         3: [2, 7],
-#         4: [0, 5],
+#         1: [2],
+#         2: [3],
+#         3: [1, 4],
+#         4: [5],
 #         5: [6],
-#         6: [5],
-#         7: [3, 6]
+#         6: [4, 7],
+#         7: []
 #     }
+
+#     # 反向圖中，每條邊的方向與原圖相反
+#     rev_graph = {
+#         1: [3],
+#         2: [1],
+#         3: [2],
+#         4: [3, 6],
+#         5: [4],
+#         6: [5],
+#         7: [6]
+#     }
+
+#     scc = kosaraju(graph, rev_graph)
+#     print("Strongly Connected Components (強連通分量):", scc)
+
+def floyd_warshall(graph):
+    # T: O(n^3)
+    # S: O(n^2)
+    # n 通常指的是「圖中節點（頂點）的數量」。
+    # 我們假設要「嘗試把節點 k 當作中繼點」，意即看能不能透過節點 k，讓 i 到 j 的路徑縮短。
+    """
+    計算圖中所有節點對之間的最短路徑。
     
-#     scc = kosaraju(graph)
-#     print("Strongly Connected Components:", scc)
+    參數:
+        graph: 二維列表（矩陣），其中 graph[i][j] 表示從節點 i 到節點 j 的邊權重。
+               如果 i 與 j 之間沒有直接邊，請將對應值設定為 float('inf')（無限大）。
+               
+    回傳:
+        dist: 二維列表，dist[i][j] 為從節點 i 到節點 j 的最短距離。
+              若存在負權環，則演算法可能無法正確處理（此實作假設圖中沒有負環）。
+    """
+    n = len(graph)  # 節點數
+    # 建立距離矩陣，初始時直接複製原圖的權重矩陣
+    dist = [row[:] for row in graph]
+
+    # 三層迴圈依序嘗試每個中繼點 k
+    for k in range(n):
+        # 對每一對起點 i 與終點 j
+        for i in range(n):
+            for j in range(n):
+                # 如果經過中繼點 k 的路徑比原本 i -> j 的路徑更短，就更新距離
+                if dist[i][k] + dist[k][j] < dist[i][j]:
+                    dist[i][j] = dist[i][k] + dist[k][j]
+    return dist
+
+# 測試範例
+# if __name__ == "__main__":
+#     # 定義無向圖或有向圖的權重矩陣
+#     # 節點間沒有直接相連的邊，則用無限大（INF）表示
+#     INF = float('inf')
+#     graph = [
+#         [0,   3,   INF, 7],
+#         [8,   0,   2,   INF],
+#         [5,   INF, 0,   1],
+#         [2,   INF, INF, 0]
+#     ]
+
+#     # 呼叫 Floyd-Warshall 演算法取得所有節點對之最短距離
+#     shortest_paths = floyd_warshall(graph)
+
+#     # 印出結果
+#     print("所有節點對的最短路徑距離矩陣：")
+#     for row in shortest_paths:
+#         print(row)
