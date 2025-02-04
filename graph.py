@@ -2,10 +2,12 @@
 DSU: undirected
 Prim: undirected (or nodes are not fully reachable)
 Kruskal: undirected (otherwise it would fail to detect cycle)
-Topological: DAG (directed acyclic graph)
-Dijkstra/A*: non-negative weighted graph
-Belmman-Ford: positive/negative weighted grpah (NO negative cycle. But it can be detected)
-Floyd-Warshall: positive/negative weighted graph (not negative cycle)
+Topological: Directed Acyclic Graph
+Dijkstra/A*: non-negative weighted graph, single source shortest path (all nodes)
+A*: non-negative weighted graph, single source to single target shortest path
+Belmman-Ford: positive/negative weighted grpah (NO negative cycle. But it can be detected), single source shortest path (to all other nodes)
+Floyd-Warshall: All pairs shortest path. positive/negative weighted graph (not negative cycle).  works for both directed and undirected graphs.
+SPFA (optimized bellmand-ford): directed/weighted single source shortest path (to all other nodes)
 Kosaraju: 強連通分量（Strongly Connected Components, SCC） (graph + rev_graph + stack0)
 
 BFS: 1091. Shortest Path in Binary Matrix
@@ -16,6 +18,7 @@ Bellman-Ford: 787. Cheapest Flights Within K Stops
 Kruska (DSU): 1584. Min Cost to Connect All Points
 Prim (heap): 1584. Min Cost to Connect All Points
 Floyd-Warshall: 1334. Find the City With the Smallest Number of Neighbors at a Threshold Distance0    
+SPFA:
 """
 # 弱連通weakly connected component, WCC：只要對於任意兩個點 u 和 v，至少有 "u 能走得到 v" 或 "v 能走得到 u”，就稱為弱連通。
 # 強連通strongly connected component, SCC：對於任意兩個點 u 和 v，必須同時滿足 “u 能走得到 v” 以及 “v 能走得到 u”。
@@ -60,6 +63,7 @@ Floyd-Warshall: 1334. Find the City With the Smallest Number of Neighbors at a T
 # 來達成目標
 
 import heapq
+from collections import deque
 
 def has_cycle_undirected(graph):
     """
@@ -420,3 +424,86 @@ def floyd_warshall(graph):
 #     print("所有節點對的最短路徑距離矩陣：")
 #     for row in shortest_paths:
 #         print(row)
+
+
+def spfa(n, edges, source):
+    # optimized bellman-ford
+    # Shortest Path Faster Algorithm
+    """
+    使用 SPFA 演算法計算從單一源點 (source) 到其他所有頂點的最短路徑距離。
+    
+    參數：
+    n      : 圖中頂點的數目（頂點編號預設為 0 ~ n-1）。
+    edges  : 鄰接表形式的邊資訊，edges[u] = [(v1, w1), (v2, w2), ...]
+             表示從節點 u 可以走到節點 v1, v2, ...，權重(或距離) 分別為 w1, w2, ...
+    source : 單一源點的編號。
+    
+    回傳：
+    dist   : 一維列表，dist[v] 表示從 source 到頂點 v 的最短距離。
+             若無法到達，則會保持為 float('inf')。
+    
+    時間複雜度：在最差情況下依舊可能達到 O(n * m)，
+                其中 n 為頂點數、m 為邊數。
+                但在許多情況下，SPFA 通常比 Bellman-Ford 實際執行更快。
+    """
+    INF = float('inf')
+    
+    # dist[v] = 目前從 source 到 v 的最短距離，初始全部設為 INF
+    dist = [INF] * n
+    dist[source] = 0  # 自己到自己距離為 0
+    
+    # in_queue[v] 用來標記節點 v 是否已經在佇列中
+    in_queue = [False] * n
+    
+    # 使用雙向佇列 deque 實作 FIFO
+    queue = deque()
+    queue.append(source)
+    in_queue[source] = True
+    
+    # 當佇列不空時，就持續進行鬆弛操作
+    while queue:
+        u = queue.popleft()
+        in_queue[u] = False  # 把 u 移出佇列
+        
+        # 針對所有從 u 出發可到達的 (v, w)，嘗試更新 dist[v]
+        for v, w in edges[u]:
+            # 如果透過 u 能讓 dist[v] 更小，就更新
+            if dist[u] + w < dist[v]:
+                dist[v] = dist[u] + w
+                # 若 v 還不在佇列中，才將其加入，避免重複
+                if not in_queue[v]:
+                    queue.append(v)
+                    in_queue[v] = True
+    
+    return dist
+
+# # 測試示例
+# if __name__ == "__main__":
+#     """
+#     這裡示範一個有 5 個節點 (0, 1, 2, 3, 4) 的有向圖。
+#     edges[u] = [(v, w), ...]：
+#       - 從 u -> v 的權重為 w
+#     """
+#     n = 5  # 頂點數量
+#     edges = [[] for _ in range(n)]
+    
+#     # 建立邊 (範例)
+#     # 0 -> 1 (權重 2)
+#     edges[0].append((1, 2))
+#     # 0 -> 2 (權重 5)
+#     edges[0].append((2, 5))
+#     # 1 -> 2 (權重 1)
+#     edges[1].append((2, 1))
+#     # 1 -> 3 (權重 3)
+#     edges[1].append((3, 3))
+#     # 2 -> 4 (權重 2)
+#     edges[2].append((4, 2))
+#     # 3 -> 4 (權重 4)
+#     edges[3].append((4, 4))
+    
+#     source = 0
+#     dist = spfa(n, edges, source)
+    
+#     print(f"從節點 {source} 出發到各頂點的最短距離：")
+#     for v in range(n):
+#         print(f"dist[{v}] = {dist[v]}")
