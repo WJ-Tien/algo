@@ -769,3 +769,89 @@ class Solution_Prim:
 
     def manhattan(self, x1, y1, x2, y2):
         return abs(x1 - x2) + abs(y1 - y2)
+    
+    
+def findTheCity_floyd_warshall(n: int, edges: list[list[int]], distanceThreshold: int) -> int:
+    # floyd-warshall
+    # T: O(N^3)
+    # S: O(N^2)
+
+    # 初始化距離矩陣，預設兩城市之間距離為無窮大
+    dist = [[float('inf')] * n for _ in range(n)]
+    
+    # 對角線表示同一城市之間距離為 0
+    for i in range(n):
+        dist[i][i] = 0
+    
+    # 根據 edges 初始化相鄰城市間的距離
+    for u, v, w in edges:
+        dist[u][v] = w
+        dist[v][u] = w  # 無向圖，所以雙向都要更新
+    
+    # Floyd Warshall 主迴圈
+    # k 作為中間城市，嘗試讓每對 (i, j) 通過 k 來獲得更短距離
+    # at most we go through k cities from i to j
+    for k in range(n):
+        for i in range(n):
+            for j in range(n):
+                if dist[i][k] + dist[k][j] < dist[i][j]:
+                    dist[i][j] = dist[i][k] + dist[k][j]
+    
+    # 找出符合條件的城市：能到達其他城市的數量最少
+    # 如果有多個城市擁有相同數量，則返回編號最大的那個城市
+    result = -1
+    min_count = float('inf')
+    
+    for i in range(n):
+        # 統計從城市 i 出發，距離小於等於 distanceThreshold 的其他城市個數
+        count = sum(1 for j in range(n) if i != j and dist[i][j] <= distanceThreshold)
+        
+        # 更新結果：若 count 更小，或相同且 i 較大，就更新
+        if count < min_count or (count == min_count and i > result):
+            min_count = count
+            result = i
+            
+    return result
+
+def findTheCity_SPFA(n, edges, distanceThreshold):
+    # T: O(N^4)(completed) average O(n^3)(sparse)
+    # S: O(N^2)
+    # 建立圖的鄰接表
+    graph = defaultdict(list)
+    for u, v, w in edges:
+        graph[u].append((v, w))
+        graph[v].append((u, w))  # 無向圖
+
+    def spfa(start):
+        """ 使用 SPFA 演算法計算單源最短路徑 """
+        dist = [float("inf")] * n
+        dist[start] = 0
+        in_queue = [False] * n
+        queue = deque([start])
+        in_queue[start] = True
+
+        while queue:
+            u = queue.popleft()
+            in_queue[u] = False
+            for v, weight in graph[u]:
+                if dist[u] + weight < dist[v]:  # 鬆弛
+                    dist[v] = dist[u] + weight
+                    if not in_queue[v]:
+                        queue.append(v)
+                        in_queue[v] = True
+        return dist
+
+    min_count = float("inf") 
+    best_city = -1
+
+    # 遍歷所有城市作為起點，使用 SPFA 求最短路徑
+    for i in range(n):
+        dist = spfa(i)
+        count = sum(1 for d in dist if d <= distanceThreshold and d != 0)
+
+        # 找到可達城市數最少的，若相同則選擇編號較大的
+        if count < min_count or (count == min_count and i > best_city):
+            min_count = count
+            best_city = i
+
+    return best_city

@@ -1,13 +1,22 @@
 """
+n verticies with n - 1 edges -> tree (graph)
+with n edges --> must be a cycle
+
+Dijkstra: non-negative weighted graph, single source shortest path (all nodes)
+A*: non-negative weighted graph, single source to single target shortest path
+
+Topological: Directed Acyclic Graph
+
+Belmman-Ford: directed graph (undirected non-negative weights -> dijkstra), positive/negative weighted grpah (NO negative cycle. But it can be detected), single source shortest path (to all other nodes)
+SPFA (optimized bellmand-ford): directed graph (undirected non-negative weights), directed/weighted single source shortest path (to all other nodes)
+    # Bellman-Ford 可能會對 所有節點 進行鬆弛 V−1 次。
+    # SPFA 只會對「最短距離剛被更新的節點」進行處理。
+Floyd-Warshall: All pairs shortest path. directed/undirected grpah, positive/negative weighted graph (not negative cycle, but can detect)
+
 DSU: undirected
 Prim: undirected (or nodes are not fully reachable)
 Kruskal: undirected (otherwise it would fail to detect cycle)
-Topological: Directed Acyclic Graph
-Dijkstra/A*: non-negative weighted graph, single source shortest path (all nodes)
-A*: non-negative weighted graph, single source to single target shortest path
-Belmman-Ford: positive/negative weighted grpah (NO negative cycle. But it can be detected), single source shortest path (to all other nodes)
-Floyd-Warshall: All pairs shortest path. positive/negative weighted graph (not negative cycle).  works for both directed and undirected graphs.
-SPFA (optimized bellmand-ford): directed/weighted single source shortest path (to all other nodes)
+
 Kosaraju: 強連通分量（Strongly Connected Components, SCC） (graph + rev_graph + stack0)
 
 BFS: 1091. Shortest Path in Binary Matrix
@@ -18,7 +27,7 @@ Bellman-Ford: 787. Cheapest Flights Within K Stops
 Kruska (DSU): 1584. Min Cost to Connect All Points
 Prim (heap): 1584. Min Cost to Connect All Points
 Floyd-Warshall: 1334. Find the City With the Smallest Number of Neighbors at a Threshold Distance0    
-SPFA:
+SPFA: 1334. Find the City With the Smallest Number of Neighbors at a Threshold Distance0    
 """
 # 弱連通weakly connected component, WCC：只要對於任意兩個點 u 和 v，至少有 "u 能走得到 v" 或 "v 能走得到 u”，就稱為弱連通。
 # 強連通strongly connected component, SCC：對於任意兩個點 u 和 v，必須同時滿足 “u 能走得到 v” 以及 “v 能走得到 u”。
@@ -148,6 +157,7 @@ def bellman_ford(graph, vertices, source):
                 distance[v] = distance[u] + w
     
     # 步驟3：檢查負權重循環
+    # keep looping, find smaller one -> negative cycle
     for u, v, w in graph:
         if distance[u] != float("inf") and distance[u] + w < distance[v]:
             return False  # 存在負權重循環
@@ -380,6 +390,7 @@ def floyd_warshall(graph):
     # S: O(n^2)
     # n 通常指的是「圖中節點（頂點）的數量」。
     # 我們假設要「嘗試把節點 k 當作中繼點」，意即看能不能透過節點 k，讓 i 到 j 的路徑縮短。
+    # dist[i][i] <0 --> negative cycle
     """
     計算圖中所有節點對之間的最短路徑。
     
