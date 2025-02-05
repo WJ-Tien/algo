@@ -1,6 +1,8 @@
 """
-n verticies with n - 1 edges -> tree (graph)
+tree --> n verticies with n - 1 edges (connected and acyclic)
 with n edges --> must be a cycle
+# In a “graph with no negative-weight cycles” with N vertices, 
+# the shortest path between any two vertices has at most N-1 edges.
 
 Dijkstra: non-negative weighted graph, single source shortest path (all nodes)
 A*: non-negative weighted graph, single source to single target shortest path
@@ -132,7 +134,7 @@ class DSU:
             self.parent[x] = x
         
         # path compression
-        if x != self.parent[x]: 
+        elif x != self.parent[x]: 
             self.parent[x] = self.find(self.parent[x])
         return self.parent[x]
     
@@ -157,6 +159,7 @@ def bellman_ford(graph, vertices, source):
     # e.g. C(+inf) -> 200 -> D(+inf) -> D remains +inf
     # for each time, we will relax the nearest one (parent != +inf)
     # for inf, we just skip it this time
+    # hence if we go k times -> we determine kth layers
 
     # 步驟2：重複鬆弛所有邊 V-1 次 # edge relaxation --> find min distance
     for _ in range(vertices - 1):

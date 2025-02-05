@@ -439,6 +439,8 @@ def findCheapestPrice(n: int, flights: list[list[int]], src: int, dst: int, k: i
             if prices[start] == float("inf"):
                 continue
             new_price = prices[start] + price
+            # from start vertex to end vertex
+            # we can about end point, so we update it
             if new_price < temp_prices[end]:
                 temp_prices[end] = new_price
 
