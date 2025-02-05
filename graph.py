@@ -152,6 +152,10 @@ def bellman_ford(graph, vertices, source):
     distance = [float("inf")] * vertices
     distance[source] = 0
     
+    # we can only relax vertices from non-inf parent verticies
+    # e.g. A(0) -> 100 -> B(+inf) -> B is updated as 100
+    # e.g. C(+inf) -> 200 -> D(+inf) -> D remains +inf
+
     # 步驟2：重複鬆弛所有邊 V-1 次 # edge relaxation --> find min distance
     for _ in range(vertices - 1):
         for u, v, w in graph:  # 每個邊 (u到v的權重為w)
