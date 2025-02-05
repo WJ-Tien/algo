@@ -1,16 +1,16 @@
 """
-tree --> n verticies with n - 1 edges (connected and acyclic)
+tree --> n verticies with n - 1 edges
 with n edges --> must be a cycle
 # In a “graph with no negative-weight cycles” with N vertices, 
 # the shortest path between any two vertices has at most N-1 edges.
 
-Dijkstra: non-negative weighted graph, single source shortest path (all nodes)
+Dijkstra (greedy): non-negative weighted graph, single source shortest path (all nodes)
 A*: non-negative weighted graph, single source to single target shortest path
 
 Topological: Directed Acyclic Graph
 
-Bellman-Ford: directed graph (undirected non-negative weights -> dijkstra), positive/negative weighted grpah (NO negative cycle. But it can be detected), single source shortest path (to all other nodes)
-SPFA (optimized bellmand-ford): directed graph (undirected non-negative weights), positive/negative weighted single source shortest path (to all other nodes)
+Bellman-Ford (DP): directed/undirected graph (NOTE: undirected non-negative weights -> dijkstra), positive/negative weighted grpah (NO negative cycle. But it can be detected), single source shortest path (to all other nodes)
+SPFA (optimized bellmand-ford): directed/undirected graph (NOTE: undirected non-negative weights), positive/negative weighted single source shortest path (to all other nodes)
     # Bellman-Ford 可能會對 所有節點 進行鬆弛 V−1 次。
     # SPFA 只會對「最短距離剛被更新的節點」進行處理。
     # both specialized in directed negative weight graph
@@ -20,7 +20,7 @@ DSU: undirected
 Prim: undirected (or nodes are not fully reachable)
 Kruskal: undirected (otherwise it would fail to detect cycle)
 
-Kosaraju: Directed, 強連通分量（Strongly Connected Components, SCC） (graph + rev_graph + stack0)
+Kosaraju: Directed, 強連通分量（Strongly Connected Components, SCC） (graph + rev_graph + stack)
 
 BFS: 1091. Shortest Path in Binary Matrix
 DFS: 200. number of islands 
@@ -252,6 +252,8 @@ def astar_manhattan(grid, start, goal):
 
 
 def kruskal(n, edges):
+    # T: O(ElogV)
+    # S: O(V+E)
     """
     Kruskal 最小生成樹演算法
     :param n: 節點數
@@ -274,6 +276,8 @@ def kruskal(n, edges):
 
 
 def prim(n, edges):
+    # T: O(ElogV)
+    # S: O(V+E)
     """
     Prim's Minimum Spanning Tree (MST) Algorithm
     :param n: Number of nodes
@@ -473,6 +477,8 @@ def floyd_warshall(graph):
 
 
 def spfa(n, edges, source):
+    # T: O(n) (edges)
+    # S: O(n+m) (queue + edge lists)
     # optimized bellman-ford
     # Shortest Path Faster Algorithm
     """
