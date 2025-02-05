@@ -155,6 +155,8 @@ def bellman_ford(graph, vertices, source):
     # we can only relax vertices from non-inf parent verticies
     # e.g. A(0) -> 100 -> B(+inf) -> B is updated as 100
     # e.g. C(+inf) -> 200 -> D(+inf) -> D remains +inf
+    # for each time, we will relax the nearest one (parent != +inf)
+    # for inf, we just skip it this time
 
     # 步驟2：重複鬆弛所有邊 V-1 次 # edge relaxation --> find min distance
     for _ in range(vertices - 1):
