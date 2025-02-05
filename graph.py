@@ -71,6 +71,7 @@ SPFA: 1334. Find the City With the Smallest Number of Neighbors at a Threshold D
 # Kosaraju 算法 是另一個用來找出 強連通分量（Strongly Connected Components, SCC） 
 # 的演算法。它是基於 深度優先搜尋（DFS），並且利用圖的 反向圖（transpose graph） 
 # 來達成目標
+# https://www.youtube.com/watch?v=Rs6DXyWpWrI&t=816s&ab_channel=Techdose
 
 import heapq
 from collections import deque
