@@ -7,17 +7,18 @@ A*: non-negative weighted graph, single source to single target shortest path
 
 Topological: Directed Acyclic Graph
 
-Belmman-Ford: directed graph (undirected non-negative weights -> dijkstra), positive/negative weighted grpah (NO negative cycle. But it can be detected), single source shortest path (to all other nodes)
-SPFA (optimized bellmand-ford): directed graph (undirected non-negative weights), directed/weighted single source shortest path (to all other nodes)
+Bellman-Ford: directed graph (undirected non-negative weights -> dijkstra), positive/negative weighted grpah (NO negative cycle. But it can be detected), single source shortest path (to all other nodes)
+SPFA (optimized bellmand-ford): directed graph (undirected non-negative weights), positive/negative weighted single source shortest path (to all other nodes)
     # Bellman-Ford 可能會對 所有節點 進行鬆弛 V−1 次。
     # SPFA 只會對「最短距離剛被更新的節點」進行處理。
+    # both specialized in directed negative weight graph
 Floyd-Warshall: All pairs shortest path. directed/undirected grpah, positive/negative weighted graph (not negative cycle, but can detect)
 
 DSU: undirected
 Prim: undirected (or nodes are not fully reachable)
 Kruskal: undirected (otherwise it would fail to detect cycle)
 
-Kosaraju: 強連通分量（Strongly Connected Components, SCC） (graph + rev_graph + stack0)
+Kosaraju: Directed, 強連通分量（Strongly Connected Components, SCC） (graph + rev_graph + stack0)
 
 BFS: 1091. Shortest Path in Binary Matrix
 DFS: 200. number of islands 
@@ -320,6 +321,21 @@ def prim(n, edges):
 
 
 def kosaraju(graph, rev_graph):
+    # O(V+E) TS
+
+    """
+    scc_1 --> scc_2 --> scc_3  stack = [3,2,1]
+    scc_1 <-- scc_2 <-- scc_3  (cut property) (we don't revisit)
+    
+    """
+    
+    """
+    1 -> 2 -> 3
+         ^    
+         |    |
+              U
+         4 <- 5
+    """
     # 第一階段：對原圖 graph 執行 DFS，記錄每個節點的「完成順序」
     visited = set()   # 記錄已拜訪的節點
     order = []        # 用來儲存 DFS 完成時的順序
@@ -335,12 +351,20 @@ def kosaraju(graph, rev_graph):
     for node in graph:
         if node not in visited:
             dfs(node)
-
+    # [5, 4, 3, 2, 1]
     # 第二階段：對反向圖 rev_graph 執行 DFS，
     # 依據在第一階段所得的 order（反向順序）找出各個強連通分量 (SCC)
     visited.clear()   # 清空 visited 以便重複使用
     scc_list = []     # 用來儲存所有的強連通分量
 
+    # using CUT property here
+    """
+    1 <- 2 <- 3
+              ^
+         |    |
+         U    
+         4 -> 5
+    """
     def reverse_dfs(u, component):
         visited.add(u)
         component.append(u)
@@ -349,6 +373,7 @@ def kosaraju(graph, rev_graph):
                 reverse_dfs(v, component)
 
     # 依照第一階段 DFS 完成順序的反向順序進行第二次 DFS
+    # [1, 2, 3, 4, 5]
     for node in reversed(order):
         if node not in visited:
             component = []
