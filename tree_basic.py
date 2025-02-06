@@ -66,6 +66,46 @@ class BST:
 		self.in_order_traversal(node.left)
 		self.in_order_traversal(node.right)
 
+class FenwickTree:
+	# https://www.youtube.com/watch?v=CWDQJGaN1gY&ab_channel=TusharRoy-CodingMadeSimple
+    def __init__(self, size):
+		# S: O(N)
+        """ 初始化 Fenwick Tree，建立一個長度為 size+1 的陣列（索引從 1 開始） """
+        self.size = size
+        self.tree = [0] * (size + 1) # 0 = dummy node arr[i+1] = bit[i]
+
+    def update(self, idx, val):
+		# T: O(logN)
+		# get next
+        """ 在索引 idx 加上 val，並更新相關節點 """
+        while idx <= self.size:
+            self.tree[idx] += val
+            idx += idx & -idx  # 移動到父節點
+
+    def query(self, idx):
+		# T: O(logN)
+		# get parent
+        """ 查詢從 1 到 idx 的前綴和 """
+        sum_ = 0
+        while idx > 0:
+            sum_ += self.tree[idx]
+            idx -= idx & -idx  # 移動到前一個影響範圍內的節點
+        return sum_
+
+    def range_query(self, left, right):
+		# T: O(logN)
+        """ 查詢範圍 [left, right] 內的總和 """
+        return self.query(right) - self.query(left - 1)
+
+# # 測試範例
+# fenwick = FenwickTree(10)  # 建立大小為 10 的 Fenwick Tree
+# fenwick.update(3, 5)  # 在索引 3 加上 5
+# fenwick.update(5, 7)  # 在索引 5 加上 7
+# fenwick.update(7, 10) # 在索引 7 加上 10
+
+# print(fenwick.query(5))  # 查詢前 5 個元素的總和，輸出 12 (5 + 7)
+# print(fenwick.range_query(3, 7))  # 查詢索引 3 到 7 的總和，輸出 22
+
 
 
 if __name__ == "__main__":
