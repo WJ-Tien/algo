@@ -444,6 +444,8 @@ def floyd_warshall(graph):
     n = len(graph)  # 節點數
     # 建立距離矩陣，初始時直接複製原圖的權重矩陣
     dist = [row[:] for row in graph]
+    # for non-complete graph we can set the i-j pair (not exist) to +inf
+    # otherwise we just calc the dist of the i-j pair
 
     # 三層迴圈依序嘗試每個中繼點 k
     for k in range(n):
