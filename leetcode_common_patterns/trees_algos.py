@@ -703,6 +703,8 @@ def removeLeafNodes(root: Optional[TreeNode], target: int) -> Optional[TreeNode]
 
 
 class NumArray_BIT:
+    # T: O(N) (cons: O(n); update/query: O(log(n)))
+    # S: O(N)
 
     def __init__(self, nums: list[int]):
         # Fenwick Tree (Binary Indexed Tree, BIT)
