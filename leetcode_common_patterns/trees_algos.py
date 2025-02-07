@@ -700,3 +700,54 @@ def removeLeafNodes(root: Optional[TreeNode], target: int) -> Optional[TreeNode]
         return root
 
     return dfs(root) 
+
+
+class NumArray_BIT:
+
+    def __init__(self, nums: list[int]):
+        # Fenwick Tree (Binary Indexed Tree, BIT)
+        # 0 as dummy node, so BIT starts from 1
+        self.size = len(nums)
+        self.nums = nums[:]
+        self.BIT = [0] + self.nums
+        # this is slow, O(nlog(n))
+        # self.BIT = [0] * (self.size + 1)
+        # for i in range(self.size):
+        #     self._construct(i+1, self.nums[i])
+        for i in range(len(self.BIT)):
+            next_node_idx = i + (i & -i)
+            if next_node_idx < len(self.BIT):
+                self.BIT[next_node_idx] += self.BIT[i]
+
+    def _construct(self, index: int, val: int) -> None:
+        # because we are at 0, no need to calc diff
+        # get next: +
+        idx = index
+        while idx < len(self.BIT):
+            self.BIT[idx] += val
+            idx += idx & -idx
+    
+    def update(self, index: int, val: int) -> None:
+        # focus on 增量
+        # get next: +
+        diff = val - self.nums[index]  # 計算增量
+        self.nums[index] = val  # 更新原始數組
+        idx = index + 1  # 轉換為 1-based 索引
+        # while idx <= self.size:
+        while idx < len(self.BIT):
+            self.BIT[idx] += diff
+            idx += idx & -idx
+    
+    def query(self, idx):
+        # get parent, prefix sum: -
+        # idx should be 1-indexed
+        acc = 0
+        while idx > 0:
+            acc += self.BIT[idx]
+            idx -= idx & -idx
+        return acc
+        
+    def sumRange(self, left: int, right: int) -> int:
+        # prefix sum
+        # 1-indexed, so we add 1 for left & right
+        return self.query(right+1) - self.query(left - 1 + 1)
