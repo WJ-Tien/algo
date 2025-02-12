@@ -26,17 +26,18 @@ view -> virutual table --> select only -> update when querying
 materialized view (cache like) -> with real data -> need to update manually
 store procedure (SP): sort of like function in SQL, can reduce IO/CPU workload
 # IN(read), OUT(return the output), INOUT (best, bidirection)
+Common Table Expression (CTE): temporary table (with temp_name as)
 
 ACID
 Atomic: all successful or all failed
 Consistency: e.g., bank balance must >= 0
-isolation: each transaction is independant from each other
+isolation: each transaction is independent from each other (e.g., prevent phantom read)
 durability: store the data forever 
 
 INDEX: B+ index (data distriubtion)
 Partition (same table, e.g. hash partition)
 Sharding (tables in different physical storage)
-Clustering: store similar data in the neighboring physical address
+Clustering: store similar data in the neighboring physical address (e.g., disk)
 
 "
 --197. Rising Temperature
