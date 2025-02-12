@@ -91,6 +91,7 @@ and description <> "boring"
 order by rating des
 
 -- 1978. Employees Whose Manager Left the Company
+-- manager is also an employee 
 select employee_id from Employees
 where salary < 30000
 and manager_id NOT IN (select employee_id from Employees)
