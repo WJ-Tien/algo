@@ -1,5 +1,5 @@
 from collections import Counter
-from heapq import heappush, heappushpop, heappop
+from heapq import heappush, heappushpop, heappop, heapify
 from typing import Optional
 
 class ListNode:
@@ -8,6 +8,8 @@ class ListNode:
         self.next = next
 
 # Python itself implements "min_heap"
+# If a node is at index i, then its children are at indices 2i + 1 and 2i + 2
+# 子節點 i 的 父節點 在 (i - 1) // 2
 
 # heap sorted by the first element of the tuple
 # and then by the second element and etc
@@ -301,3 +303,20 @@ def trapRainWater(heightMap: list[list[int]]) -> int:
                 heappush(heap, (curr_height, new_row, new_col))
     
     return result
+
+
+def halveArray(nums: list[int]) -> int:
+    # 2208. Minimum Operations to Halve Array Sum
+    target = sum(nums) / 2
+    hp = [-num for num in nums] 
+    heapify(hp)
+
+    ans = 0
+    while target > 0:
+        ans += 1
+        cur_max = heappop(hp)
+        cur_max /= 2
+        target += cur_max # negative
+        heappush(hp, cur_max)
+    
+    return ans
