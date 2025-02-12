@@ -39,6 +39,10 @@ Partition (same table, e.g. hash partition)
 Sharding (tables in different physical storage)
 Clustering: store similar data in the neighboring physical address (e.g., disk)
 
+DELETE：刪除特定記錄（可回滾）
+TRUNCATE：清空表（不可回滾）
+DROP：刪除表
+
 "
 --197. Rising Temperature
 -- select w1.id from weather w1, weather w2 --> return all combs n^2 <- self-join
