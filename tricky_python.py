@@ -1,4 +1,12 @@
 """
+dict key must be immutable --> otherwise it will raise unhashable type error
+可雜湊物件（Hashable Object）從字面上看起來就是可以被雜湊函數所計算的物件，
+在 Python 只要是不可變物件，例如整數、浮點數、字串、位元組，這些都是可以進行雜湊計算的；
+相對的，如果是可變物件，像是串列、字典、集合，都是不可雜湊的。那麼 Tuple 呢？
+這得看情況，Tuple 本身雖然是不可變物件，但還得看看裡面裝的元素是不是全部也都是可雜湊物件，如果裡面的元素都是可雜湊物件，
+那麼這個 Tuple 就是可雜湊的。
+在字典裡的 Key 有個規定，就是 Key 必須是可雜湊的物件，所以在字典裡的鍵不能是串列、字典、集合，但可以是 Tuple
+
 Any module that contains a __path__ attribute is considered a package.
 MRO 是 Method Resolution Order 的縮寫，字面上的意思是指 Python 在查找方法時候的尋找順序
 Diamond problem --> C3 Linearization algo to solve --> finding next item in the MRO tuple
@@ -41,6 +49,9 @@ The default implementation defined by the built-in type object calls object.__re
 迭代器一定是可迭代物件
 but可迭代物件不一定是迭代器
 迭代器協議的內容也很簡單，只要有實作 __iter__() 以及 __next__()
+產生器物件同時也是一種可迭代物件
+for 迴圈或推導式的時候 Python 會自動幫我們搞定這個錯誤 (StopIteration)
+Generator ad: prevent allocate too large memory block at once
 
 iterable:
 An object can be iterated over with for if it implements __iter__() or __getitem__().
@@ -49,6 +60,24 @@ An object can function as an iterator if it implements next().
 try error:
 不管 try 區塊有沒有出錯，finally 區塊裡面的程式碼都會被執行。這個關鍵字通常用來做一些清理、善後的工作，例如關閉檔案、關閉資料庫連線等等，寫起來大概像這樣：
 另一個關鍵字是 else，當 try 區塊沒有發生問題的時候，else 區塊裡面的程式碼才會被執行：
+
+“Cell” objects are used to implement variables referenced by multiple scopes.
+
+
+Decorator:
+想要快速設計一個裝飾器，建議按照以下 3 步驟：
+1️⃣ 先寫出原始函數（不加裝飾器）
+2️⃣ 把想要的額外行為包裹起來（用 wrapper）
+3️⃣ 用 @wraps(fn) 保持原函數資訊
+✅ 3️⃣ 需要裝飾器帶參數？用「三層裝飾器」
+如果 裝飾器本身需要參數，記得 先返回 decorator(fn)，再返回 wrapper：
+
+「模組（Module）」是一個 Python 檔案，裡面可能會包含一些函數、變數和類別。
+透過模組的設計，可以讓程式碼更有組織性，也更容易維護。
+另外一個常會跟模組一起看到的名詞叫做「套件（Package）」，如果說剛才講到的模組是一個檔案的話，
+那麼套件就是一個目錄、資料夾的概念。一個套件裡面可以放很多的模組，
+或是放更多的子套件裡面再放更多的模組，
+基本上就是個像檔案系統一樣的結構，一個目錄裡能放很多檔案以及更多的子目錄一樣
 
 """
 def test_args(*args, **kwargs):
@@ -368,4 +397,65 @@ for i in range(1, 10):
 multiplication_table = [f"{i} x {j} = {i * j}" for j in range(1, 10) for i in range(1, 10)]
 # 改用串列推導式來寫的話：
 # print("\n".join(multiplication_table))
+
+# ===========================================================================================================
+# [*range(5)] = [0,1,2,3,4]
+# *_
+# combine array = [*arr1, *arr2]
+
+# ===========================================================================================================
+
+# dict unpacking
+# >>> city = {"name": "台北", "population": 2600000}
+# >>> location = {"lat": 25.04, "lng": 121.51}
+
+# # 使用 ** 開箱字典再組合
+# >>> info = {**city, **location}
+
+# >>> info
+# {'name': '台北', 'population': 2600000, 'lat': 25.04, 'lng': 121.51}
+# 在合併字典的時候，不管是哪種合併方式，都需要注意如果有重複的 Key 的話，後面的值會蓋掉前面的值，也就是說 A 合併 B 跟 B 合併 A，結局可能是不一樣的。
+
+# ===========================================================================================================
+def create_counter():
+    count = 0
+
+    def inner():
+        nonlocal count
+        count += 1
+        return count
+
+    return inner
+
+# 我在 create_counter() 函數裡設定了一個 count 變數，它會變成 inner() 函數的自由變數，
+# 這裡也會發生閉包的行為。透過這個函數可以建立獨立的計數器，而且它們有各別的狀態：
+
+counter1 = create_counter()
+counter2 = create_counter()
+
+# print(counter1())  # 印出 1
+# print(counter1())  # 印出 2
+# print(counter1())  # 印出 3
+
+# print(counter2())  # 印出 1
+# print(counter2())  # 印出 2
+
+# print(counter1())  # 印出 4
+
+# ===========================================================================================================
+
+def log(level="INFO"):
+    def decorator(fn):
+        def wrapper(*args, **kwargs):
+            print(f"[{level}] 執行 {fn.__name__}()")
+            return fn(*args, **kwargs)
+        return wrapper
+    return decorator
+
+@log(level="WARNING")  # 帶參數的裝飾器
+def my_function():
+    print("這是我的函數")
+
+my_function()
+
 # ===========================================================================================================
