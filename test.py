@@ -10,3 +10,14 @@ def deprecated(reason="TEST"):
 @deprecated
 def exile(num):
     print(f"I am an exilar: {num}")
+
+
+def countdown(n):
+    while n > 0:
+        yield n
+        print(f"back:{n}")
+        n -= 1
+
+c = countdown(10)
+next(c)
+next(c)

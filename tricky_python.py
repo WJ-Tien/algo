@@ -47,19 +47,31 @@ repr() 這個函數會聽 __repr__() 的。
 
 __str__: readable msgs
 __repr__: devs debugging
-
 The default implementation defined by the built-in type object calls object.__repr__().
 
-迭代器一定是可迭代物件
-but可迭代物件不一定是迭代器
-迭代器協議的內容也很簡單，只要有實作 __iter__() 以及 __next__()
-產生器物件同時也是一種可迭代物件
+__hash__ and __eq__ must be implemented at the same time --> 否則 set 和 dict 會出錯
+✅ p1 和 p2 在 set 內被視為同一個物件，因為：
+__eq__ 讓它們在比較時相等。
+__hash__ 讓它們擁有相同的哈希值，確保 set 內不會重複存入。
+
+generator物件同時也是一種iterable
 for 迴圈或推導式的時候 Python 會自動幫我們搞定這個錯誤 (StopIteration)
 Generator ad: prevent allocate too large memory block at once
+Generator function: the function contains yield
+generator iterator (generator object) 有實作 __iter__() 與 __next__() 2 個方法
+generator iterator 是 iterator 無誤，所以可以當 iterator 使用！
 
-iterable:
+iterable (not necessary an iterator):
 An object can be iterated over with for if it implements __iter__() or __getitem__().
-An object can function as an iterator if it implements next().
+iterable 就代表可以被 for 迴圈走訪！
+
+__iter__ 讓物件可用 for ... in ... 迴圈遍歷。
+__iter__() 方法規定必須回傳 1 個 iterator, 
+所以用 iter() 函式將 [self.a, self.b, self.c] 轉成 1 個 iterator 。
+
+iterator (iterable):
+其中選擇實作 __iter__() AND 實作 __next__() 方法的型態/類別，就稱為 iterator !
+x = iter([1, 2, 3])
 
 try error:
 不管 try 區塊有沒有出錯，finally 區塊裡面的程式碼都會被執行。這個關鍵字通常用來做一些清理、善後的工作，例如關閉檔案、關閉資料庫連線等等，寫起來大概像這樣：
@@ -83,6 +95,52 @@ Decorator:
 那麼套件就是一個目錄、資料夾的概念。一個套件裡面可以放很多的模組，
 或是放更多的子套件裡面再放更多的模組，
 基本上就是個像檔案系統一樣的結構，一個目錄裡能放很多檔案以及更多的子目錄一樣
+
+LEGB 规则（Local, Enclosing, Global, Built-in）：Python 查找变量时的顺序是： L –> E –> G –> B。
+Local：当前函数的局部作用域。
+Enclosing：包含当前函数的外部函数的作用域（如果有嵌套函数）。
+Global：当前模块的全局作用域。
+Built-in：Python 内置的作用域。
+
+GIL: Globa Interpret Lock
+當一個 Python 程式是以多線程 multithread 的方式在運行時，只有爭取到 GIL 的線程可以運行該程式。
+每個線程基本上都在做這樣的事：
+1. 爭取 GIL
+2. 執行程式碼
+3. 釋放 GIL
+
+所以我們可以將 GIL 看作是一種「通行證」，只有取得通行證的線程才可以執行程式。
+而一個直譯器只會有一個 GIL，因此，就算你把兩個不同的 thread 放在不同的核上，
+程式在運行時依然只會有一個 thread 在運行。
+
+在 CPython 中，會有一個內建的計數器或計時器，當達到一定的閥值時，就會強制釋放 GIL。 (or doing IO)
+Python 會在執行一定數量的「字節碼指令」後，自動釋放 GIL。
+或者，每 5ms Python 會嘗試強制釋放 GIL，允許其他 Thread 執行（可透過 sys.setswitchinterval() 設定）。
+但如果當前 Thread 還沒執行完，它仍然可能持有 GIL 更久！
+Python 每 5ms 嘗試釋放 GIL，但 CPU 密集型 Thread 仍可能長時間持有 GIL
+# GIL 只會對 CPU bound 任務有負面影響，對於 I/O bound 任務則沒有！
+# 所以python 的threading如果是cpu bound的 他會一值傾向佔用該time slice
+# --> python CPU-bound 的任務會傾向於一直持有 GIL (acquire lock release)，導致切換效率較低
+# 而其他語言的情況是可以切換time slice (by OS)
+
+Python = OS context switch + GIL 相關開銷
+其他語言 = OS context switch
+
+how to solve?
+使用 multiprocess -> each process has its own interpreter --> no commu --> IPC (shared memory + message passing)
+使用其他 Interpreter (Jython、IronPython 或 PyPy。)
+等待 Python 官方移除 GIL (3.13)
+
+format string
+f"{num}:.1f"
+
+file read:
+read()	讀取整個檔案（小型檔案）(w/ new line breaker)
+readline()	逐行讀取
+readlines()	讀取所有行（回傳 list）
+with open(file_name, "r"):
+	for line in f:
+		# do something else
 
 """
 def test_args(*args, **kwargs):
@@ -237,6 +295,8 @@ class Child(Parent):
 # ===========================================================================================================
 
 class AgeValue:
+	# obj: instance
+	# obj_type: owner
     def __get__(self, obj, obj_type):
         return 18
 
