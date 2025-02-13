@@ -29,14 +29,16 @@ def test_args(*args, **kwargs):
 
 class test_class:
 	order = 123
+
 	def __init__(self):
 		# self.order --> instance scope
 		# test_class.order --> class scope --> shared by instances, even after init
 		# if you use instance e.g., a.order = 888 --> won't effect other existing instances
 		# and a.order will change this class variable to an instance variable
 		# inheritance class also follow the rule
-		# find instance --> if not found --> find class --> very special
+		# find instance --> if not found --> find class --> very special --> find __get__ (another class/instnace)
 		test_class.order += 10
+
 	@classmethod
 	def test2(cls):
 		cls.order += 1
@@ -142,3 +144,113 @@ def animal_sound(animal):
 
 # animal_sound(dog)  # 輸出: Dog barks
 # animal_sound(cat)  # 輸出: Cat meows
+
+# ===========================================================================================================
+class Parent:
+    def __init__(self, name):
+        print("Parent 初始化")
+        self.name = name
+
+class Child(Parent):
+    def __init__(self, name, age):
+        super().__init__(name)  # 調用父類的 __init__
+        print("Child 初始化")
+        self.age = age
+
+# 創建 Child 類別的實例
+# child = Child("Alice", 10)
+# print(child.name)
+# print(child.age)
+# ===========================================================================================================
+
+class AgeValue:
+    def __get__(self, obj, obj_type):
+        return 18
+
+class Cat:
+    age = AgeValue()
+
+"""
+
+self：這個 self 指的是 AgeValue 這個類別的實體，不是 kitty 這個實體喔！--> 描述器的實體
+obj：承上，這個參數才是 kitty 實體。
+obj_type：這個描述器掛在哪個類別裡，以上面的例子來說就是 Cat。
+
+>>> kitty = Cat()
+>>> kitty.__dict__
+{}
+>>> kitty.age
+18
+
+這是因為這個實體實作了 __get__() 方法，
+當透過 . 的方式存取屬性或方法的時候，如果這個值剛好是某個類別的實體，
+就會看看這個實體有沒有實作 __get__() 方法。如果有，Python 就會呼叫這個方法
+如果描述器只有實作 __get__() 方法的時候，我們稱它為「非資料描述器」（Non-Data Descriptor）
+它只能讀取屬性的值，但沒有寫入功能。0
+
+find instance --> if not found --> find class --> not found --> find __get__ (another class/instnace)
+
+# if we don't use __get__
+
+class AgeValue:
+    pass
+
+>>> kitty = Cat()
+>>> kitty.age
+<__main__.AgeValue object>
+
+"""
+
+# ===========================================================================================================
+class AgeValue:
+    def __init__(self, age=0):
+        self._age = age
+
+	# Non-data descriptor
+    def __get__(self, obj, obj_type):
+        return self._age
+
+	# Data Descriptor
+    def __set__(self, obj, value):
+        if value < 0 or value > 150:
+            raise ValueError("年齡超過範圍")
+        self._age = value
+		# won't show in __dict__
+		# 資料描述器會遮蔽（Shadow）物件的 __dict__，非資料描述器就沒這特性
+
+class Cat:
+    age = AgeValue()
+# ===========================================================================================================
+
+class Cat:
+	age = AgeValue()
+
+a = Cat()
+b = Cat()
+a.age = 90
+# print(a.age, b.age)
+
+class Tree:
+	h = 100 # class variable
+
+c = Tree()
+d = Tree()
+c.h = 777
+print(d.h)
+Tree.h = 800
+print(d.h)
+# find instance -> not found --> class
+# __dict__ stores only instance variables -->
+# which means, at the beginning, the {} is empty
+# print(c.__dict__)  # {}  → 還沒有屬性，會使用類別屬性
+# print(d.__dict__)  # {}  → 還沒有屬性，會使用類別屬性
+
+# c.h = 777  # 這會在 c 實例內部新增 h
+# print(c.__dict__)  # {'h': 777}  → c 有自己的 h，不再使用類別的 h
+# print(d.__dict__)  # {}  → d 沒有 h，還是使用類別的 h
+
+# Tree.h = 800  # 改變類別屬性
+# print(d.h)  # 800，因為 d 還是使用類別屬性 h
+# print(c.h)  # 777，因為 c 有自己的 h，不受類別影響
+# 如果你希望修改 Tree.h 時，所有實例的 h 也都跟著改變，你應該避免讓實例擁有獨立的 h 屬性，可以使用 @property 來強制實例總是訪問類別屬性：
+# ===========================================================================================================
