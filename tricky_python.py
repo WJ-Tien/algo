@@ -9,8 +9,46 @@ Override 是一種多型的實作方式，但多型不一定需要繼承
 
 classmethod --> factory mode
 
+data descriptor (資料描述器)：
+	同時實作 __get__ 和 __set__
+	優先於實例的 __dict__
+	可以攔截屬性的讀取與寫入
+	確保屬性存取受控 (避免外部直接修改)
+	支援資料驗證 (可以攔截並檢查賦值)
+	實作唯讀屬性 (強制只讀取、不允許修改)
+	確保屬性總是來自描述器，不會被覆蓋
+
+non-data descriptor (非資料描述器)：
+	只實作 __get__
+	不影響 __dict__，允許實例屬性覆寫
+
+__new__ | __init__ diff:
+	__new__: 第一個參數是 cls（類別本身）
+	__init__: 第一個參數是 self（實例本身）
+	返回值差異:
+	__new__: 必須返回一個物件實例
+	__init__: 只能返回 None
 
 
+print()、str()、format() 以及 F 字串會聽 __str__() 的。
+repr() 這個函數會聽 __repr__() 的。
+
+__str__: readable msgs
+__repr__: devs debugging
+
+The default implementation defined by the built-in type object calls object.__repr__().
+
+迭代器一定是可迭代物件
+but可迭代物件不一定是迭代器
+迭代器協議的內容也很簡單，只要有實作 __iter__() 以及 __next__()
+
+iterable:
+An object can be iterated over with for if it implements __iter__() or __getitem__().
+An object can function as an iterator if it implements next().
+
+try error:
+不管 try 區塊有沒有出錯，finally 區塊裡面的程式碼都會被執行。這個關鍵字通常用來做一些清理、善後的工作，例如關閉檔案、關閉資料庫連線等等，寫起來大概像這樣：
+另一個關鍵字是 else，當 try 區塊沒有發生問題的時候，else 區塊裡面的程式碼才會被執行：
 
 """
 def test_args(*args, **kwargs):
@@ -71,6 +109,7 @@ class B(test_class):
 
 class human:
 	# property has a conflict with __slots__
+	# 會發現如果類別有設定 __slots__ 屬性的話，在建立物件的時候會把物件的 __dict__, __weak_ref__ 屬性給拿掉。
 
 	__slots__ = ["name", "_age"] # inheritable
 
@@ -253,4 +292,80 @@ print(d.h)
 # print(d.h)  # 800，因為 d 還是使用類別屬性 h
 # print(c.h)  # 777，因為 c 有自己的 h，不受類別影響
 # 如果你希望修改 Tree.h 時，所有實例的 h 也都跟著改變，你應該避免讓實例擁有獨立的 h 屬性，可以使用 @property 來強制實例總是訪問類別屬性：
+
+
+# ===========================================================================================================
+class Parent:
+    parent_attr = "parent"
+    
+    def parent_method(self):
+        pass
+        
+    @classmethod
+    def class_method(cls):
+        pass
+
+class Childs(Parent):
+    child_attr = "child"
+    
+    def __init__(self):
+        self.instance_attr = "instance"
+    
+    def child_method(self):
+        pass
+    
+    @staticmethod
+    def static_method():
+        pass
+
+c = Childs()
+print(c.__dict__)  
+# 只會輸出: {'instance_attr': 'instance'}
+
+print(Child.__dict__)  
+# 會包含: 'child_attr', 'child_method', 'static_method' 等
+# 但不會包含繼承自 Parent 的屬性和方法
+
+# instance call
+# 會存在 __dict__ 的：
+# 實例屬性 (instance attributes)
+# 在類別中直接定義的一般方法
+
+# class call
+# 會存在 __dict__ 的：
+# class attributes, classmethod, staticmethod, instance method (normal function la)
+
+# ===========================================================================================================
+
+class MyClass:
+    def __new__(cls):
+        # 這行實際上做了以下事情：
+        # 1. super() 找到父類別 (object)
+        # 2. 呼叫父類別的 __new__ 方法
+        # 3. 把當前類別 (cls) 傳進去
+        # 4. object.__new__ 會配置記憶體並建立 MyClass 的實例
+        instance = super().__new__(cls)
+        return instance
+
+# 等同於：
+# class MyClass:
+#     def __new__(cls):
+#         instance = object.__new__(cls)
+#         return instance
+# ===========================================================================================================
+def hello():
+    try:
+        return "world"
+    finally:
+        return "kitty"
+	# return kitty -> don't do this
+# ===========================================================================================================
+
+for i in range(1, 10):
+    for j in range(1, 10):
+        print(f"{i} x {j} = {i * j}")
+
+multiplication_table = [f"{i} x {j} = {i * j}" for j in range(1, 10) for i in range(1, 10)]
+# 改用串列推導式來寫的話：
+# print("\n".join(multiplication_table))
 # ===========================================================================================================
