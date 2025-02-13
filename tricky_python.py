@@ -110,7 +110,7 @@ Enclosing：包含当前函数的外部函数的作用域（如果有嵌套函�
 Global：当前模块的全局作用域。
 Built-in：Python 内置的作用域。
 
-GIL: Globa Interpret Lock
+GIL: Global Interpreter Lock
 當一個 Python 程式是以多線程 multithread 的方式在運行時，只有爭取到 GIL 的線程可以運行該程式。
 每個線程基本上都在做這樣的事：
 1. 爭取 GIL
@@ -138,6 +138,10 @@ how to solve?
 使用 multiprocess -> each process has its own interpreter --> no commu --> IPC (shared memory + message passing)
 使用其他 Interpreter (Jython、IronPython 或 PyPy。)
 等待 Python 官方移除 GIL (3.13)
+
+如果 CPU 有多個核心，不同的 thread 可以真正並行執行（Parallel execution）-> distributed to different CPUs
+如果 CPU 只有單核心，則多執行緒會透過 時間分片 來交錯執行（Concurrency）。
+使用 std::mutex 保護共享資源，但頻繁使用會降低並行效能。
 
 format string
 f"{num}:.1f"
@@ -301,6 +305,17 @@ class Child(Parent):
         print("Child 初始化")
         self.age = age
 
+class A:
+	print("class A")
+class C(A): ...
+class D(B, C):
+    def method(self):
+		# D.mro() == D->B->C->A
+		# self == D, start from C, so we finally get A
+		# if super() --> start from D itself
+        m = super(C, self).method() # print class A
+        print(m)
+        return 'Class D'
 # 創建 Child 類別的實例
 # child = Child("Alice", 10)
 # print(child.name)
