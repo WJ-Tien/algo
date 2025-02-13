@@ -54,6 +54,12 @@ __hash__ and __eq__ must be implemented at the same time --> 否則 set 和 dict
 __eq__ 讓它們在比較時相等。
 __hash__ 讓它們擁有相同的哈希值，確保 set 內不會重複存入。
 
+def __eq__(self, other):
+	return (self.id) == (other.id)
+
+def __hash__(self):
+	return hash(self.id)
+
 generator物件同時也是一種iterable
 for 迴圈或推導式的時候 Python 會自動幫我們搞定這個錯誤 (StopIteration)
 Generator ad: prevent allocate too large memory block at once
@@ -61,17 +67,19 @@ Generator function: the function contains yield
 generator iterator (generator object) 有實作 __iter__() 與 __next__() 2 個方法
 generator iterator 是 iterator 無誤，所以可以當 iterator 使用！
 
-iterable (not necessary an iterator):
-An object can be iterated over with for if it implements __iter__() or __getitem__().
+iterable (not necessary an iterator, sort of like a container):
+An object can be iterated over with for if it implements __iter__() or __getitem__() with sequence semantics.
 iterable 就代表可以被 for 迴圈走訪！
 
 __iter__ 讓物件可用 for ... in ... 迴圈遍歷。
 __iter__() 方法規定必須回傳 1 個 iterator, 
 所以用 iter() 函式將 [self.a, self.b, self.c] 轉成 1 個 iterator 。
 
-iterator (iterable):
+iterator (iterable, stream of data):
 其中選擇實作 __iter__() AND 實作 __next__() 方法的型態/類別，就稱為 iterator !
 x = iter([1, 2, 3])
+
+dict is iterable, but not an iterator (no __next__)
 
 try error:
 不管 try 區塊有沒有出錯，finally 區塊裡面的程式碼都會被執行。這個關鍵字通常用來做一些清理、善後的工作，例如關閉檔案、關閉資料庫連線等等，寫起來大概像這樣：
@@ -141,6 +149,11 @@ readlines()	讀取所有行（回傳 list）
 with open(file_name, "r"):
 	for line in f:
 		# do something else
+
+Python compiler
+Python 虛擬機（Python Virtual Machine, PVM）逐行執行 Bytecode，轉換為 CPU 指令。
+這就是 Python 比 C 慢的原因，因為它是 直譯執行，而不是預先編譯成機器碼！
+frame --> bytecode (PVM[JIT, Cypython, PyPy], .pyc) --> CPU Instruction (Machine code)
 
 """
 def test_args(*args, **kwargs):
