@@ -30,6 +30,10 @@ non-data descriptor (非資料描述器)：
 	只實作 __get__
 	不影響 __dict__，允許實例屬性覆寫
 
+1. lookup data-descriptor
+2. self.__dict__['d]
+3. lookup non-data descriptor
+
 __new__ | __init__ diff:
 	__new__: 第一個參數是 cls（類別本身）
 	__init__: 第一個參數是 self（實例本身）
@@ -71,6 +75,7 @@ Decorator:
 3️⃣ 用 @wraps(fn) 保持原函數資訊
 ✅ 3️⃣ 需要裝飾器帶參數？用「三層裝飾器」
 如果 裝飾器本身需要參數，記得 先返回 decorator(fn)，再返回 wrapper：
+# multiple decorators --> execute from inner to outer
 
 「模組（Module）」是一個 Python 檔案，裡面可能會包含一些函數、變數和類別。
 透過模組的設計，可以讓程式碼更有組織性，也更容易維護。
@@ -459,3 +464,50 @@ def my_function():
 my_function()
 
 # ===========================================================================================================
+
+def deco1(func):
+    def wrapper(*args, **kwargs):
+        print("deco1 開始")
+        result = func(*args, **kwargs)
+        print("deco1 結束")
+        return result
+    return wrapper
+
+def deco2(func):
+    def wrapper(*args, **kwargs):
+        print("deco2 開始")
+        result = func(*args, **kwargs)
+        print("deco2 結束")
+        return result
+    return wrapper
+
+@deco1
+@deco2
+def my_function():
+    print("執行 my_function")
+
+# my_function()
+# deco1 開始
+# deco2 開始
+# 執行 my_function
+# deco2 結束
+# deco1 結束
+
+# ===========================================================================================================
+
+"""
+結論
+裝飾時（Wrapping）：
+
+內層 (@decoB) 先執行，形成 decoB_wrapper。
+外層 (@decoA) 再包住 decoB_wrapper，形成 decoA_wrapper。
+執行時（Execution）：
+
+先從 decoA_wrapper 開始，然後進入 decoB_wrapper，最後執行原始函數。
+執行結束後，先從 decoB_wrapper 返回，再回到 decoA_wrapper。
+
+裝飾器的"進入"是由外而內
+實際函數執行是在最內層
+裝飾器的"離開"是由內而外
+ 
+"""
