@@ -21,3 +21,8 @@ def countdown(n):
 c = countdown(10)
 next(c)
 next(c)
+
+# base_kcal = 1600 
+# print("Carbo: ", base_kcal * 0.60 / 4)
+# print("Protein: ", base_kcal * 0.15 / 4)
+# print("Fat: ", base_kcal * 0.25 / 9)

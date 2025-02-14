@@ -21,6 +21,7 @@ dense_rank: 1 1 2 2 3
 row_number: 1 2 3 4 
 over (partition something orderby another)
 --> rank, dense_rank, row_number, range, lead, lag
+diff: with groupby --> groupby reduce the #of cols while over-partition keeps
 
 view -> virutual table --> select only -> update when querying 
 materialized view (cache like) -> with real data -> need to update manually
@@ -56,6 +57,8 @@ DROP：刪除表
 📌 不可回滾 (ROLLBACK)，因為會直接刪除表
 📌 刪除後，表無法恢復，需要重新 CREATE TABLE
 📌 執行速度最快
+
+索引的類別分為 B-tree 與 Hash 2 種，這 2 種有各自適合的情境，譬如某些不重複的欄位，就適合使用 Hash 作為索引，不過 Hash 索引無法進行範圍查詢和排序，因此要考慮清楚0
 "
 --197. Rising Temperature
 -- select w1.id from weather w1, weather w2 --> return all combs n^2 <- self-join

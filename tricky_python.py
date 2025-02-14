@@ -123,7 +123,8 @@ GIL: Global Interpreter Lock
 
 在 CPython 中，會有一個內建的計數器或計時器，當達到一定的閥值時，就會強制釋放 GIL。 (or doing IO)
 Python 會在執行一定數量的「字節碼指令」後，自動釋放 GIL。
-或者，每 5ms Python 會嘗試強制釋放 GIL，允許其他 Thread 執行（可透過 sys.setswitchinterval() 設定）。
+或者，每 5ms Python 會嘗試強制釋放 GIL or reach 1000 bytecodes，
+允許其他 Thread 執行（可透過 sys.setswitchinterval() 設定）。
 但如果當前 Thread 還沒執行完，它仍然可能持有 GIL 更久！
 Python 每 5ms 嘗試釋放 GIL，但 CPU 密集型 Thread 仍可能長時間持有 GIL
 # GIL 只會對 CPU bound 任務有負面影響，對於 I/O bound 任務則沒有！
@@ -158,6 +159,41 @@ Python compiler
 Python 虛擬機（Python Virtual Machine, PVM）逐行執行 Bytecode，轉換為 CPU 指令。
 這就是 Python 比 C 慢的原因，因為它是 直譯執行，而不是預先編譯成機器碼！
 frame --> bytecode (PVM[JIT, Cypython, PyPy], .pyc) --> CPU Instruction (Machine code)
+
+Async/Await (same thread):
+Coroutines are a more generalized form of subroutines. 
+Subroutines are entered at one point and exited at another point. 
+Coroutines can be entered, exited, and resumed at many different points. 
+They can be implemented with the async def statement.
+await 語法則是被用來告知 Python 可以在此處暫停執行 coroutine 轉而執行其他工作，
+而且該語法只能在 coroutine 函式內使用，因此 async def 與 await 通常會一起出現。
+另 1 個關於 await 語法的重點是 await 之後只能接 awaitables 物件，
+例如 coroutine 或者是之後會介紹到的 Task, Future 以及有實作 __await__() 方法 的物件，
+所以不是所有的物件或操作都能夠用 await 進行暫停。
+
+coroutine 本身的特性有別於一般函式，一定要透過 event loop 排程後執行。
+The event loop is the core of every asyncio application. 
+Event loops run asynchronous tasks and callbacks, 
+perform network IO operations, and run subprocesses.
+event loop 關鍵運作部分是 1 個無窮迴圈（原始碼），
+不斷地 loop 進行排程/執行非同步任務、回呼函式(callbacks)等工作
+
+asyncio.to_thread() 可以將耗時執行的部分丟至 event loop 以外的另 1 個 thread 中執行，
+每呼叫 1 次就會在 1 個新的 thread. --> to prevent the eventloop from blocking 
+
+Tasks:
+在 event loop 中，工作的執行是以 Task 為單位， 
+event loop 一次僅會執行 1 個 Task, 如果某個 Task 正在等待執行結果，
+也就是執行到 await 的地方，那麼 event loop 將會暫停(suspend)並將之進行排程，
+接著切換執行其他 Task, 回呼函數(callback)或者執行某些 I/O 相關的操作。
+Event loops use cooperative scheduling: an event loop runs one Task at a time. 
+While a Task awaits for the completion of a Future, 
+the event loop runs other Tasks, callbacks, or performs IO operations.
+
+# asyncio.create_task() 回傳的 Task 並不需要等到使用 await 才會被執行，
+Task 繼承自 Future, 因此 Future 是相對底層(low-level)的 awaitable Python 物件，
+用以代表非同步操作的最終結果，一般並不需要自己創造 Future 物件進行操作，
+多以 coroutine 與 Task 為主。
 
 """
 def test_args(*args, **kwargs):
@@ -311,7 +347,7 @@ class C(A): ...
 class D(B, C):
     def method(self):
 		# D.mro() == D->B->C->A
-		# self == D, start from C, so we finally get A
+		# in this case self == D, start from C, so we finally get A
 		# if super() --> start from D itself
         m = super(C, self).method() # print class A
         print(m)
