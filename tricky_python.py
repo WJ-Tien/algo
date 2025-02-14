@@ -1,3 +1,5 @@
+from datetime import datetime, timedelta, timezone
+
 """
 dict key must be immutable --> otherwise it will raise unhashable type error
 可雜湊物件（Hashable Object）從字面上看起來就是可以被雜湊函數所計算的物件，
@@ -521,7 +523,8 @@ def hello():
 
 for i in range(1, 10):
     for j in range(1, 10):
-        print(f"{i} x {j} = {i * j}")
+        ''
+        # print(f"{i} x {j} = {i * j}")
 
 multiplication_table = [f"{i} x {j} = {i * j}" for j in range(1, 10) for i in range(1, 10)]
 # 改用串列推導式來寫的話：
@@ -585,7 +588,7 @@ def log(level="INFO"):
 def my_function():
     print("這是我的函數")
 
-my_function()
+# my_function()
 
 # ===========================================================================================================
 
@@ -607,13 +610,13 @@ def deco2(func):
 
 @deco1
 @deco2
-def my_function():
+def my_cfunction():
     print("執行 my_function")
 
-# my_function()
+# my_cfunction()
 # deco1 開始
 # deco2 開始
-# 執行 my_function
+# 執行 my_cfunction
 # deco2 結束
 # deco1 結束
 
@@ -635,3 +638,27 @@ def my_function():
 裝飾器的"離開"是由內而外
  
 """
+
+# Method	     Purpose	                            Input	         Output
+# strftime()	Formats a datetime object as a string	datetime object	 Formatted string
+# strptime()	Parses a string into a datetime object	Formatted string	datetime object
+
+# string format time --> it's a string
+# string parse time --> it's a datetime object
+cur_time = datetime.now()
+formatted = cur_time.strftime("%Y-%m-%d %H:%M:%S")
+# print(formatted)
+parsed = datetime.strptime(formatted, "%Y-%m-%d %H:%M:%S")
+# print("Parsed Datetime:", parsed)
+# print(type(parsed))
+delta = timedelta(days=3)
+# print(datetime.today() + delta)
+# print(datetime.now().day)
+# print(datetime.now().year)
+# print(parsed.month)
+naive_dt = datetime(2025, 2, 14, 12, 0, 0)
+# Add UTC+5:30 timezone (e.g., India Standard Time)
+ist = timezone(timedelta(hours=5, minutes=30))
+aware_dt = naive_dt.replace(tzinfo=ist)
+# print(ist) # UTC+05:30, default is None
+# print(aware_dt) # 2025-02-14 12:00:00+05:30
