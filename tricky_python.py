@@ -106,6 +106,31 @@ Decorator:
 或是放更多的子套件裡面再放更多的模組，
 基本上就是個像檔案系統一樣的結構，一個目錄裡能放很多檔案以及更多的子目錄一樣
 
+my_package/        # 套件目錄
+│── __init__.py    # 讓這個目錄變成 Python 套件
+│── math_utils.py  # 模組 1
+│── string_utils.py # 模組 2
+
+使用 __all__ 限制 import *
+在 __init__.py 中：
+__all__ = ["add"]
+這樣 from my_package import * 只會導入 add()，而不會導入 reverse_string()。
+
+
+__init__.py 可用來控制 當 import my_package 時導入哪些模組。
+簡化導入：
+
+例如，我們可以在 __init__.py 中加入：
+from .math_utils import add
+from .string_utils import reverse_string
+這樣我們就能直接使用：
+from my_package import add, reverse_string
+而不需要：
+from my_package.math_utils import add
+from my_package.string_utils import reverse_string
+--> 如果希望讓導入更簡潔，可以在 __init__.py 內部管理導入。(如上)
+
+
 LEGB 规则（Local, Enclosing, Global, Built-in）：Python 查找变量时的顺序是： L –> E –> G –> B。
 Local：当前函数的局部作用域。
 Enclosing：包含当前函数的外部函数的作用域（如果有嵌套函数）。
@@ -191,6 +216,13 @@ event loop 一次僅會執行 1 個 Task, 如果某個 Task 正在等待執行�
 Event loops use cooperative scheduling: an event loop runs one Task at a time. 
 While a Task awaits for the completion of a Future, 
 the event loop runs other Tasks, callbacks, or performs IO operations.
+
+Future:
+未來對象
+本質：一個表示 尚未完成結果 的對象。
+asyncio.Future() 是一個低階 API，通常不直接使用，而是讓 Task 來管理它。
+Task 本質上是 Future 的子類，所以 Task 也是 Future。
+主要用於讓某個操作（如 I/O）在未來某個時間點設定結果（set_result()）。
 
 # asyncio.create_task() 回傳的 Task 並不需要等到使用 await 才會被執行，
 Task 繼承自 Future, 因此 Future 是相對底層(low-level)的 awaitable Python 物件，
