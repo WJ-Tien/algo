@@ -278,7 +278,6 @@ def myAtoi(s: str) -> int:
     return sign * result
     
 
-
 class LargerNumStr(str):
     # 179. Largest Number
     # 當 Python 排序需要判斷 self < other 時，就會呼叫這個方法
