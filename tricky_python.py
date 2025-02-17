@@ -1,7 +1,7 @@
 from datetime import datetime, timedelta, timezone
 
 """
-dict key must be immutable --> otherwise it will raise unhashable type error
+dict key must be immutable/hashable --> otherwise it will raise unhashable type error
 可雜湊物件（Hashable Object）從字面上看起來就是可以被雜湊函數所計算的物件，
 在 Python 只要是不可變物件，例如整數、浮點數、字串、位元組，這些都是可以進行雜湊計算的；
 相對的，如果是可變物件，像是串列、字典、集合，都是不可雜湊的。那麼 Tuple 呢？
@@ -14,7 +14,7 @@ MRO 是 Method Resolution Order 的縮寫，字面上的意思是指 Python 在�
 Diamond problem --> C3 Linearization algo to solve --> finding next item in the MRO tuple
 
 Override（覆寫）: 子類別重新定義父類別的方法	
-多型（Polymorphism）: 不同類別的物件可以使用相同的介面（方法名稱），但有不同的行為
+多型（Polymorphism [ducktype]）: 不同類別的物件可以使用相同的介面（方法名稱），但有不同的行為
 Override 是一種多型的實作方式，但多型不一定需要繼承
 
 classmethod --> factory mode
@@ -228,6 +228,9 @@ Task 本質上是 Future 的子類，所以 Task 也是 Future。
 Task 繼承自 Future, 因此 Future 是相對底層(low-level)的 awaitable Python 物件，
 用以代表非同步操作的最終結果，一般並不需要自己創造 Future 物件進行操作，
 多以 coroutine 與 Task 為主。
+
+cls._instasnce = None
+singleton: cls._instance = super().__new__(cls)
 
 """
 def test_args(*args, **kwargs):

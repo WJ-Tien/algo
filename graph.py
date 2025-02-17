@@ -7,7 +7,8 @@ with n edges --> must be a cycle
 Dijkstra (greedy): non-negative weighted graph, single source shortest path (all nodes)
 A*: non-negative weighted graph, single source to single target shortest path
 
-Topological: Directed Acyclic Graph
+Topological: Directed Acyclic Graph (no need visited, since in_degree will prevent infinite addition of items)
+for BFS, since the grpah might have cycle, so we need a visited set.
 
 Bellman-Ford (DP): directed/undirected graph (NOTE: undirected non-negative weights -> dijkstra), positive/negative weighted grpah (NO negative cycle. But it can be detected), single source shortest path (to all other nodes)
 SPFA (optimized bellmand-ford): directed/undirected graph (NOTE: undirected non-negative weights), positive/negative weighted single source shortest path (to all other nodes)

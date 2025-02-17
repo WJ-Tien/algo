@@ -18,6 +18,17 @@ def bubble(arr: list) -> None:
             if arr[j+1] < arr[j]:
                 arr[j], arr[j+1] = arr[j+1], arr[j]
 
+def bubble_sort_optimized(arr: list) -> None:
+    n = len(arr)
+    for i in range(n - 1):
+        swapped = False  # 記錄本輪是否發生交換
+        for j in range(n - 1 - i):
+            if arr[j] > arr[j + 1]:  # 兩兩比較
+                arr[j], arr[j + 1] = arr[j + 1], arr[j]
+                swapped = True  # 如果發生交換，標記為 True
+        if not swapped:
+            break  # 如果沒有交換，代表已經排序完成，提前結束
+
 def selection(arr: list) -> None:
     # TC: O(n^2)
     # SC: O(1)

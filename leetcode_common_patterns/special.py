@@ -466,3 +466,19 @@ def longestValidParentheses(s: str) -> int:
         elif left > right: 
             left = right = 0
     return max_len
+
+def is_prime(n: int) -> bool:
+    if n < 2:
+        return False
+    
+    # [2, sqrt(n)]
+    for i in range(2, int(math.sqrt(n)) + 1):
+        if n % i == 0:
+            return False
+    return True
+
+def gcd_iterative(a, b):
+    # euclidean method
+    while b:
+        a, b = b, a % b
+    return a
