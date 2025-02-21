@@ -3,10 +3,11 @@ normal func
 agg func
 window func
 
-agg func --> NULL WON'T be included, but count will
+agg func --> NULL WON'T be included, but count will (count(*))
 primary: unique + non-null
 
-是的，b.bonus IS NULL 這個條件是 必要的，
+comparison with null value it won't give true or false values
+bonus IS NULL 這個條件是 必要的，
 因為在 SQL 中，NULL 不是數字，也不能用來比較大小，所以 b.bonus < 1000 不會包含 NULL 值。
 
 self join --> need on (emp vs mgr)
@@ -22,6 +23,10 @@ row_number: 1 2 3 4
 over (partition something orderby another)
 --> rank, dense_rank, row_number, range, lead, lag
 diff: with groupby --> groupby reduce the #of cols while over-partition keeps
+over means do ops on a dataset
+
+limit offset --> offset first then limit
+e.g., limit 3 offset 2 --> first offset 2 rows, and choose the last three in a row. 
 
 view -> virutual table --> select only -> update when querying 
 materialized view (cache like) -> with real data -> need to update manually
@@ -67,11 +72,34 @@ DROP：刪除表
 select w1.id from weather w1, weather w2
 where w1.temperature > w2.temperature
 and w1.recordDate::date - w2.recordDate::date = 1
--- MYSQL
+
+-- MYSQL - 1
+WITH PreviousWeatherData AS
+(
+    SELECT 
+        id,
+        recordDate,
+        temperature, 
+        LAG(temperature, 1) OVER (ORDER BY recordDate) AS PreviousTemperature,
+        LAG(recordDate, 1) OVER (ORDER BY recordDate) AS PreviousRecordDate
+    FROM 
+        Weather
+)
+SELECT 
+    id 
+FROM 
+    PreviousWeatherData
+WHERE 
+    temperature > PreviousTemperature
+AND 
+recordDate = DATE_ADD(PreviousRecordDate, INTERVAL 1 DAY);
+
+-- MySQL - 2
 SELECT w1.id FROM Weather w1
 JOIN Weather w2
 ON DATEDIFF(w1.recordDate, w2.recordDate) = 1
 WHERE w1.temperature > w2.temperature
+
 
 -- 1661. Average Time of Process per Machine
 SELECT 
@@ -129,12 +157,144 @@ select emp_id, dept from tmp
 where rnk = 2
 order by emp_id
 
+
 -- 2339. All the Matches of the League
 select t1.team_name as home_team, t2.team_name as away_team
 from Teams as t1
 cross join Teams as t2
 where (on) t1.team_name != t2.team_name
 
+
 -- 2985. Calculate Compressed Mean
-select round(sum(item_count * order_occurrences) / sum(order_occurrences),2) as average_items_per_order
+select round(sum(item_count * order_occurrences) / sum(order_occurrences), 2) as average_items_per_order
 from Orders 
+
+
+-- 1571. Warehouse Manager
+with tmp as (
+    select product_id, (Width*Length*Height) as volume
+    from Products
+)
+select w.name as warehouse_name, sum(p.volume * w.units) as volume
+from Warehouse as w
+inner join tmp as p
+on w.product_id = p.product_id
+group by w.name
+
+
+-- 2084. Drop Type 1 Orders for Customers With Type 0 Orders
+select order_id, customer_id, order_type 
+from Orders
+where order_type = 0
+or (order_type = 1 and customer_id not in (select customer_id from orders where order_type = 0))
+
+
+-- 3150. Invalid Tweets II
+select tweet_id from Tweets
+where length(content) > 140
+or length(content) - length(replace(content, "#", '')) > 3 
+or length(content) - length(replace(content, "@", '')) > 3 
+
+
+-- 1308. Running Total for Different Genders
+-- running total
+-- sum over --> running total
+select gender, day,
+sum(score_points) over(partition by gender order by day) as total
+from Scores
+
+
+-- 1445. Apples & Oranges
+-- solved
+select sale_date, SUM(CASE WHEN fruit = 'apples' THEN sold_num ELSE -sold_num END) as diff
+from Sales
+group by sale_date
+
+
+-- 1795. Rearrange Products Table
+-- pivot using union 
+
+Products table:
++------------+--------+--------+--------+
+| product_id | store1 | store2 | store3 |
++------------+--------+--------+--------+
+| 0          | 95     | 100    | 105    |
+| 1          | 70     | null   | 80     |
++------------+--------+--------+--------+
+Output: 
++------------+--------+-------+
+| product_id | store  | price |
++------------+--------+-------+
+| 0          | store1 | 95    |
+| 0          | store2 | 100   |
+| 0          | store3 | 105   |
+| 1          | store1 | 70    |
+| 1          | store3 | 80    |
++------------+--------+-------+
+select product_id, 'store1' as store, store1 as price
+from products
+where store1 is not NULL
+union
+select product_id, 'store2' as store, store2 as price
+from products
+where store2 is not NULL
+union
+select product_id, 'store3' as store, store3 as price
+from products
+where store3 is not NULL
+
+
+-- 1853. Convert Date Format
+SELECT DATE_FORMAT(day, "%W, %M %e, %Y") AS day FROM Days;
+
+
+-- 1393. Capital Gain/Loss
+select stock_name, sum(CASE WHEN operation = 'Buy' THEN -price ELSE price END) as capital_gain_loss
+
+
+-- 1581. Customer Who Visited but Did Not Make Any Transactions
+select v.customer_id, sum(CASE WHEN t.transaction_id is NULL THEN 1 ELSE 0 END) as count_no_trans 
+from Visits as v
+left join Transactions as t
+on v.visit_id = t.visit_id
+group by v.customer_id
+having count_no_trans > 0
+
+
+-- 1280. Students and Examinations
+
+WITH StudentSubjects AS (
+    -- 1. 產生所有學生 × 所有科目
+    SELECT s.student_id, s.student_name, sub.subject_name
+    FROM Students s
+    CROSS JOIN Subjects sub
+)
+
+SELECT 
+    ss.student_id,
+    ss.student_name,
+    ss.subject_name,
+    COUNT(e.subject_name) AS attended_exams
+FROM StudentSubjects ss
+LEFT JOIN Examinations e 
+ON ss.student_id = e.student_id 
+AND ss.subject_name = e.subject_name
+GROUP BY ss.student_id, ss.student_name, ss.subject_name
+ORDER BY ss.student_id, ss.subject_name;
+
+
+-- 1934. Confirmation Rate
+with tmp as (
+    select s.user_id, c.action from Signups as s
+    left join Confirmations as c
+    on s.user_id = c.user_id
+)
+
+SELECT 
+    user_id, 
+    ROUND(
+        SUM(CASE WHEN action = 'confirmed' THEN 1 ELSE 0 END) * 1.0 / COUNT(*), 
+        2
+    ) AS confirmation_rate 
+FROM tmp 
+GROUP BY user_id;
