@@ -760,6 +760,13 @@ class NumArray_BIT:
     
     
 class NumArray_SEGMENT:
+    """
+        在 Segment Tree 中，我們根據 數組的索引範圍 劃分：
+        左子樹存儲 左半區間 的資訊。
+        右子樹存儲 右半區間 的資訊。 
+        不斷切半 直到剩下一個
+    
+    """
 
     def __init__(self, nums: list[int]):
         # T: average O(logN); build_tree O(N)

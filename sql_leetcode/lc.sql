@@ -99,3 +99,42 @@ select employee_id from Employees
 where salary < 30000
 and manager_id NOT IN (select employee_id from Employees)
 order by employee_id
+
+
+-- 1303. Find the Team Size
+-- using window function
+select employee_id, count(team_id) over (partition by team_id) as team_size 
+from Employee
+
+
+-- 2356. Number of Unique Subjects Taught by Each Teacher
+select teacher_id, count(distinct subject_id) as cnt from Teacher
+group by teacher_id
+
+
+-- 2989. Class Performance
+with tmp as (
+    select (assignment1 + assignment2 + assignment3) as total_score
+    from Scores
+)
+select (max(total_score) - min(total_score)) as difference_in_score from tmp
+
+
+-- 3338. Second Highest Salary II
+with tmp as (
+    select emp_id, dept, dense_rank() over (partition by dept order by salary desc) as rnk 
+    from employees
+)
+select emp_id, dept from tmp
+where rnk = 2
+order by emp_id
+
+-- 2339. All the Matches of the League
+select t1.team_name as home_team, t2.team_name as away_team
+from Teams as t1
+cross join Teams as t2
+where (on) t1.team_name != t2.team_name
+
+-- 2985. Calculate Compressed Mean
+select round(sum(item_count * order_occurrences) / sum(order_occurrences),2) as average_items_per_order
+from Orders 
