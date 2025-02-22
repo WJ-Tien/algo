@@ -298,3 +298,20 @@ SELECT
     ) AS confirmation_rate 
 FROM tmp 
 GROUP BY user_id;
+
+
+-- 1251. Average Selling Price
+select p.product_id, COALESCE(ROUND(SUM(p.price * u.units) / SUM(u.units), 2), 0) as average_price
+from Prices as p
+left join UnitsSold as u
+on p.product_id = u.product_id
+and purchase_date between start_date and end_date 
+group by p.product_id
+
+
+-- 1075. Project Employees I
+select p.project_id, ROUND(SUM(e.experience_years) / count(*), 2) as average_years
+from Project as p
+left join Employee as e
+on p.employee_id = e.employee_id
+group by project_id
