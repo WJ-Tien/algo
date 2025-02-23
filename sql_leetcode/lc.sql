@@ -130,7 +130,7 @@ C003	T03	R303
     如果光是「學號」就已經唯一了，加上「姓名」也還是能唯一識別，但這樣就多餘了（因為其實只靠「學號」就已經可以分辨每筆資料）。
     所以「(學號, 姓名)」是一個 Super Key，但不是最小組合。
 
-4. Alternate Key（替代鍵） 
+4. Alternate Key（替代鍵） (剩下的沒有被選為 Primary Key 的 Candidate Key。)
    是指「除了主鍵（Primary Key）以外，其它可用來唯一識別資料的 Candidate Key」。
    定義：
 
@@ -139,6 +139,10 @@ C003	T03	R303
     例子：
 
     一張「學生」表裡，「學號」被選為 Primary Key，那「身分證字號」如果也能唯一，就屬於 Alternate Key。
+
+    Candidate Key 和 Alternate Key 其實是一個「包含」與「被剩下」的關係：
+    所有 Alternate Key 都是 Candidate Key，
+    但不是所有 Candidate Key 都會變成 Alternate Key，因為其中有一個被選去當 Primary Key 了。
 
 5. Composite Key (複合鍵)
     定義：
