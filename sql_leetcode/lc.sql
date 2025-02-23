@@ -3,6 +3,8 @@ normal func
 agg func
 window func
 
+-- CTE (Common Table Expressions) 通用資料表運算式 --> with tmp as (sub_query)
+
 agg func --> NULL WON'T be included, but count will (count(*))
 primary: unique + non-null
 NULL 不會參與比較 a > 10, if a has any null values --> these won't be select or oped.
@@ -563,6 +565,7 @@ SELECT COALESCE(
 
 
 -- 185. Department Top Three Salaries
+-- CTE (Common Table Expressions) 通用資料表運算式
 with tmp as (
     select d.name as Department, e.name as Employee, Salary, 
     dense_rank() over (partition by d.name order by e.salary desc) as rnk
