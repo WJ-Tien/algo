@@ -28,6 +28,7 @@ over (partition something orderby another)
 --> rank, dense_rank, row_number, range, lead, lag
 diff: with groupby --> groupby reduce the #of cols while over-partition keeps
 over means do ops on a dataset
+lag/lead 是offset row (default respect NULLs)
 
 limit offset --> offset first then limit
 e.g., limit 3 offset 2 --> first offset 2 rows, and choose the last three in a row. 
@@ -67,7 +68,10 @@ DROP：刪除表
 📌 刪除後，表無法恢復，需要重新 CREATE TABLE
 📌 執行速度最快
 
-索引的類別分為 B-tree 與 Hash 2 種，這 2 種有各自適合的情境，譬如某些不重複的欄位，就適合使用 Hash 作為索引，不過 Hash 索引無法進行範圍查詢和排序，因此要考慮清楚
+index的類別分為 B-tree 與 Hash 2 種，這 2 種有各自適合的情境，譬如某些不重複的欄位，就適合使用 Hash 作為索引，不過 Hash 索引無法進行範圍查詢和排序，因此要考慮清楚
+partition: same table's order (hash, range ....)
+clustering: physical storage order (i.e. disk)
+
 
 SELECT * 
 FROM Delivery 
@@ -289,7 +293,7 @@ having count_no_trans > 0
 
 
 -- 1280. Students and Examinations
-
+-- https://www.fooish.com/sql/cross-join.html
 WITH StudentSubjects AS (
     -- 1. 產生所有學生 × 所有科目
     SELECT s.student_id, s.student_name, sub.subject_name
@@ -437,6 +441,7 @@ group by activity_date
 having activity_date between DATE_SUB("2019-07-27", INTERVAL 29 DAY) and "2019-07-27"
 
 
+-- 1070. Product Sales Analysis III
 -- agg func, one main col and an agg col
 -- (a, b) in subquery
 with tmp as (
@@ -447,3 +452,124 @@ with tmp as (
 select product_id, year as first_year, quantity, price
 from Sales
 where (product_id, year) in (select * from tmp)
+
+
+-- 1045. Customers Who Bought All Products
+-- read the problem properly (pk and fk)
+select customer_id
+from Customer
+group by customer_id
+having count(distinct product_key) = (select count(*) from Product)
+
+
+-- 610. Triangle Judgement
+select x, y, z, (CASE WHEN x + y > z and y + z > x and x + z > y THEN "Yes" ELSE "No" END) as "triangle"
+from Triangle
+
+-- 610. Triangle Judgement
+select x, y, z, if (x + y > z and y + z > x and x + z > y, "Yes", "No") as 'triangle'
+from triangle
+
+
+-- 1789. Primary Department for Each Employee
+-- subquery
+-- first select 'N' with only one row
+-- and finally selecet "Y"
+SELECT DISTINCT employee_id, department_id
+FROM Employee
+WHERE employee_id IN (
+    SELECT employee_id
+    FROM Employee
+    GROUP BY employee_id
+    HAVING COUNT(*) = 1
+  )
+  OR primary_flag = 'Y'
+ORDER BY employee_id
+
+
+-- 1731. The Number of Employees Which Report to Each Employee
+-- every employee could be a mgr of any other
+with mgr as (
+    select employee_id, name from Employees
+)
+select m.employee_id, m.name, 
+count(e.reports_to) as reports_count, 
+ROUND(avg(e.age)) as average_age
+from mgr as m
+inner join Employees as e
+on m.employee_id = e.reports_to
+group by m.employee_id, m.name
+order by employee_id
+
+
+-- 626. Exchange Seats
+-- a smart way to swap 
+select (CASE WHEN id % 2 = 0 THEN id -1 
+             WHEN id % 2 = 1 and id < (select count(*) from Seat) THEN id + 1
+             ELSE id END) as `id` -- edge case
+             , student from Seat
+order by `id`
+
+
+-- 180. Consecutive Numbers
+with tmp as (
+    select num, lag(num) over (order by id) as prev, lead(num) over (order by id) as next
+    from Logs
+)
+select distinct num as ConsecutiveNums from tmp
+where num = prev and num = nex
+
+
+-- 1667. Fix Names in a Table
+-- start from 1 (inclusive) and proceed 1, so which is itself
+-- 2, None --> start from 2 (inclusive) til the end
+select user_id, CONCAT(upper(substr(name, 1, 1)), lower(substr(name, 2))) as name from Users
+order by user_id
+
+
+-- 1327. List the Products Ordered in a Period
+select p.product_name, SUM(o.unit) as `unit`
+from Products as p
+inner join Orders as o
+on p.product_id = o.product_id
+where DATE_FORMAT(order_date, '%Y-%m') = '2020-02'
+-- where left(order_date, 7) = '2020-02
+group by p.product_id
+having `unit` >= 10
+
+
+-- 196. Delete Duplicate Emails
+-- to prevent unknown table issue, an addtional subquery is required (see 't' sub table)
+DELETE from Person
+where id NOT IN (
+    select ID from (
+        select min(id) as ID from Person
+        group by email
+    ) t
+)
+
+
+-- 176. Second Highest Salary
+-- SELECT (sub_query) AS 'secondHighestsalary' 
+SELECT COALESCE(
+    (SELECT DISTINCT salary 
+     FROM (
+         SELECT salary, DENSE_RANK() OVER (ORDER BY salary DESC) AS rnk
+         FROM Employee
+     ) t
+     WHERE rnk = 2),
+    NULL
+) AS `SecondHighestSalary`
+
+
+-- 185. Department Top Three Salaries
+with tmp as (
+    select d.name as Department, e.name as Employee, Salary, 
+    dense_rank() over (partition by d.name order by e.salary desc) as rnk
+    from Employee as e
+    inner join Department as d
+    on e.departmentId = d.id
+)
+
+select Department, Employee, Salary from tmp
+where rnk <= 3
