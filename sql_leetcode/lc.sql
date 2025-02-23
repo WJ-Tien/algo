@@ -5,6 +5,10 @@ window func
 
 agg func --> NULL WON'T be included, but count will (count(*))
 primary: unique + non-null
+NULL 不會參與比較 a > 10, if a has any null values --> these won't be select or oped.
+NULL 表示的是什麼都沒有，它與空字串 ('')、數字 0 並不等價，且不能用於比較！
+例如：<expr> = NULL 或 NULL = '' 的結果為 FALSE。
+要判斷 NULL，必須使用 IS NULL 或 IS NOT NULL 來進行檢查。
 
 comparison with null value it won't give true or false values
 bonus IS NULL 這個條件是 必要的，
@@ -63,7 +67,30 @@ DROP：刪除表
 📌 刪除後，表無法恢復，需要重新 CREATE TABLE
 📌 執行速度最快
 
-索引的類別分為 B-tree 與 Hash 2 種，這 2 種有各自適合的情境，譬如某些不重複的欄位，就適合使用 Hash 作為索引，不過 Hash 索引無法進行範圍查詢和排序，因此要考慮清楚0
+索引的類別分為 B-tree 與 Hash 2 種，這 2 種有各自適合的情境，譬如某些不重複的欄位，就適合使用 Hash 作為索引，不過 Hash 索引無法進行範圍查詢和排序，因此要考慮清楚
+
+SELECT * 
+FROM Delivery 
+WHERE (customer_id, order_date) IN (
+    (1, '2024-01-01'),
+    (2, '2024-01-02'),
+    (3, '2024-01-03')
+);
+這裡的 IN 作用於多個欄位，會匹配 (customer_id, order_date) 是否與提供的數組（tuples）相符。
+
+
+標準 SQL 中，當你在 GROUP BY 某些欄位（可以是一個或多個「鍵」）時，SELECT 子句裡 只能出現：
+與 GROUP BY 條件中一模一樣的欄位（或同等於這些欄位的表達式），以及
+聚合函數（SUM, COUNT, MIN, MAX, AVG...）的結果。
+任何「沒有在 GROUP BY 出現、也沒有被聚合」的欄位，都會引發 SQL 錯誤（產生不確定的結果）。
+select g_col, max(a), min(b) --> OK
+select g_col, max(a) --> OK
+select g_col, max(a), c --> WRONG
+# select g_col_1, g_col_2, MIN(price) AS min_price,, MAX(price) AS max_price -> OK
+from table
+group by g_col
+# group by g_col_1, g_col_2 -> OK (ref #)
+
 "
 --197. Rising Temperature
 -- select w1.id from weather w1, weather w2 --> return all combs n^2 <- self-join
@@ -315,3 +342,108 @@ from Project as p
 left join Employee as e
 on p.employee_id = e.employee_id
 group by project_id
+
+
+-- 1633. Percentage of Users Attended a Contest
+with tmp as (
+    select count(*) as total_number from users
+)
+select r.contest_id, ROUND((count(u.user_id) *100 / (select total_number from tmp)), 2) as percentage from Users as u
+inner join Register as r
+on u.user_id = r.user_id
+group by r.contest_id
+order by percentage desc,  r.contest_id as
+
+
+-- 1211. Queries Quality and Percentage
+-- remember casting --> mutiply by .0
+-- the use of avg
+-- poor quality probably need coalesce for 0
+select query_name,
+round(avg(rating*1.0 / position), 2) as quality,
+round(sum(case when rating < 3 then 1 else 0 end) * 100.0 / count(query_name), 2) as poor_query_percentage
+from Queries
+group by query_name
+
+--  1193. Monthly Transactions I
+SELECT DATE_FORMAT(trans_date, '%Y-%m') AS month, country,
+COUNT(state) as trans_count,
+SUM(CASE WHEN state = 'approved' THEN 1 ELSE 0 END) as approved_count,
+SUM(amount) as trans_total_amount,
+SUM(CASE WHEN state = 'approved' THEN amount ELSE 0 END) as approved_total_amount 
+from Transactions
+group by month, country
+
+
+-- 1174. Immediate Food Delivery II
+with tmp1 as (
+    select customer_id, order_date, dense_rank() over (partition by customer_id order by order_date) as rnk
+    from Delivery
+),
+tmp2 as (
+    select d.customer_id, d.order_date, (CASE WHEN d.order_date = d.customer_pref_delivery_date THEN 'immediate' ELSE 'scheduled' END) as type 
+    from Delivery as d
+    inner join tmp1 as t
+    on t.customer_id = d.customer_id
+    and t.order_date = d.order_date
+    where rnk = 1
+)
+select ROUND(AVG(type = 'immediate') * 100.0, 2) as immediate_percentage from tmp2
+
+-- 1174. Immediate Food Delivery II
+SELECT 
+    ROUND(AVG(order_date = customer_pref_delivery_date) * 100.0, 2) AS immediate_percentage
+FROM Delivery
+WHERE (customer_id, order_date) IN (
+    SELECT customer_id, MIN(order_date) AS first_order_date
+    FROM Delivery
+    GROUP BY customer_id
+)
+
+
+-- 550. Game Play Analysis IV
+-- read the problem statement properly
+WITH first_login_cte AS (
+    -- 每位玩家的「第一次登入」日期
+    SELECT 
+        player_id, 
+        MIN(event_date) AS first_login
+    FROM Activity
+    GROUP BY player_id
+),
+logged_again_cte AS (
+    -- 只看「首登日 + 1 天」是否有登入
+    SELECT DISTINCT f.player_id
+    FROM first_login_cte f
+    INNER JOIN Activity a
+        ON a.player_id = f.player_id
+       AND DATEDIFF(a.event_date, f.first_login) = 1
+)
+SELECT 
+    ROUND(
+        COUNT(DISTINCT lac.player_id) *1.0
+        / (SELECT COUNT(DISTINCT player_id) FROM Activity)
+    , 2
+    ) AS fraction
+FROM logged_again_cte as lac
+
+
+-- 1141. User Activity for the Past 30 Days I
+-- INTERVAL 29 DAY --> D-30
+-- INTERVAL N DAY --> D-(N+1)
+select activity_date as "day", count(distinct user_id) as active_users
+from Activity
+group by activity_date
+having activity_date between DATE_SUB("2019-07-27", INTERVAL 29 DAY) and "2019-07-27"
+
+
+-- agg func, one main col and an agg col
+-- (a, b) in subquery
+with tmp as (
+    select product_id, min(year) as first_year
+    from Sales
+    group by product_id
+)
+select product_id, year as first_year, quantity, price
+from Sales
+where (product_id, year) in (select * from tmp)
