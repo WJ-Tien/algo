@@ -754,6 +754,28 @@ with tmp as (
     inner join Department as d
     on e.departmentId = d.id
 )
-
 select Department, Employee, Salary from tmp
 where rnk <= 3
+
+
+-- 1517. Find Users With Valid E-Mails
+SELECT user_id, name, mail
+FROM Users
+-- Note that we also escaped the `@` character, as it has a special meaning in some regex flavors
+WHERE mail REGEXP '^[a-zA-Z][a-zA-Z0-9_.-]*\\@leetcode\\.com$'
+
+
+-- 1907. Count Salary Categories
+-- SUM is critical here, since we need to take care of 0
+-- The combination of Union and CASE
+select "Low Salary" as category,
+    SUM(CASE WHEN income < 20000 THEN 1 ELSE 0 END) as accounts_count
+from accounts
+union
+select "Average Salary" as category,
+    SUM(CASE WHEN income >= 20000 and income <= 50000 THEN 1 ELSE 0 END) as accounts_count
+from accounts
+union
+select "High Salary" as category,
+    SUM(CASE WHEN income > 50000 THEN 1 ELSE 0 END) as accounts_count
+from account
