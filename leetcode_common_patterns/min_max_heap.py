@@ -1,3 +1,4 @@
+import random
 from collections import Counter
 from heapq import heappush, heappushpop, heappop, heapify
 from typing import Optional
@@ -320,3 +321,84 @@ def halveArray(nums: list[int]) -> int:
         heappush(hp, cur_max)
     
     return ans
+
+
+def findKthLargest_qs(nums: list[int], k: int) -> int:
+
+    def quick_select():
+        left, right = 0, len(nums) - 1
+        target_idx = len(nums) - k # kth_largest
+        # target_idx = k-1 -> kth_smallest
+        while left <= right:
+            pivot_idx = partition(left, right)
+            if pivot_idx == target_idx:
+                return nums[pivot_idx]
+            elif pivot_idx > target_idx:
+                right = pivot_idx - 1
+            else:
+                left = pivot_idx + 1
+        return None
+
+    def partition(left, right):
+        pivot_idx = random.randint(left, right)
+        nums[pivot_idx], nums[right] = nums[right], nums[pivot_idx]
+        pivot = nums[right]
+        i = left - 1
+        for j in range(left, right):
+            if nums[j] <= pivot:
+                i += 1
+                nums[i], nums[j] = nums[j], nums[i]
+        # 0~i <= pivot, so swap between i+1 and pivot
+        # 0~i, pivot, others. 0~i <= pivot, others > pivot
+        nums[i+1], nums[right] = nums[right], nums[i+1]
+
+        return i+1
+    
+    return quick_select()
+
+
+def topKFrequent_quick_select(nums: list[int], k: int) -> list[int]:
+    
+    hmp = dict()
+    for num in nums:
+        hmp[num] = hmp.get(num, 0) + 1
+    
+    # Convert to list of (num, freq) tuples
+    freq_pairs = [(num, freq) for num, freq in hmp.items()]
+    
+    def quick_select():
+        left, right = 0, len(freq_pairs) - 1
+        target_idx = len(freq_pairs) - k  # kth largest frequent
+        # target_idx = k - 1  # kth smallest frequent
+        
+        while left <= right:
+            pivot_idx = partition(left, right)
+            if pivot_idx == target_idx:
+                return freq_pairs[pivot_idx][1]  # return frequency threshold
+            elif pivot_idx > target_idx:
+                right = pivot_idx - 1
+            else:
+                left = pivot_idx + 1
+        return None
+    
+    def partition(left, right):
+        # Randomly select pivot
+        pivot_idx = random.randint(left, right)
+        freq_pairs[pivot_idx], freq_pairs[right] = freq_pairs[right], freq_pairs[pivot_idx]
+        
+        # Use frequency as the comparing key
+        pivot = freq_pairs[right][1]
+        i = left - 1
+        
+        for j in range(left, right):
+            if freq_pairs[j][1] <= pivot:  # Compare by frequency
+                i += 1
+                freq_pairs[i], freq_pairs[j] = freq_pairs[j], freq_pairs[i]
+        
+        # 0~i <= pivot, so swap between i+1 and pivot
+        freq_pairs[i+1], freq_pairs[right] = freq_pairs[right], freq_pairs[i+1]
+        return i+1
+    
+    freq_threshold = quick_select()
+    # Return elements with frequency >= threshold
+    return [num for num, freq in hmp.items() if freq >= freq_threshold]

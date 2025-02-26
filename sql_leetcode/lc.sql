@@ -278,6 +278,24 @@ from table
 group by g_col
 # group by g_col_1, g_col_2 -> OK (ref #)
 
+
+<窗口函數> OVER (
+    PARTITION BY <分組欄位>
+    ORDER BY <排序欄位>
+    ROWS BETWEEN 6 PRECEDING AND CURRENT ROW
+)
+🔹 ROWS BETWEEN 的定義
+6 PRECEDING：表示當前行往上數 6 行（包含這 6 行）。
+CURRENT ROW：表示當前行。
+這樣的範圍就是「當前行 + 前 6 行」，共 7 行。
+
+ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW	從第一行到當前行的累積計算（累積總和）。
+ROWS BETWEEN 6 PRECEDING AND CURRENT ROW	  計算當前行 + 前 6 行（移動平均）。
+ROWS BETWEEN CURRENT ROW AND 6 FOLLOWING	計算當前行 + 後 6 行（未來 7 天平均）。
+ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING	計算整個表的聚合值（如 AVG() 計算全表平均）。
+
+
+
 "
 --197. Rising Temperature
 -- select w1.id from weather w1, weather w2 --> return all combs n^2 <- self-join
@@ -779,3 +797,47 @@ union
 select "High Salary" as category,
     SUM(CASE WHEN income > 50000 THEN 1 ELSE 0 END) as accounts_count
 from account
+
+
+-- 1484. Group Sold Products By The Date
+-- very special, not that useful
+select sell_date, count(distinct product) as num_sold, 
+group_concat(distinct product order by product SEPARATOR ',') as products
+from Activities
+group by sell_date
+order by sell_dat
+
+
+-- 1204. Last Person to Fit in the Bus
+select person_name from (
+    select person_name, SUM(weight) over (order by turn) as total_weight
+    from Queue
+) t
+where total_weight <= 1000
+order by total_weight desc
+limit 1
+
+
+-- 1164. Product Price at a Given Date
+WITH
+  cte_price AS (
+    SELECT
+      product_id,
+      new_price,
+      ROW_NUMBER() OVER (PARTITION BY product_id ORDER BY change_date DESC) AS rn
+    FROM
+      Products
+    WHERE
+      change_date <= '2019-08-16'
+  )
+
+SELECT
+  DISTINCT Products.product_id,
+  COALESCE(price.new_price, 10) AS price
+FROM
+  Products
+LEFT JOIN
+  cte_price AS price
+ON
+  Products.product_id = price.product_id
+  AND price.rn = 1
