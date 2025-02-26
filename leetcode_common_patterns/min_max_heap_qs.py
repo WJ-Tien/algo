@@ -8,6 +8,10 @@ class ListNode:
         self.val = val
         self.next = next
 
+"""
+sift-up  （上浮）	插入新元素時	將新元素放入堆中後，透過上浮恢復堆性質	O(logn)
+sift-down（下沉）	刪除堆頂時 或 建堆	刪除堆頂後，用最後一個元素補位，透過下沉恢復堆性質 O(logn)
+"""
 # Heap is a complete binary tree
 # Python itself implements "min_heap"
 # If a node is at index i, then its children are at indices 2i + 1 and 2i + 2

@@ -191,6 +191,68 @@ class SegmentTree:
         return self._query(0, 0, self.n - 1, left, right)
 
 
+class CustomizedHeap:
+    def __init__(self, data=None, is_min_heap=False):
+        """初始化堆積，可選擇是最小堆還是最大堆。"""
+        self.is_min_heap = is_min_heap
+        self.data = list(data) if data else []
+        # 建立堆（從最後一個非葉節點開始下沉）
+        for i in range(len(self.data) // 2 - 1, -1, -1):
+            self._sift_down(i)
+
+    def _sift_up(self, idx):
+        """遞迴版本的上浮（sift-up）"""
+        if idx == 0:
+            return  # 已達到根節點，停止遞迴
+        parent_idx = (idx - 1) // 2
+        if (self.is_min_heap and self.data[idx] < self.data[parent_idx]) or \
+           (not self.is_min_heap and self.data[idx] > self.data[parent_idx]):
+            # 交換當前節點和父節點
+            self.data[idx], self.data[parent_idx] = self.data[parent_idx], self.data[idx]
+            # 遞迴地向上繼續檢查
+            self._sift_up(parent_idx)
+
+    def _sift_down(self, idx):
+        """遞迴版本的下沉（sift-down）"""
+        left = 2 * idx + 1
+        right = 2 * idx + 2
+        target = idx
+
+        # 找出較大（最大堆）或較小（最小堆）的子節點
+        if left < len(self.data):
+            if (self.is_min_heap and self.data[left] < self.data[target]) or \
+               (not self.is_min_heap and self.data[left] > self.data[target]):
+                target = left
+        if right < len(self.data):
+            if (self.is_min_heap and self.data[right] < self.data[target]) or \
+               (not self.is_min_heap and self.data[right] > self.data[target]):
+                target = right
+        
+        # 若當前節點不是最大或最小，則交換並遞迴調整
+        if target != idx:
+            self.data[idx], self.data[target] = self.data[target], self.data[idx]
+            self._sift_down(target)
+
+    def insert(self, value):
+        """插入新元素，並使用遞迴的 sift-up 來調整堆"""
+        self.data.append(value)
+        self._sift_up(len(self.data) - 1)
+
+    def extract(self):
+        """取出堆頂元素，並使用遞迴的 sift-down 來維持堆性質"""
+        if not self.data:
+            return None
+        top_value = self.data[0]
+        last_value = self.data.pop()
+        if self.data:
+            self.data[0] = last_value
+            self._sift_down(0)
+        return top_value
+
+    def peek(self):
+        """查看堆頂元素（不刪除）"""
+        return self.data[0] if self.data else None
+
 
 
 if __name__ == "__main__":
