@@ -21,6 +21,7 @@ class ListNode:
 # heap only guarantees to store the smallest value at the first node
 # and recursively to the substree root
 # while the others are not sorted
+# quick select qs is also included here since it's good at finding kth largest/smallest
 
 """
 insert num to a 
