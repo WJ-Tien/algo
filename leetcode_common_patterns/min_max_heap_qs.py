@@ -8,6 +8,7 @@ class ListNode:
         self.val = val
         self.next = next
 
+# Heap is a complete binary tree
 # Python itself implements "min_heap"
 # If a node is at index i, then its children are at indices 2i + 1 and 2i + 2
 # 子節點 i 的 父節點 在 (i - 1) // 2
