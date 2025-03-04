@@ -1,4 +1,6 @@
 from bisect import bisect_right
+from heapq import heappush, heappop
+
 
 def maximalSquare(matrix: list[list[str]]) -> int:
 
@@ -179,3 +181,87 @@ def jobScheduling(startTime: list[int], endTime: list[int], profit: list[int]) -
             dp.append((end, cur_profit))
     
     return dp[-1][1]
+
+def asteroidsDestroyed(mass: int, asteroids: list[int]) -> bool:
+    # 2126. Destroying Asteroids
+    asteroids.sort()
+    for asteroid in asteroids:
+        if asteroid > mass:
+            return False
+        mass += asteroid
+    
+    return True
+
+def partitionArray(nums: list[int], k: int) -> int:
+    # 2294. Partition Array Such That Maximum Difference Is K
+    # [x, x+k]
+    # greedy algo
+    # if nums[i] - base > k --> create another new group
+    # edge case: ans should added by 1
+    nums.sort()
+    x = nums[0]
+
+    ans = 0
+    for i in range(1, len(nums)):
+        if nums[i] - x > k:
+            x = nums[i]
+            ans += 1
+    return ans + 1
+
+
+def findMaximizedCapital(k: int, w: int, profits: list[int], capital: list[int]) -> int:
+    # 502. IPO
+    # T: O(n*logn)
+    # S: O(n)
+
+    hp = []
+    i = 0
+    projects = sorted(zip(capital, profits))
+    ans = w
+    n = len(profits)
+
+    for _ in range(k):
+        while i < n and projects[i][0] <= ans:
+            heappush(hp, -projects[i][1])
+            i += 1
+        
+        if not hp:
+            break
+        ans += -heappop(hp)
+
+    return ans
+
+
+def findLeastNumOfUniqueInts(arr: list[int], k: int) -> int:
+
+    hmp = dict()
+
+    for num in arr:
+        hmp[num] = hmp.get(num, 0) + 1
+
+    hmp = dict(sorted(hmp.items(), key=lambda x: x[1]))
+
+    ans = 0
+    for value in hmp.values():
+        if k - value >= 0:
+            k -= value
+        else:
+            ans += 1
+    return ans
+
+
+def numRescueBoats(people: list[int], limit: int) -> int:
+    # 881. Boats to Save People
+
+    # heavy first, then light
+    people.sort()
+    ans = 0
+    l, r = 0, len(people) - 1 # noqa
+
+    # = is required for the one person edge case
+    while l <= r:
+        if people[l] + people[r] <= limit:
+            l += 1 # noqa
+        r -= 1
+        ans += 1
+    return ans
