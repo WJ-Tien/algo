@@ -1,4 +1,5 @@
 from bisect import bisect_right
+from collections import Counter
 from heapq import heappush, heappop
 
 
@@ -287,6 +288,7 @@ def maximumUnits(boxTypes: list[list[int]], truckSize: int) -> int:
 
 
 def minSetSize(arr: list[int]) -> int:
+    # 1338. Reduce Array Size to The Half
 
     hmp = dict()
     half_len = len(arr) // 2
@@ -305,3 +307,37 @@ def minSetSize(arr: list[int]) -> int:
         else:
             break
     return ans
+
+def minSetSize_bucket_sort(arr: list[int]) -> int:
+    # 1338. Reduce Array Size to The Half
+    n = len(arr)
+    half_length = n // 2
+    
+    # Count the frequency of each number
+    counter = Counter(arr)
+    
+    # Create frequency buckets
+    # The maximum possible frequency is n
+    buckets = [0] * (n + 1)
+    
+    # Fill the buckets with frequency counts
+    for freq in counter.values():
+        buckets[freq] += 1
+    
+    # Greedily remove numbers starting from highest frequency
+    total_removed = 0
+    set_size = 0
+    
+    # Start from the highest possible frequency (n) and work downwards
+    for freq in range(n, 0, -1):
+        # If there are numbers with this frequency
+        while buckets[freq] > 0:
+            total_removed += freq
+            set_size += 1
+            buckets[freq] -= 1
+            
+            # If we've removed at least half of the array
+            if total_removed >= half_length:
+                return set_size
+    
+    return set_size
