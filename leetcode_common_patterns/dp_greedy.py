@@ -265,3 +265,43 @@ def numRescueBoats(people: list[int], limit: int) -> int:
         r -= 1
         ans += 1
     return ans
+
+
+def maximumUnits(boxTypes: list[list[int]], truckSize: int) -> int:
+    # 1710. Maximum Units on a Truck
+
+    boxTypes.sort(key=lambda x: x[1], reverse=True)
+    cur_box = truckSize
+    ans = 0
+    
+    for nob, unit in boxTypes:
+        if cur_box <= 0:
+            break
+        
+        # Take as many boxes as possible
+        boxes_to_take = min(nob, cur_box)
+        ans += boxes_to_take * unit
+        cur_box -= boxes_to_take
+    
+    return ans
+
+
+def minSetSize(arr: list[int]) -> int:
+
+    hmp = dict()
+    half_len = len(arr) // 2
+    ans = 0
+
+    for num in arr:
+        hmp[num] = hmp.get(num, 0) + 1
+
+    hmp = dict(sorted(hmp.items(), key=lambda x: x[1], reverse=True))
+
+    for freq in hmp.values():
+        remain = half_len - freq
+        ans += 1
+        if remain > 0:
+            half_len -= freq
+        else:
+            break
+    return ans
