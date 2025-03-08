@@ -294,6 +294,8 @@ ROWS BETWEEN 6 PRECEDING AND CURRENT ROW	  計算當前行 + 前 6 行（移動�
 ROWS BETWEEN CURRENT ROW AND 6 FOLLOWING	計算當前行 + 後 6 行（未來 7 天平均）。
 ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING	計算整個表的聚合值（如 AVG() 計算全表平均）。
 
+Coalesce: return first non-null value; if all are nulls, then return ull
+
 
 
 "

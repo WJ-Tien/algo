@@ -1,3 +1,4 @@
+from math import ceil
 # arr is sorted --> binary search
 # otherwise we can use heapq (n+k) * logk, O(k) space
 def findClosestElements(arr: list[int], k: int, x: int) -> list[int]:
@@ -138,3 +139,32 @@ def findMedianSortedArrays(self, nums1: list[int], nums2: list[int]) -> float:
             right = partitionA - 1
         elif max_left_B > min_right_A:
             left = partitionA + 1
+
+
+def smallestDivisor(nums: list[int], threshold: int) -> int:
+    # 1283. Find the Smallest Divisor Given a Threshold
+    # Intuition: the smaller the divisor, the larger the d-sum and vice versa
+    # hence we can use binary search (implicit asc/desc order)
+    # T: O(nlog(M)) M:= max num in nums
+    # S: O(1)
+    def find_division_sum(divisor: int) -> int:
+        result = 0
+        for num in nums:
+            result += ceil((1.0 * num) / divisor)
+        return result
+
+    # Binary search boundaries
+    left = 1
+    right = max(nums)
+    
+    # Binary search process
+    while left <= right:
+        mid = left + (right - left) // 2 
+        
+        # If current divisor meets threshold requirement
+        if find_division_sum(mid) <= threshold:
+            right = mid - 1  # Try smaller divisors
+        else:
+            left = mid + 1  # Need to try larger divisors
+    
+    return left 
