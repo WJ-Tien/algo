@@ -168,3 +168,75 @@ def smallestDivisor(nums: list[int], threshold: int) -> int:
             left = mid + 1  # Need to try larger divisors
     
     return left 
+
+
+def answerQueries(nums: list[int], queries: list[int]) -> list[int]:
+
+    # binary search + prefix_sum
+    ans = [0] * len(queries)
+    nums.sort()
+    prefix_sum = [nums[0]]
+
+    for i in range(1, len(nums)):
+        prefix_sum.append(prefix_sum[-1] + nums[i])
+    
+    def binary_search(nums, low, high, target):
+        while low <= high:
+            mid = low + (high - low) // 2
+            if nums[mid] == target:
+                return mid + 1
+            elif nums[mid] > target:
+                high = mid - 1
+            else:
+                low = mid + 1
+        return low
+
+    # [1, 3, 8, 12]
+    low, high = 0, len(prefix_sum) - 1
+    for i in range(len(ans)):
+        ans[i] = binary_search(prefix_sum, low, high, queries[i])
+    return ans
+
+
+def separateSquares(squares: list[list[int]]) -> float:
+
+    def calculate_area(y_line: float) -> tuple[float, float]:
+        area_below = 0
+        area_above = 0
+
+        # in between
+
+        for x, y, l in squares: # noqa
+            square_top = y + l
+            # all above
+            if y >= y_line:
+                area_above += l * l
+            # all below
+            elif square_top <= y_line:
+                area_below += l * l
+            # in between
+            else:
+                above_height = square_top - y_line
+                below_height = y_line - y
+                area_above += above_height * l
+                area_below += below_height * l
+        return area_above, area_below
+    
+    right = float("-inf") # max_y
+    left = float("inf") # min_y
+    for x, y, l in squares: # noqa
+        right = max(right, y+l)
+        left = min(left, y)
+    
+    eps = 1e-5
+
+    while right - left > eps:
+        y_line = left + (right - left) / 2
+
+        area_above, area_below = calculate_area(y_line)
+
+        if area_above > area_below:
+            left = y_line
+        else:
+            right = y_line 
+    return left
