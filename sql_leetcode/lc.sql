@@ -843,3 +843,17 @@ LEFT JOIN
 ON
   Products.product_id = price.product_id
   AND price.rn = 1
+
+
+
+CREATE FUNCTION getNthHighestSalary(N INT) RETURNS INT
+BEGIN
+DECLARE M INT; 
+    SET M = N-1; 
+  RETURN (
+      SELECT DISTINCT salary
+      FROM Employee
+      ORDER BY salary DESC
+      LIMIT M, 1  -- index, start from N-1, choose 1
+  );
+END 
