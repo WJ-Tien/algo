@@ -855,5 +855,13 @@ DECLARE M INT;
       FROM Employee
       ORDER BY salary DESC
       LIMIT M, 1  -- index, start from N-1, choose 1
+      -- LIMIT offset, row_count
+      -- 3 → 偏移量（offset），即跳過前 3 行
+      -- 1 → 回傳 1 行
+
+      -- LIMIT row_count OFFSET offset
+      -- 3 → 回傳 3 行
+      -- OFFSET 1 → 跳過前 1 行
+
   );
 END 
