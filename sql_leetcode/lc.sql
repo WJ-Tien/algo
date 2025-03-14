@@ -277,6 +277,7 @@ select g_col, max(a), c --> WRONG
 from table
 group by g_col
 # group by g_col_1, g_col_2 -> OK (ref #)
+# You can put expression in the sum e.g., sum(price > 0)
 
 
 <窗口函數> OVER (
