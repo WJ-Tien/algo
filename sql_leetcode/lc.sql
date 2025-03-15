@@ -278,6 +278,8 @@ from table
 group by g_col
 # group by g_col_1, g_col_2 -> OK (ref #)
 # You can put expression in the sum e.g., sum(price > 0)
+select g_col --> (OK)
+group by g_col
 
 
 <窗口函數> OVER (
@@ -566,11 +568,11 @@ group by p.product_id
 
 
 -- 1075. Project Employees I
-select p.project_id, ROUND(SUM(e.experience_years) / count(*), 2) as average_years
+select p.project_id, ROUND(AVG(e.experience_years), 2) as average_years
 from Project as p
 left join Employee as e
 on p.employee_id = e.employee_id
-group by project_id
+group by p.project_id
 
 
 -- 1633. Percentage of Users Attended a Contest
@@ -700,16 +702,16 @@ from triangle
 -- subquery
 -- first select 'N' with only one row
 -- and finally selecet "Y"
-SELECT DISTINCT employee_id, department_id
-FROM Employee
-WHERE employee_id IN (
-    SELECT employee_id
-    FROM Employee
-    GROUP BY employee_id
-    HAVING COUNT(*) = 1
-  )
-  OR primary_flag = 'Y'
-ORDER BY employee_id
+with tmp as (
+    select employee_id, COUNT(distinct department_id) as cnt
+    from Employee
+    group by employee_id
+    having cnt = 1
+)
+select employee_id, department_id
+from Employee
+where primary_flag = "Y"
+or employee_id in (select employee_id from tmp)
 
 
 -- 1731. The Number of Employees Which Report to Each Employee
@@ -746,6 +748,7 @@ where num = prev and num = nex
 
 
 -- 1667. Fix Names in a Table
+-- substr (str, pos, len)
 -- start from 1 (inclusive) and proceed 1, so which is itself
 -- 2, None --> start from 2 (inclusive) til the end
 select user_id, CONCAT(upper(substr(name, 1, 1)), lower(substr(name, 2))) as name from Users
@@ -764,7 +767,10 @@ having `unit` >= 10
 
 
 -- 196. Delete Duplicate Emails
--- to prevent unknown table issue, an addtional subquery is required (see 't' sub table)
+-- 在許多資料庫系統（特別是 MySQL）中，如果你在一個 DELETE（或 UPDATE）指令裡，同時又想從「同一張表」進行 SELECT 以取得條件，往往會遇到以下錯誤或限制：
+-- You can't specify target table 'XXX' for update in FROM clause
+-- 也就是說，不允許直接在 DELETE FROM Person 的同時，在 WHERE 子句的子查詢中直接 SELECT FROM Person 做聚合或過濾。
+
 DELETE from Person
 where id NOT IN (
     select ID from (
@@ -876,9 +882,10 @@ DECLARE M INT;
       SELECT DISTINCT salary
       FROM Employee
       ORDER BY salary DESC
-      LIMIT M, 1  -- index, start from N-1, choose 1
+      LIMIT M, 1  -- index (rowcount-1), start from M+1=N, choose 1
+      -- 0-indexed
       -- LIMIT offset, row_count
-      -- 3 → 偏移量（offset），即跳過前 3 行
+      -- 3 → 偏移量（offset)
       -- 1 → 回傳 1 行
 
       -- LIMIT row_count OFFSET offset
@@ -903,3 +910,23 @@ select city from Listings
 group by city
 having avg(price) >  (select avg(price) from Listings)
 order by cit
+
+
+-- 181. Employees Earning More Than Their Managers
+select e1.name as 'Employee'
+from Employee e1
+inner join Employee e2
+on e1.managerId = e2.Id
+where e1.salary > e2.salary
+
+
+-- 586. Customer Placing the Largest Number of Orders
+select customer_number
+from Orders
+group by customer_number
+having count(order_number) = (
+    SELECT count(order_number)
+	FROM orders
+	GROUP BY customer_number
+	ORDER BY count(order_number) DESC LIMIT 1
+)

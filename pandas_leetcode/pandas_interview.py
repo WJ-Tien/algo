@@ -115,7 +115,7 @@ def find_products(products: pd.DataFrame) -> pd.DataFrame:
     return products[(products.low_fats == 'Y') & (products.recyclable == 'Y')][['product_id']]
 
 
-def find_customers(customers: pd.DataFrame, orders: pd.DataFrame) -> pd.DataFrame:
+def find_customers_never_order(customers: pd.DataFrame, orders: pd.DataFrame) -> pd.DataFrame:
     # 183. Customers Who Never Order
     customers = customers.merge(orders, right_on=['customerId'], left_on=['id'], how='left')
     customers = customers[customers['customerId'].isnull()]
@@ -355,6 +355,14 @@ def largest_orders(orders: pd.DataFrame) -> pd.DataFrame:
     df = orders.groupby(['customer_number'])['order_number'].size().reset_index()
     return df[df.order_number == df.order_number.max()][['customer_number']]
 
+    def largest_orders(orders: pd.DataFrame) -> pd.DataFrame:
+        df = orders.groupby(['customer_number']).size().reset_index(name='cnt')
+        if df.empty:
+            return pd.DataFrame({"customer_number": []}) # None (Null) != []
+        largest = max(df['cnt'])
+        return df[df.cnt == largest][['customer_number']]
+   
+
 def categorize_products(activities: pd.DataFrame) -> pd.DataFrame:
     # 1484. Group Sold Products By The Date
     def str_concat(g):
@@ -445,3 +453,77 @@ def rising_temperature(weather: pd.DataFrame) -> pd.DataFrame:
     weather['previousDate'] = weather['recordDate'].shift(1)
     return weather[(weather.temperature > weather.previousTemperature) & 
                    (weather.recordDate == weather.previousDate + pd.Timedelta(days=1))][['id']]
+
+
+def find_customers_no_trans(visits: pd.DataFrame, transactions: pd.DataFrame) -> pd.DataFrame:
+    # 1581. Customer Who Visited but Did Not Make Any Transactions
+    df = pd.merge(visits, transactions, on=['visit_id'], how='left')
+    df = df.groupby(['customer_id']).apply(lambda x: sum(x['transaction_id'].isnull())).reset_index(name='count_no_trans')
+    return df[df.count_no_trans > 0]
+
+
+def team_size(employee: pd.DataFrame) -> pd.DataFrame:
+    # 1303. Find the Team Size
+    # partition
+    employee['team_size'] = employee.groupby(['team_id']).transform('size')
+    return employee[['employee_id', 'team_size']]
+
+
+def running_total(scores: pd.DataFrame) -> pd.DataFrame:
+    # 1308. Running Total for Different Genders
+    # over partition by order by
+    # running total
+    scores.sort_values(by=['gender', 'day'], ascending=True, inplace=True)
+    scores['total'] = scores.groupby(['gender'])['score_points'].transform('cumsum')
+    return scores[['gender', 'day', 'total']]
+
+
+def find_employees(employees: pd.DataFrame) -> pd.DataFrame:
+    # 1978. Employees Whose Manager Left the Company
+    all_employees = employees.employee_id.unique()
+    employees.sort_values(by=['employee_id'], ascending=True, inplace=True)
+    return employees[(employees.salary < 30000) & (~employees.manager_id.isin(all_employees)) & (employees.manager_id.notnull())][['employee_id']]
+
+
+def count_followers(followers: pd.DataFrame) -> pd.DataFrame:
+    # 1729. Find Follwers Count
+    return followers.groupby(['user_id']).size().reset_index(name='followers_count')
+
+
+def project_employees_i(project: pd.DataFrame, employee: pd.DataFrame) -> pd.DataFrame:
+    # 1075. Project Employees I
+    df = pd.merge(project, employee, on=['employee_id'], how='left')
+    df = df.groupby(['project_id'])['experience_years'].mean().round(2).reset_index(name='average_years')
+    return df[['project_id', 'average_years']]
+
+
+def find_employees_salary(employee: pd.DataFrame) -> pd.DataFrame:
+    # 181. Employees Earning More Than Their Managers
+    # inner join
+    df = pd.merge(employee, employee, left_on=['managerId'], right_on=['id'])
+    df.rename(columns={"name_x": 'Employee'}, inplace=True)
+    return df[df.salary_x > df.salary_y][['Employee']]
+
+
+def user_activity(activity: pd.DataFrame) -> pd.DataFrame:
+    # 1141. User Activity for the Past 30 Days I 
+    # between inclusive
+    activity['activity_date'] = pd.to_datetime(activity['activity_date'])
+    df = activity.groupby(['activity_date'])['user_id'].nunique().reset_index(name='active_users')
+    df = df[df.activity_date.between((pd.Timestamp(2019,7,27) - pd.Timedelta(days=29)), pd.Timestamp(2019,7,27))]
+    df.rename(columns={"activity_date": "day"}, inplace=True)
+    return df
+
+def users_percentage(users: pd.DataFrame, register: pd.DataFrame) -> pd.DataFrame:
+    # 1633. Percentage of Users Attended a Contest
+    total_cnt = users.user_id.nunique()
+    df = (register.groupby(['contest_id'])['user_id'].size() * 100 / total_cnt).round(2).reset_index(name='percentage')
+    df.sort_values(by=['percentage', 'contest_id'], ascending=[False, True], inplace=True)
+    return df
+
+
+def find_primary_department(employee: pd.DataFrame) -> pd.DataFrame:
+    # 1789. Primary Department for Each Employee
+    flag_n_eids = employee.groupby(['employee_id']).size().reset_index(name='cnt')
+    flag_n_eids = flag_n_eids[flag_n_eids.cnt == 1]['employee_id'].unique()
+    return employee[(employee.primary_flag == "Y") | (employee.employee_id.isin(flag_n_eids))][['employee_id', 'department_id']]
