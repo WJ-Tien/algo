@@ -44,3 +44,16 @@ def countBits(n: int) -> list[int]:
     for i in range(1, n+1):
         ans[i] = ans[i&(i-1)] + 1
     return ans
+
+
+def duplicateNumbersXOR(nums: list[int]) -> int:
+    # 3158. Find the XOR of Numbers Which Appear Twice
+    # len(nums) <= 50 --> can fit 64 bits
+    ans = 0
+    seen = 0
+    for num in nums:
+        if seen & (1 << num):
+            ans ^= num
+        else:
+            seen |= (1 << num)
+    return ans
