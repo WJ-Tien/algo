@@ -482,3 +482,17 @@ def gcd_iterative(a, b):
     while b:
         a, b = b, a % b
     return a
+
+
+
+def fillCups(amount: list[int]) -> int:
+    # 2335. Minimum Amount of Time to Fill Cups
+    # s := sum(amount)
+    # s is even --> s//2 
+    # s is odd --> (s+1)//2
+
+    # O(1) TS
+    amount.sort()
+    if amount[2] >= amount[1] + amount[0]:
+        return amount[2]
+    return (sum(amount)+1) // 2
