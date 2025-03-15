@@ -328,6 +328,7 @@ WHERE
     temperature > PreviousTemperature
 AND 
 recordDate = DATE_ADD(PreviousRecordDate, INTERVAL 1 DAY);
+-- and DATEDIFF(recordDate, previousRecordDate) = 1
 
 -- MySQL - 2
 SELECT w1.id FROM Weather w1
@@ -510,12 +511,32 @@ SELECT
     ss.student_name,
     ss.subject_name,
     COUNT(e.subject_name) AS attended_exams
+-- count (e.) is critical, e has NULL, but ss does not
 FROM StudentSubjects ss
 LEFT JOIN Examinations e 
 ON ss.student_id = e.student_id 
 AND ss.subject_name = e.subject_name
 GROUP BY ss.student_id, ss.student_name, ss.subject_name
 ORDER BY ss.student_id, ss.subject_name;
+
+-- better solution
+-- two CTEs
+with all_stu_sub as (
+    select * from Students
+    cross join Subjects
+),
+
+exam_grp as (
+    select student_id, subject_name, COUNT(*) as 'attended_exams' from Examinations
+    group by student_id, subject_name
+)
+
+select a.student_id, a.student_name, a.subject_name, COALESCE(e.attended_exams, 0) as 'attended_exams'
+from all_stu_sub as a
+left join exam_grp as e
+on a.student_id = e.student_id
+and a.subject_name = e.subject_name
+order by a.student_id, a.subject_nam
 
 
 -- 1934. Confirmation Rate
@@ -866,3 +887,19 @@ DECLARE M INT;
 
   );
 END 
+
+
+-- 2990. Loan Types
+SELECT user_id 
+FROM Loans
+WHERE loan_type IN ('Refinance', 'Mortgage')
+GROUP BY user_id
+HAVING COUNT(DISTINCT loan_type) = 2
+ORDER BY user_id as
+
+
+-- 2987. Find Expensive Cities
+select city from Listings
+group by city
+having avg(price) >  (select avg(price) from Listings)
+order by cit

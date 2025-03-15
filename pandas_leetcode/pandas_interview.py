@@ -2,6 +2,9 @@ import numpy as np
 import pandas as pd # noqa
 
 """
+count --> non-nulls
+size --> all (include non-nulls)
+
 a = pd.Series({"A": 1, "B": 2, "C": 3}) --> series (index: ['A', 'B', 'C']) 
 a = pd.DataFrame({"A": [1], "B": [2], "C": [3]}) --> dataframe
 
@@ -399,3 +402,46 @@ def sales_person(sales_person: pd.DataFrame, company: pd.DataFrame, orders: pd.D
     df = df.merge(sales_person, on=['sales_id'], how='right')
     red = df[df.company_name == 'RED']['name'].unique()
     return df[~df.name.isin(red)][['name']].drop_duplicates()
+
+def loan_types(loans: pd.DataFrame) -> pd.DataFrame:
+    df = loans[loans.loan_type.isin(['Refinance', 'Mortgage'])]
+    df = df.groupby(['user_id'])['loan_type'].nunique().reset_index(name='unique_count')
+    return df[df.unique_count >= 2][['user_id']]
+
+def find_expensive_cities(listings: pd.DataFrame) -> pd.DataFrame:
+    national_avg = listings['price'].mean()
+    df = listings.groupby(['city'])['price'].mean().reset_index(name='city_avg')
+    return df[df.city_avg > national_avg][['city']].sort_values(by=['city'], ascending=True)
+
+
+def get_average_time(activity: pd.DataFrame) -> pd.DataFrame:
+    # 1661. Average Time of Process per Machine
+    df = activity.groupby(['machine_id']).apply(lambda x: (sum(x[x['activity_type']=='end']['timestamp']) - sum(x[x['activity_type']=='start']['timestamp'])) / x['process_id'].nunique()).reset_index(name='processing_time')
+    df['processing_time'] = round(df['processing_time'], 3)
+    return df[['machine_id', 'processing_time']]
+
+
+def average_selling_price(prices: pd.DataFrame, units_sold: pd.DataFrame) -> pd.DataFrame:
+    # 1251. Average Selling Price
+    unique_product_id = prices.product_id.unique()
+
+    # prices = pd.DataFrame(columns=['product_id'], data=prices['product_id'].unique())
+
+    df = pd.merge(prices, units_sold, on=['product_id'], how='left')
+    df = df[(df['start_date'] <= df['purchase_date']) & (df['purchase_date'] <= df['end_date'])]
+    if df.shape[0] == 0:
+        return pd.DataFrame({"product_id": unique_product_id, "average_price": [0]*len(unique_product_id)})
+
+    df = df.groupby(['product_id']).apply(lambda x: sum(x['price'] * x['units'] / x['units'].sum()) if x['units'].sum() > 0 else 0).round(2).reset_index(name='average_price')
+    df = prices[['product_id']].drop_duplicates().merge(df, on=['product_id'], how='left').fillna(0)
+    return df
+
+
+def rising_temperature(weather: pd.DataFrame) -> pd.DataFrame:
+    # 197. Rising Temperature
+    weather['recordDate'] = pd.to_datetime(weather['recordDate'])
+    weather.sort_values('recordDate', inplace=True)
+    weather['previousTemperature'] = weather['temperature'].shift(1)
+    weather['previousDate'] = weather['recordDate'].shift(1)
+    return weather[(weather.temperature > weather.previousTemperature) & 
+                   (weather.recordDate == weather.previousDate + pd.Timedelta(days=1))][['id']]
