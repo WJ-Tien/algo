@@ -232,6 +232,18 @@ Task 繼承自 Future, 因此 Future 是相對底層(low-level)的 awaitable Pyt
 cls._instasnce = None
 singleton: cls._instance = super().__new__(cls)
 
+
+ULP: Unit in the last place = 2 ^ (exponent - 53)  --> 64 bits we have 53 for mantissa
+big = 1e16 ~= 1 x 2^53
+adjacent
+small = 1.4
+print(big + small - big)
+np.spacing(1e16) = 2
+
+mantissa bits 是浮點數尾數（mantissa）的長度：
+float32 (單精度)：尾數有 23 位
+float64 (雙精度)：尾數有 52 位
+
 """
 def test_args(*args, **kwargs):
 	print(args)

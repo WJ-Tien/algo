@@ -1,6 +1,110 @@
 import numpy as np
 import pandas as pd # noqa
 
+"""
+a = pd.Series({"A": 1, "B": 2, "C": 3}) --> series (index: ['A', 'B', 'C']) 
+a = pd.DataFrame({"A": [1], "B": [2], "C": [3]}) --> dataframe
+
+time series
+rng = pd.date_range("1/1/2012", periods=100, freq="s")
+ts = pd.Series(np.random.randint(0, 500, len(rng)), index=rng)
+ts2 = ts.resample("10s").mean()
+
+df = pd.DataFrame({'value': [10, 20, 30, 40, 50]})
+
+df['rolling_mean'] = df['value'].rolling(window=3).mean()
+right is the start point. When you are at 30, you actually calculate 10<-20<-30
+only keep data size == window
+
+   value  rolling_mean
+0     10           NaN
+1     20           NaN
+2     30          20.0
+3     40          30.0
+4     50          40.0
+
+df['expanding_mean'] = df['value'].expanding().mean()
+# cumulative, keep previous data
+   value  expanding_mean
+0     10            10.0
+1     20            15.0
+2     30            20.0
+3     40            25.0
+4     50            30.0
+
+
+df = pd.DataFrame({"Col1": [10, 20, 15, 30, 45],
+                    "Col2": [13, 23, 18, 33, 48],
+                    "Col3": [17, 27, 22, 37, 52]},
+                   index=pd.date_range("2020-01-01", "2020-01-05"))
+
+shift(N)
+N > 0 --> forward 
+N < 0 --> backward
+            Col1  Col2  Col3
+2020-01-01    10    13    17
+2020-01-02    20    23    27
+2020-01-03    15    18    22
+2020-01-04    30    33    37
+2020-01-05    45    48    52
+
+df.shift(periods=3)
+            Col1  Col2  Col3
+2020-01-01   NaN   NaN   NaN
+2020-01-02   NaN   NaN   NaN
+2020-01-03   NaN   NaN   NaN
+2020-01-04  10.0  13.0  17.0
+2020-01-05  20.0  23.0  27.0
+
+df.shift(periods=1, axis="columns")
+            Col1  Col2  Col3
+2020-01-01   NaN    10    13
+2020-01-02   NaN    20    23
+2020-01-03   NaN    15    18
+2020-01-04   NaN    30    33
+2020-01-05   NaN    45    48
+
+df.shift(periods=3, fill_value=0)
+            Col1  Col2  Col3
+2020-01-01     0     0     0
+2020-01-02     0     0     0
+2020-01-03     0     0     0
+2020-01-04    10    13    17
+2020-01-05    20    23    27
+
+df.shift(periods=3, freq="D")
+            Col1  Col2  Col3
+2020-01-04    10    13    17
+2020-01-05    20    23    27
+2020-01-06    15    18    22
+2020-01-07    30    33    37
+2020-01-08    45    48    52
+
+"""
+
+def createDataframe(student_data: list[list[int]]) -> pd.DataFrame:
+    # we can create a dataframe from a list
+    # [col1_val, col2_val, ...]
+    return pd.DataFrame(student_data, columns=['student_id', 'age'])
+
+
+def changeDatatype(students: pd.DataFrame) -> pd.DataFrame:
+    # df['column_name'] = df['column_name'].astype(new_dtype)
+    students = students.astype({'grade': int})
+    return students
+
+def fillMissingValues(products: pd.DataFrame) -> pd.DataFrame:
+    products['quantity'].fillna(0, inplace=True)
+    # When we have multiple columns we can use dictionary,
+    # products.fillna(value={'quantity':0},inplace=True)
+    return products
+
+def pivotTable(weather: pd.DataFrame) -> pd.DataFrame:
+    # pivot: no duplicated items allowed, can't agg
+    # pivot_table: long-format table to a wide-format table
+    df = weather.pivot_table(index='month', columns='city', values='temperature', aggfunc='mean')
+    return df
+
 def find_products(products: pd.DataFrame) -> pd.DataFrame:
     # Keep in mind, the return type expected is a pandas DataFrame; 
     # if you use single brackets instead of double brackets, 
@@ -243,12 +347,10 @@ def game_analysis(activity: pd.DataFrame) -> pd.DataFrame:
     # df.rename(columns={"event_date": "first_login"}, inplace=True) 
     # return df[['player_id', 'first_login']]
 
-
 def largest_orders(orders: pd.DataFrame) -> pd.DataFrame:
     # 586. Customer Placing the Largest Number of Orders 
     df = orders.groupby(['customer_number'])['order_number'].size().reset_index()
     return df[df.order_number == df.order_number.max()][['customer_number']]
-
 
 def categorize_products(activities: pd.DataFrame) -> pd.DataFrame:
     # 1484. Group Sold Products By The Date
@@ -261,3 +363,39 @@ def categorize_products(activities: pd.DataFrame) -> pd.DataFrame:
         products=('product', str_concat)
     ).reset_index()
     return df
+
+
+def daily_leads_and_partners(daily_sales: pd.DataFrame) -> pd.DataFrame:
+    # 1693. Daily Leads and Partners
+    df = daily_sales.groupby(['date_id', 'make_name']).agg(
+        unique_leads=("lead_id", 'nunique'), 
+        unique_partners=("partner_id", 'nunique'), 
+    ).reset_index()
+    return df
+
+
+def actors_and_directors(actor_director: pd.DataFrame) -> pd.DataFrame:
+    # 1050. Actors and Directors Who Cooperated At Least Three Times
+    # reset_index(name='?') will rename the groupbyed column
+    df = actor_director.groupby(['actor_id', 'director_id']).size().reset_index(name='cnt')
+    return df[df.cnt >= 3][['actor_id', 'director_id']]
+
+
+def students_and_examinations(students: pd.DataFrame, subjects: pd.DataFrame, examinations: pd.DataFrame) -> pd.DataFrame:
+    # 1280. Students and Examinations
+    # cross join
+    df = students.merge(subjects, how='cross')
+    df2 = examinations.groupby(['student_id', 'subject_name']).size().reset_index(name='attended_exams')
+    df = df.merge(df2, on=['student_id', 'subject_name'], how='left')
+    df['attended_exams'].fillna(0, inplace=True)
+    df.sort_values(by=['student_id', 'subject_name'], inplace=True)
+    return df
+
+
+def sales_person(sales_person: pd.DataFrame, company: pd.DataFrame, orders: pd.DataFrame) -> pd.DataFrame:
+    # 607. Sales Person
+    df = orders.merge(company, on=['com_id'], how='left')
+    df.rename(columns={"name": "company_name"}, inplace=True)
+    df = df.merge(sales_person, on=['sales_id'], how='right')
+    red = df[df.company_name == 'RED']['name'].unique()
+    return df[~df.name.isin(red)][['name']].drop_duplicates()
