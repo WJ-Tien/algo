@@ -1,3 +1,4 @@
+from collections import deque
 from typing import Optional
 
 class ListNode:
@@ -695,4 +696,78 @@ def merge(nums1: list[int], m: int, nums2: list[int], n: int) -> None:
         nums1[p] = nums1[p1]
         p1 -= 1
         p -= 1
+
+
+class Logger:
+    # 359. Logger Rate Limiter
+    # hashmap --> deque (better memory effiency)
+
+    def __init__(self):
+        # dict[message, timestamp]
+        # T: O(1)
+        # S: O(N)
+        self.check_msg = set() 
+        self.msgq = deque() # [msg, timestamp]
+
+    def shouldPrintMessage(self, timestamp: int, message: str) -> bool:
+
+        # remove all items <= timestamp-10 to keep memory-efficient
+
+        while self.msgq:
+            old_msg, old_timestamp = self.msgq[0]
+            if timestamp - old_timestamp >= 10:
+                self.msgq.popleft()
+                self.check_msg.remove(old_msg)
+            else:
+                break
+
+        if message not in self.check_msg:
+            self.check_msg.add(message)
+            self.msgq.append((message, timestamp))
+            return True
+        else:
+            return False 
     
+    # def __init__(self):
+    #     # dict[message, timestamp]
+    #     self.hmp = dict()
+
+    # def shouldPrintMessage(self, timestamp: int, message: str) -> bool:
+    #     if message not in self.hmp:
+    #         self.hmp[message] = timestamp + 10
+    #         return True
+    #     else:
+    #         if timestamp < self.hmp[message]:
+    #             return False
+    #         self.hmp[message] = timestamp + 10
+    #         return True
+
+
+def findDisappearedNumbers(nums: list[int]) -> list[int]:
+
+    for i in range(len(nums)):
+
+        idx = abs(nums[i]) - 1
+
+        if nums[idx] > 0:
+            nums[idx] *= -1
+    
+    ans = []
+    for i in range(1, len(nums)+1):
+        if nums[i-1] > 0:
+            ans.append(i)
+    return ans
+
+
+
+def containsNearbyDuplicate(nums: list[int], k: int) -> bool:
+    # 219. Contains Duplicate II
+
+    # hashmap + sliding window
+    hmp = dict()
+
+    for idx, num in enumerate(nums):
+        if num in hmp and idx - hmp[num] <= k:
+            return True
+        hmp[num] = idx
+    return False

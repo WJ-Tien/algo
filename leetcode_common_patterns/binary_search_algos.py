@@ -240,3 +240,26 @@ def separateSquares(squares: list[list[int]]) -> float:
         else:
             right = y_line 
     return left
+
+
+def mySqrt(x: int) -> int:
+    # 69. Sqrt(x)
+
+    # edge case
+    if x < 2:
+        return x
+
+    low, high = 0, x//2
+
+    while low <= high:
+        mid = low + (high - low) // 2
+        target = mid * mid 
+        if target > x: 
+            high = mid - 1
+        elif target < x:
+            low = mid + 1
+        else:
+            return mid
+    # at this moment, low > high
+    # high is smaller, so we return high
+    return high

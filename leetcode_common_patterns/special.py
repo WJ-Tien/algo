@@ -496,3 +496,26 @@ def fillCups(amount: list[int]) -> int:
     if amount[2] >= amount[1] + amount[0]:
         return amount[2]
     return (sum(amount)+1) // 2
+
+
+def addStrings(num1: str, num2: str) -> str:
+    # 415. Add Strings
+    # O(max(len(num1), len(num2))) TS
+    carry = 0
+    ans = []
+
+    len1 = len(num1) - 1
+    len2 = len(num2) - 1
+
+    while len1 >= 0 or len2 >= 0:
+        digit_1 = int(num1[len1]) if len1 >= 0 else 0
+        digit_2 = int(num2[len2]) if len2 >= 0 else 0
+        total = digit_1 + digit_2 + carry
+        ans.append(str(total % 10))
+        carry = total // 10
+        len1 -= 1
+        len2 -= 1
+    
+    if carry:
+        ans.append(str(carry))
+    return ''.join(ans[::-1]) 

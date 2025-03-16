@@ -385,3 +385,66 @@ def backspaceCompare(s: str, t: str) -> bool:
         j -= 1
 
     return True
+
+
+def isPalindrome_i(s: str) -> bool:
+    # 125. Valid Palindrome
+
+    l, r = 0, len(s) - 1 #noqa
+
+    # negative lists
+
+    while l <= r:
+        if not s[l].isalnum():
+            l += 1 # noqa
+            continue
+
+        if not s[r].isalnum():
+            r -= 1
+            continue
+        
+        if s[l].lower() != s[r].lower():
+            return False
+        
+        r -= 1
+        l += 1 #noqa
+    return True
+
+
+def validPalindromeII(s: str) -> bool:
+    # 680. Valid Palindrome II
+
+    def is_palindrome(left: int, right: int) -> bool:
+        while left <= right:
+            if s[left] != s[right]:
+                return False
+            left += 1
+            right -= 1
+        
+        return True
+    
+    left, right = 0, len(s) - 1 
+    while left <= right:
+        if s[left] != s[right]:
+        # either remove left or remove right
+            return is_palindrome(left+1, right) or is_palindrome(left, right-1)
+        left += 1
+        right -= 1
+    return True
+
+
+def gcdOfStrings(str1: str, str2: str) -> str:
+    # O(n+m) TS
+
+    def gcd(a, b):
+        # O(log(min(m,n)))
+        while b:
+            a, b = b, a % b
+        return a
+    
+    # O(n + m)
+    if str1 + str2 != str2 + str1:
+        return ""
+    
+    max_len = gcd(len(str1), len(str2))
+    return str1[:max_len]
