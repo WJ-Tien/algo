@@ -846,3 +846,42 @@ def minimumRecolors(blocks: str, k: int) -> int:
                 white -= 1
             left += 1
     return ans
+
+
+def canPlaceFlowers(f, flowerbed: list[int], n: int) -> bool:
+    # 0 + flowerbed + 0 for edge cases
+    # [0, 0, 0] or [0, 0, 1]
+    # O(n) TS
+    new_flowerbed = [0] + flowerbed + [0]
+    x = n
+
+    for i in range(1, len(new_flowerbed)-1):
+        if new_flowerbed[i-1] == 0 and new_flowerbed[i] == 0 and new_flowerbed[i+1] == 0:
+            new_flowerbed[i] = 1
+            x -= 1 
+    return x <= 0
+
+    def canPlaceFlowers_opt(flowerbed: list[int], n: int) -> bool:
+
+            cur_cnt = 0
+            idx = 0
+
+            while idx < len(flowerbed):
+                if flowerbed[idx] == 0:
+                    # left [0, 0, 1] or [1, 0, 0, 0]
+                    prev_empty = (idx == 0 or flowerbed[idx-1] == 0)
+                    # right [1, 0, 0] or [0, 0, 0, 1]
+                    next_empty = (idx == len(flowerbed)-1 or flowerbed[idx+1] == 0)
+
+                    if prev_empty and next_empty:
+                        flowerbed[idx] = 1
+                        cur_cnt += 1
+                        if cur_cnt >= n:
+                            return True
+                        
+                        idx += 1 # important
+                idx += 1
+
+            # edge case [1, 0, 1, 0], n = 0 
+            # so we can't return False here
+            return cur_cnt >= n
