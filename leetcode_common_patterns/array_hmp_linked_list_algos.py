@@ -759,9 +759,12 @@ def findDisappearedNumbers(nums: list[int]) -> list[int]:
     return ans
 
 
-
 def containsNearbyDuplicate(nums: list[int], k: int) -> bool:
     # 219. Contains Duplicate II
+
+    # T: O(n)
+    # S: O(min(n, k))
+    # n: false, k: true
 
     # hashmap + sliding window
     hmp = dict()
@@ -771,3 +774,20 @@ def containsNearbyDuplicate(nums: list[int], k: int) -> bool:
             return True
         hmp[num] = idx
     return False
+
+
+def deleteDuplicates(head: Optional[ListNode]) -> Optional[ListNode]:
+    # 83. Remove Duplicates from Sorted List
+
+    if head is None:
+        return head
+    
+    prev = head
+    cur = head.next
+    while cur:
+        if cur.val == prev.val:
+            prev.next = cur.next
+        else:
+            prev = prev.next
+        cur = cur.next
+    return head

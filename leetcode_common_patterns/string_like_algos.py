@@ -434,6 +434,7 @@ def validPalindromeII(s: str) -> bool:
 
 
 def gcdOfStrings(str1: str, str2: str) -> str:
+    # 1071. Greatest Common Divisor of Strings
     # O(n+m) TS
 
     def gcd(a, b):
@@ -448,3 +449,24 @@ def gcdOfStrings(str1: str, str2: str) -> str:
     
     max_len = gcd(len(str1), len(str2))
     return str1[:max_len]
+
+
+def isIsomorphic(s: str, t: str) -> bool:
+    # 205. Isomorphic Strings
+    
+    if len(s) != len(t):
+        return False
+
+    def iso_group(s: str) -> list[int]:
+        hmp = dict()
+        idx = 0
+        iso = []
+
+        for char in s:
+            if char not in hmp:
+                hmp[char] = idx
+                idx += 1
+            iso.append(hmp[char]) 
+        return iso
+    
+    return iso_group(s) == iso_group(t)
