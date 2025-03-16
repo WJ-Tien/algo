@@ -470,3 +470,18 @@ def isIsomorphic(s: str, t: str) -> bool:
         return iso
     
     return iso_group(s) == iso_group(t)
+
+
+def lengthOfLastWord(s: str) -> int:
+    # 58. Length of Last Word
+    p = len(s) - 1
+
+    while p >= 0 and s[p] == " ":
+        p -= 1
+    
+    ans = 0
+
+    while p >= 0 and s[p] != " ":
+        ans += 1
+        p -= 1
+    return ans

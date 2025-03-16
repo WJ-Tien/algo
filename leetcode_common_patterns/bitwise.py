@@ -57,3 +57,11 @@ def duplicateNumbersXOR(nums: list[int]) -> int:
         else:
             seen |= (1 << num)
     return ans
+
+
+def isPowerOfTwo(self, n: int) -> bool:
+    #   n = 100
+    # n-1 = 011
+    return n != 0 and n & (n-1) == 0
+    # return (x & -x) == x
+    # x & -x get the rightmost set bit, and to set all the other bits to 0.

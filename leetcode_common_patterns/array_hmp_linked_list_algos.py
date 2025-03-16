@@ -791,3 +791,58 @@ def deleteDuplicates(head: Optional[ListNode]) -> Optional[ListNode]:
             prev = prev.next
         cur = cur.next
     return head
+
+
+
+def firstUniqChar(s: str) -> int:
+
+    hmp = dict()
+    uni = []
+
+    for idx, char in enumerate(s):
+        if char not in hmp:
+            uni.append((char, idx))
+            hmp[char] = 1
+        else:
+            hmp[char] += 1
+    
+    for char, idx in uni:
+        if hmp[char] == 1:
+            return idx 
+    return -1
+
+
+def maxProfit(prices: list[int]) -> int:
+    # 122. Best Time to Buy and Sell Stock II
+    # 7, 1, 5, 3, 6, 4
+    # sum every nearest valley and peak (buy at low, sell at high)
+    # i.e. every positive profit
+    # 6 - 1 = 5 is not the max_profit
+    # instead, 5-1 + 6-3 = 7 is 
+    max_profit = 0
+
+    for i in range(len(prices)-1):
+        net = prices[i+1] - prices[i]
+        if net > 0:
+            max_profit += net
+    return max_profit
+
+
+def minimumRecolors(blocks: str, k: int) -> int:
+    # 2379. Minimum Recolors to Get K Consecutive Black Blocks
+    left = 0
+    white = 0
+    ans = float("inf")
+
+    for right in range(len(blocks)):
+        if blocks[right] == "W":
+            white += 1
+        
+        # sliding window with size k
+        if right - left + 1 == k:
+            ans = min(ans, white)
+
+            if blocks[left] == "W":
+                white -= 1
+            left += 1
+    return ans
