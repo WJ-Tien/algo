@@ -885,3 +885,16 @@ def canPlaceFlowers(f, flowerbed: list[int], n: int) -> bool:
             # edge case [1, 0, 1, 0], n = 0 
             # so we can't return False here
             return cur_cnt >= n
+
+def removeElements(head: Optional[ListNode], val: int) -> Optional[ListNode]:
+
+    dummy = ListNode(0, head)  # Dummy node simplifies removal logic
+    cur = dummy
+
+    while cur.next:
+        if cur.next.val == val:
+            cur.next = cur.next.next  # remove node by skipping it
+        else:
+            cur = cur.next  # move to next node if no removal
+
+    return dummy.next

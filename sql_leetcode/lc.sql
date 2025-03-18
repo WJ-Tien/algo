@@ -921,6 +921,7 @@ where e1.salary > e2.salary
 
 
 -- 586. Customer Placing the Largest Number of Orders
+-- handle multiple customers with max val
 select customer_number
 from Orders
 group by customer_number

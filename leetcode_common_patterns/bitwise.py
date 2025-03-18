@@ -59,7 +59,7 @@ def duplicateNumbersXOR(nums: list[int]) -> int:
     return ans
 
 
-def isPowerOfTwo(self, n: int) -> bool:
+def isPowerOfTwo(n: int) -> bool:
     #   n = 100
     # n-1 = 011
     return n != 0 and n & (n-1) == 0

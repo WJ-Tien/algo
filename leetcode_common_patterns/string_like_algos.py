@@ -485,3 +485,22 @@ def lengthOfLastWord(s: str) -> int:
         ans += 1
         p -= 1
     return ans
+
+
+def reverseStr(s: str, k: int) -> str:
+    # 541. Reverse String II
+
+    ans = []
+
+    for i in range(0, len(s), 2*k):
+
+        left = i
+        right = min(i+k-1, len(s)-1)
+        while right >= left:
+            ans.append(s[right])
+            right -= 1
+        
+        for i in range(i+k, min(i+2*k, len(s))):
+            ans.append(s[i])
+    
+    return ''.join(ans)

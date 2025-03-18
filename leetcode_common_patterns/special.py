@@ -98,6 +98,20 @@ def romanToInt(s: str) -> int:
             ans += mp[s[i]]
     return ans + mp[s[-1]]
 
+def intToRoman(num: int) -> str:
+
+    values = [1000, 900, 500, 400, 100, 90, 50, 40, 10, 9, 5, 4, 1]
+    symbols = ["M", "CM", "D", "CD", "C", "XC", "L", "XL", "X", "IX", "V", "IV", "I"]
+    result = []
+
+    for i in range(len(values)):
+        # from bigger to smaller
+        count = num // values[i]
+        result.append(symbols[i] * count)
+        num %= values[i]
+    
+    return ''.join(result)
+
 
 class LRUCacheSimple:
     # LRU --> get and put will be treated as used
