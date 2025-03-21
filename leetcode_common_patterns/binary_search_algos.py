@@ -263,3 +263,91 @@ def mySqrt(x: int) -> int:
     # at this moment, low > high
     # high is smaller, so we return high
     return high
+
+
+def isBadVersion(version: int) -> bool:
+    ...
+
+def firstBadVersion(n: int) -> int:
+
+    # low 總是指向第一個滿足條件的元素（在這個問題中是第一個壞版本）
+    # high 總是指向最後一個不滿足條件的元素（在這個問題中是最後一個好版本）
+
+    low, high = 1, n
+
+    while low <= high:
+        mid = low + (high-low) // 2
+
+        if isBadVersion(mid):
+            high = mid - 1
+        else:
+            low = mid + 1
+
+    # low > high
+    return low
+
+
+def searchInsert(nums: list[int], target: int) -> int:
+
+    low, high = 0, len(nums) - 1
+
+    while low <= high:
+        mid = low + (high - low) // 2
+
+        if nums[mid] == target:
+            return mid
+        elif nums[mid] > target:
+            high = mid - 1
+        else:
+            low = mid + 1
+
+    # low > high
+    # 1,3,5, target = 7
+    return low
+
+def searchRange(self, nums: list[int], target: int) -> list[int]:
+    # 34. Find First and Last Position of Element in Sorted Array
+
+    left_most_idx = self.find_left_most_idx(nums, target) 
+
+    if left_most_idx == -1:
+        return [-1, -1]
+
+    right_most_idx = self.find_right_most_idx(nums, target)
+
+    return [left_most_idx, right_most_idx]
+
+def find_left_most_idx(self, nums, target):
+
+    left, right = 0, len(nums) - 1
+    left_most_idx = -1
+
+    while left <= right:
+        mid = left + (right - left) // 2
+
+        if nums[mid] == target:
+            right = mid - 1
+            left_most_idx = mid
+        elif nums[mid] < target:
+            left = mid + 1
+        else:
+            right = mid - 1
+    return left_most_idx
+
+def find_right_most_idx(self, nums, target):
+
+    left, right = 0, len(nums) - 1
+    right_most_idx = -1
+
+    while left <= right:
+        mid = left + (right - left) // 2
+
+        if nums[mid] == target:
+            right_most_idx = mid
+            left = mid + 1
+        if nums[mid] > target:
+            right = mid - 1
+        else:
+            left = mid + 1
+    
+    return right_most_idx
