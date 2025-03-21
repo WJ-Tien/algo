@@ -35,6 +35,18 @@ def subarraySum(nums: list[int], k: int) -> int:
     
     return ans 
 
+    count = {0: 1}
+    prefix_sum = 0
+    ans = 0
+
+    for idx, num in enumerate(nums):
+        prefix_sum += num
+        if prefix_sum - k in count:
+            ans += count[prefix_sum - k]
+        count[prefix_sum] = count.get(prefix_sum, 0) + 1 
+
+    return ans
+
 def numberOfSubarrays(nums: list[int], k: int) -> int:
     # odd counts
     counters = defaultdict(int)
@@ -133,3 +145,25 @@ def gridGame(grid: list[list[int]]) -> int:
         second_row_sum += grid[1][turn_idx]
     
     return min_sum
+
+def maxSubArrayLen(nums: list[int], k: int) -> int:
+
+    max_len = float("-inf")
+    prefix_sum = {0: -1}
+    cur_sum = 0
+    # edge case
+    # 0 - (-1) = 1
+
+    # prefix_sum[i] - prefix_sum[j] = nums[j+1] + ... + nums[i]
+    # i - (j+1) + 1 = i - j
+
+    for idx, num in enumerate(nums):
+        cur_sum += num
+        if cur_sum - k in prefix_sum:
+            # i - (j+1) + 1 = i - j
+            max_len = max(max_len, idx - prefix_sum[cur_sum - k])
+        
+        if cur_sum not in prefix_sum:
+            prefix_sum[cur_sum] = idx
+    
+    return 0 if max_len == float("-inf") else max_len

@@ -504,3 +504,25 @@ def reverseStr(s: str, k: int) -> str:
             ans.append(s[i])
     
     return ''.join(ans)
+
+
+def validWordAbbreviation(word: str, abbr: str) -> bool:
+    # 408. Valid Word Abbreviation
+    i = j = 0
+    
+    m, n = len(word), len(abbr)
+    while i < m and j < n:
+        skip = 0
+        if word[i] == abbr[j]:
+            i += 1
+            j += 1
+        elif abbr[j] == "0":
+            return False
+        elif abbr[j].isnumeric():
+            while j < n and abbr[j].isnumeric():
+                skip = int(abbr[j]) + skip*10
+                j += 1
+            i += int(skip)
+        else:
+            return False
+    return i == m and j == n

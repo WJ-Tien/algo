@@ -53,7 +53,9 @@ def numSubarrayProductLessThanK(nums: list[int], k: int) -> int:
             prod //= nums[left]
             left += 1
         ans += (right - left + 1) # key here !
-        # window size n == n combinations
+        # (right-left+1) as the number of subarrays ending at "right" index
+        # starting at left
+
     return ans
 
 def find_best_subarray(nums, k):
@@ -656,7 +658,7 @@ def lexicographicallySmallestArray(nums: list[int], limit: int) -> list[int]:
     return result
 
 
-def removeDuplicates(nums: list[int]) -> int:
+def removeDuplicates_I(nums: list[int]) -> int:
     # 26. Remove Duplicates from Sorted Array
     # two pointers approach
     slow = 0
@@ -667,6 +669,37 @@ def removeDuplicates(nums: list[int]) -> int:
             nums[slow] = nums[fast]
     return slow + 1 # idx + 1 == len
 
+
+def removeDuplicates_I_better(nums: list[int]) -> int:
+
+    k = 1
+    if len(nums) < k:
+        return len(nums)
+    
+    slow = k
+
+    for fast in range(k, len(nums)):
+        if nums[fast] != nums[slow-k]:
+            nums[slow] = nums[fast]
+            slow += 1
+    return slow
+
+def removeDuplicates_II(nums: list[int]) -> int:
+    # 80. Remove Duplicates from Sorted Array II
+    # < k --> swap in ; >= k, discard
+    # always check window size == k
+
+    k = 2
+    if len(nums) < k:
+        return len(nums)
+
+    slow = k
+
+    for fast in range(k, len(nums)):
+        if nums[fast] != nums[slow-k]:
+            nums[slow] = nums[fast]
+            slow += 1
+    return slow
 
 def merge(nums1: list[int], m: int, nums2: list[int], n: int) -> None:
     # 88. Merge Sorted Array
