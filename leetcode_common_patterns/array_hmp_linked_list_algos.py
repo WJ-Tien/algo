@@ -38,6 +38,7 @@ def longestOnes(nums: list[int], k: int) -> int:
     return ans
 
 def numSubarrayProductLessThanK(nums: list[int], k: int) -> int:
+    # 713. Subarray Product Less Than K
 
     # sliding window classic pattern
 
@@ -52,9 +53,16 @@ def numSubarrayProductLessThanK(nums: list[int], k: int) -> int:
         while prod >= k and left <= right: 
             prod //= nums[left]
             left += 1
+        
+        # why left <= right ?
+        # nums = [1, 1, 1]
+        # k = 1
+
         ans += (right - left + 1) # key here !
         # (right-left+1) as the number of subarrays ending at "right" index
         # starting at left
+        # [10, 5, 2]
+        # @2 -> [2] & [5, 2]
 
     return ans
 
