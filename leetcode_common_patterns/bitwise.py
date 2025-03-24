@@ -1,3 +1,4 @@
+from collections import defaultdict
 
 def minimizeXor(num1: int, num2: int) -> int:
     # 2429. Minimize XOR
@@ -65,3 +66,29 @@ def isPowerOfTwo(n: int) -> bool:
     return n != 0 and n & (n-1) == 0
     # return (x & -x) == x
     # x & -x get the rightmost set bit, and to set all the other bits to 0.
+
+
+
+def countTriplets(arr: list[int]) -> int:
+    # i < j <= k
+    # 2 = 3 ^ 1
+    ans = 0
+    prefix = 0
+    count_map = defaultdict(int)
+    count_map[0] = 1
+    indices_sum = defaultdict(int)
+
+    for i in range(len(arr)):
+        prefix ^= arr[i]
+        # 第一部分 XOR（arr[i] ^ ... ^ arr[j-1]）
+        # 等於第二部分 XOR（arr[j] ^ ... ^ arr[k]）
+        # prefix[j-1] ^ prefix[i-1] = prefix[k] ^ prefix[j-1]
+        # prefix[i-1] = prefix[k]
+        # 這意味著，只要我們找到兩個位置 i-1 和 k，使得它們的前綴 XOR 值相等
+        #（prefix[i-1] = prefix[k]），那麼中間的 j（滿足 i < j <= k）
+        # 就可以構成一個有效的三元組。
+        # sum(k - i) = k + k + ... + k（n 次） - (i1 + i2 + ... + ik)
+        ans += count_map[prefix] * i - indices_sum[prefix]
+        indices_sum[prefix] += i + 1
+        count_map[prefix] += 1
+    return ans

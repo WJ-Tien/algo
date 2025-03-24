@@ -341,3 +341,34 @@ def findWords(board: list[list[str]], words: list[str]) -> list[str]:
         for c in range(cols):
             backtrack(r, c, trie.root, [])
     return list(ans)
+
+
+def getHappyString(n: int, k: int) -> str:
+    # 1415. The k-th Lexicographical String of All Happy Strings of Length n
+    # T: O(2^n) 
+    # S: O(n*2^n)
+    # 3 * 2 * 2 * 2 ...
+
+    def backtrack(path, start):
+        if len(path) == n:
+            ans.append(''.join(path))
+            return
+        
+        for i in range(start, n): 
+            for char in chars:
+                if not path:
+                    path.append(char)
+                else:
+                    if char != path[-1]:
+                        path.append(char)
+                    else:
+                        continue
+                backtrack(path, i+1)
+                path.pop()
+                
+    ans: list = []
+    chars: list = ["a", "b", "c"]
+    backtrack([], 0)
+    ans.sort()
+
+    return "" if len(ans) < k else ans[k-1]
