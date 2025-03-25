@@ -1,4 +1,3 @@
-from collections import defaultdict
 
 def minimizeXor(num1: int, num2: int) -> int:
     # 2429. Minimize XOR
@@ -68,27 +67,27 @@ def isPowerOfTwo(n: int) -> bool:
     # x & -x get the rightmost set bit, and to set all the other bits to 0.
 
 
-
 def countTriplets(arr: list[int]) -> int:
-    # i < j <= k
-    # 2 = 3 ^ 1
-    ans = 0
-    prefix = 0
-    count_map = defaultdict(int)
-    count_map[0] = 1
-    indices_sum = defaultdict(int)
+    # 1442. Count Triplets That Can Form Two Arrays of Equal XOR
 
-    for i in range(len(arr)):
-        prefix ^= arr[i]
-        # 第一部分 XOR（arr[i] ^ ... ^ arr[j-1]）
-        # 等於第二部分 XOR（arr[j] ^ ... ^ arr[k]）
-        # prefix[j-1] ^ prefix[i-1] = prefix[k] ^ prefix[j-1]
-        # prefix[i-1] = prefix[k]
-        # 這意味著，只要我們找到兩個位置 i-1 和 k，使得它們的前綴 XOR 值相等
-        #（prefix[i-1] = prefix[k]），那麼中間的 j（滿足 i < j <= k）
-        # 就可以構成一個有效的三元組。
-        # sum(k - i) = k + k + ... + k（n 次） - (i1 + i2 + ... + ik)
-        ans += count_map[prefix] * i - indices_sum[prefix]
-        indices_sum[prefix] += i + 1
-        count_map[prefix] += 1
+    # O(N) TS
+
+    # Suppose index "a, b, c" all has the same prefix xor. 
+    # Current index is "i", then the result is:
+    # (i-a-1)+(i-b-1)+(i-c-1) == i*3-(a+b+c)-3.
+    # i*cnt - (sum(idx)) - cnt
+    # X(i, k) = 0 
+    # i+1 (i), i+2~k (j), k (k) 
+    # hence the #comb is  k- i - 1
+
+    # @ idx = -1, prefix_xor_sum = 0, and zero has one count
+    prefix_xor_sum = {0: [-1, 1]} # prefix_xor: [idxSum, cnt]
+    ans = 0
+    cur_xor_sum = 0
+
+    for idx, num in enumerate(arr):
+        cur_xor_sum ^= num
+        idx_sum, cnt = prefix_xor_sum.get(cur_xor_sum, [0, 0])
+        ans += ((idx * cnt) - idx_sum - cnt)
+        prefix_xor_sum[cur_xor_sum] = [idx_sum + idx, cnt + 1]
     return ans
