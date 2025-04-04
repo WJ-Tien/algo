@@ -526,3 +526,31 @@ def validWordAbbreviation(word: str, abbr: str) -> bool:
         else:
             return False
     return i == m and j == n
+
+
+
+def strStr(haystack: str, needle: str) -> int:
+    # 28. Find the Index of the First Occurrence in a String
+    # T: O(n*m)
+    # S: O(1)
+
+    m = len(haystack)
+    n = len(needle)
+
+    for window_start in range(m-n+1):
+        for i in range(n):
+            if needle[i] != haystack[window_start + i]:
+                break
+            
+            if i == n - 1:
+                return window_start
+    return -1
+
+
+def repeatedSubstringPattern(self, s: str) -> bool:
+    # 459. Repeated Substring Pattern
+    # s = p * k
+    # s + s = p * k + p * k
+    #       = head + p*(k-1) + p*(k-1) + tail
+
+    return (s+s)[1:-1].find(s) != -1

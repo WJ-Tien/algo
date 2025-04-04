@@ -341,3 +341,20 @@ def minSetSize_bucket_sort(arr: list[int]) -> int:
                 return set_size
     
     return set_size
+
+
+def minOperations(nums: list[int]) -> int:
+    # T: O(N)
+    # S: O(1)
+    # Greedy Approach
+    ans = 0
+    for i in range(len(nums)-2):
+        if nums[i] == 0:
+            nums[i] = 1 - nums[i]
+            nums[i+1] = 1 - nums[i+1]
+            nums[i+2] = 1 - nums[i+2]
+            ans += 1
+    
+    if nums[-1] == 0 or nums[-2] == 0:
+        return -1
+    return ans

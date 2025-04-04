@@ -91,3 +91,5 @@ def countTriplets(arr: list[int]) -> int:
         ans += ((idx * cnt) - idx_sum - cnt)
         prefix_xor_sum[cur_xor_sum] = [idx_sum + idx, cnt + 1]
     return ans
+
+

@@ -1,4 +1,6 @@
+from collections import Counter
 from datetime import datetime, timedelta, timezone
+from math import sqrt, log10 # 123
 
 """
 dict key must be immutable/hashable --> otherwise it will raise unhashable type error
@@ -709,3 +711,86 @@ ist = timezone(timedelta(hours=5, minutes=30))
 aware_dt = naive_dt.replace(tzinfo=ist)
 # print(ist) # UTC+05:30, default is None
 # print(aware_dt) # 2025-02-14 12:00:00+05:30
+
+# ===========================================================================================================
+
+# the use of the key arg
+def majorityElement(nums):
+    counts = Counter(nums)
+    return max(counts.keys(), key=counts.get)
+
+def decimal_to_binary(n: int):
+	x = n
+
+	ans = []
+	while x:
+		rem = x % 2
+		ans.append(str(rem))
+		x //= 2
+	return '0b' + ''.join(ans[::-1])
+
+
+def decimal_to_hex(n: int):
+    x = n
+    hex_chars = '0123456789ABCDEF'  # 對應 0~15
+
+    ans = []
+    while x:
+        rem = x % 16
+        ans.append(hex_chars[rem])  # 把餘數轉成對應字元
+        x //= 16
+    return '0x' + ''.join(ans[::-1])
+
+# print(decimal_to_binary(233))
+# print(decimal_to_hex(233))
+# print(bin(233))
+# print(hex(233))
+
+def is_prime(n: int) -> bool:
+	if n < 2:
+		return False
+	
+	for i in range(2, int(sqrt(n))+1):
+		if n % i == 0 and n != i:
+			return False
+	return True
+
+def isPowerOfTwo(n: int) -> bool:
+    # 1.
+    x = n
+
+    if x == 0:
+        return False
+    
+    while n % 2 == 0:
+        n //= 2
+    return n == 1
+    # 2. 
+    if n == 0:
+        return False
+    return n & (n-1) == 0
+
+    # 3.
+    return n>=1 and log10(n)/log10(2)%1==0
+
+def isPowerOfThree(self, n: int) -> bool:
+
+    if n == 0:
+        return False
+    
+    x = n
+    while x % 3 == 0:
+        x //= 3
+    return x == 1
+
+def hammingWeight(n: int) -> int:
+    # 191. number of 1 bits
+
+    ans = 0
+    mask = 1
+    for _ in range(32):
+        if n & mask:
+            ans += 1
+        mask <<= 1
+    return ans
+# ===========================================================================================================

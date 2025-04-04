@@ -533,3 +533,38 @@ def addStrings(num1: str, num2: str) -> str:
     if carry:
         ans.append(str(carry))
     return ''.join(ans[::-1]) 
+
+
+
+def checkPowersOfThree(n: int) -> bool:
+    # 1780. Check if Number is a Sum of Powers of Three
+    # T: O(log3n)
+    # S: O(1)
+
+    x = n
+
+    # n = a1*x^0 + a2*x^1 + .... + an*x^n
+    # coefficients a_n are determined by dividing 3
+    # hence only three possible outcome 0 1 2
+    while x > 0:
+        # 0(3), 1, 2
+        # 1 = 3^0 valid
+        # 2 --> 2* 3^n --> invalid (duplicated use)
+        if x % 3 == 2:
+            return False
+        x //= 3
+    return True
+
+
+def isPowerOfThree(n: int) -> bool:
+    # 326. Power of Three
+    if n <= 0:
+        return False
+
+    x = n
+    while (x % 3 == 0):
+        x //= 3
+    return x == 1
+
+    # second solution
+    # return n>=1 and log10(n)/log10(3)%1==0

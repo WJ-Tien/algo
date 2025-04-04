@@ -60,8 +60,9 @@ def combine(n: int, k: int) -> list[list[int]]:
 
 
 def subsets(nums: list[int]) -> list[list[int]]:
+    # sum(O(k * C(n, k))) = O(n*2^n)
     # TC: O(n*2^n) --> n stack depth * 2^n results
-    # SC: O(n)
+    # SC: O(n*2^n)
     ans = []
 
     def backtrack(start, path, k):
