@@ -486,22 +486,56 @@ def simplifyPath(path: str) -> str:
     return "/" + '/'.join(stack)
 
 
+class MyQueue:
+
+    def __init__(self):
+        self.stack = []
+        self.backup_stack = []
+        self.size = 0
+
+    def push(self, x: int) -> None:
+        # push to top
+        self.stack.append(x)
+        
+    def pop(self) -> int:
+        # stack can only pop from the end
+        if not self.backup_stack:
+            while self.stack:
+                self.backup_stack.append(self.stack.pop())
+
+        return self.backup_stack.pop()
+        
+    def peek(self) -> int:
+        # stack can only peek from the end
+        if not self.backup_stack:
+            while self.stack:
+                self.backup_stack.append(self.stack.pop())
+        return self.backup_stack[-1]
+        
+
+    def empty(self) -> bool:
+        return len(self.stack) == 0 and len(self.backup_stack) == 0 
+
 
 class MyStack:
-    # 225. Implement Stack using Queues
 
     def __init__(self):
         self.queue = deque()
+        self.size = 0
 
     def push(self, x: int) -> None:
-        # Queue = FIFO
-        # so we need to put the latest one to the front
-        qsize = len(self.queue)
+        n = self.size
         self.queue.append(x)
-        for _ in range(qsize):
-            self.queue.append(self.queue.popleft())
+        while n > 0:
+            move_to_right = self.queue.popleft()
+            n -= 1
+            self.queue.append(move_to_right)
+        
+        self.size += 1
+            
 
     def pop(self) -> int:
+        self.size -= 1
         return self.queue.popleft()
 
     def top(self) -> int:

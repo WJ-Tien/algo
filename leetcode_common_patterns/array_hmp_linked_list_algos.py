@@ -939,3 +939,76 @@ def removeElements(head: Optional[ListNode], val: int) -> Optional[ListNode]:
             cur = cur.next  # move to next node if no removal
 
     return dummy.next
+
+
+def maximumTripletValue(nums: list[int]) -> int:
+    # 2873. Maximum Value of an Ordered Triplet I
+    # 如果我把陣列從左到右遍歷，每次把當前數字當作 nums[k]，
+    # 那麼問題就變成：在 k 左邊的所有數字中，
+    # 找到一個最大的 (nums[i] - nums[j])，然後乘以當前的 nums[k]。
+    # nums[i] - nums[j] 找max_diff
+    # nums[i] 找max_num
+
+    ans = 0
+    max_diff = 0
+    max_num = 0
+
+    for num in nums:
+        ans = max(ans, max_diff * num) # k
+        max_diff = max(max_diff, max_num - num) # j
+        max_num = max(max_num, num) # i
+    
+    return ans
+
+
+def isHappy(self, n: int) -> bool:
+    # 202. Happy Number
+
+    slow = n
+    fast = self.square_sum_of_each_digit(n)
+    while fast != 1 and fast != slow:
+        slow = self.square_sum_of_each_digit(slow)
+        fast = self.square_sum_of_each_digit(self.square_sum_of_each_digit(fast))
+    return fast == 1
+    def square_sum_of_each_digit(self, n: int) -> int:
+        cur_sum = 0
+        while n:
+            digit = n % 10
+            cur_sum += digit**2
+            n //= 10
+        return cur_sum
+
+    class Solution:
+        def isHappy(self, n: int) -> bool:
+
+            x = n
+            check = set()
+            check.add(x)
+            while x != 1:
+                x = self.square_sum_of_each_digit(x)
+                if x in check:
+                    return False
+                check.add(x)
+            
+            return True
+        def square_sum_of_each_digit(self, n: int) -> int:
+            cur_sum = 0
+            while n:
+                digit = n % 10
+                cur_sum += digit**2
+                n //= 10
+            return cur_sum
+
+        
+def replaceElements(arr: list[int]) -> list[int]:
+    # 1299. Replace Elements with Greatest Element on Right Side
+    # just reverse it !
+    cur_max = float("-inf")
+    ans = [-1] * len(arr)
+    for i in range(len(arr)-1, -1, -1): 
+        if cur_max == float("-inf"):
+            ans[i] = -1
+        else:
+            ans[i] = cur_max
+        cur_max = max(cur_max, arr[i])
+    return ans

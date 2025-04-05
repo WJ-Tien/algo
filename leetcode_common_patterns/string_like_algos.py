@@ -1,5 +1,5 @@
 from bisect import bisect_left
-from collections import Counter
+from collections import Counter, deque
 
 """
 Tips: hashmap + sliding window, and two_pointers
@@ -554,3 +554,18 @@ def repeatedSubstringPattern(self, s: str) -> bool:
     #       = head + p*(k-1) + p*(k-1) + tail
 
     return (s+s)[1:-1].find(s) != -1
+
+def finalString(s: str) -> str:
+    # 2810. Faulty Keyboard
+    ans = deque()
+    i_count = s.count("i") % 2 # 0: normal, 1: revesered
+
+    for char in s:
+        if char == 'i':
+            i_count ^= 1
+        else:
+            if i_count:
+                ans.appendleft(char)
+            else:
+                ans.append(char)
+    return ''.join(ans)

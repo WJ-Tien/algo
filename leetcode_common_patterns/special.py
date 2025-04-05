@@ -2,6 +2,7 @@ import math
 import random
 from collections import OrderedDict
 from typing import Optional
+from math import sqrt
 
 class ListNode:
     def __init__(self, val=0, next=None):
@@ -568,3 +569,57 @@ def isPowerOfThree(n: int) -> bool:
 
     # second solution
     # return n>=1 and log10(n)/log10(3)%1==0
+
+def checkPerfectNumber(num: int) -> bool:
+    if num == 1:
+        return False
+        
+    ans = 1
+
+    # num = sqrt(num) * sqrt(num) --> balance
+    # otherwise, the pair should be 
+    # smaller and bigger or bigger and smaller
+    for i in range(2, int(sqrt(num))+1):
+        if num % i == 0:
+            ans += i
+            if i * i != num: # not equal
+                ans += num//i
+    
+    return ans == num
+
+
+def convertToTitle(columnNumber: int) -> str:
+
+    ans = []
+    x = columnNumber
+
+    while x:
+        # trick !
+        if x % 26 == 0:
+            ans.append("Z")
+            x = x//26 - 1
+        else:
+            ans.append(chr(ord("A") + x%26 - 1))
+            x //= 26
+    
+    return ''.join(ans[::-1])
+
+
+def oddCells(m: int, n: int, indices: list[list[int]]) -> int:
+
+    # 1252. Cells with Odd Values in a Matrix
+    # T: O(n+m + indices.length)
+    # S: O(n+m)
+
+    row = [0] * m
+    col = [0] * n
+
+    for r, c in indices:
+        row[r] += 1
+        col[c] += 1
+
+    odd_rows = sum(r % 2 for r in row)
+    odd_cols = sum(c % 2 for c in col)
+
+    # odd + even == odd
+    return odd_rows * (n - odd_cols) + (m - odd_rows) * odd_cols
