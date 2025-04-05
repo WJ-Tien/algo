@@ -1012,3 +1012,23 @@ def replaceElements(arr: list[int]) -> list[int]:
             ans[i] = cur_max
         cur_max = max(cur_max, arr[i])
     return ans
+
+
+def numberOfPoints(nums: list[list[int]]) -> int:
+
+    # 2848. Points That Intersect With Cars
+    # diff method
+    diff = [0] * 102
+
+    for start, end in nums:
+        diff[start] += 1
+        diff[end+1] -= 1
+
+    n_points = 0 
+    car_cumsum = 0
+    for i in range(len(diff)):
+        car_cumsum += diff[i]
+        if car_cumsum > 0:
+            n_points += 1
+    
+    return n_points
