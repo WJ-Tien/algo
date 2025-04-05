@@ -487,6 +487,7 @@ def simplifyPath(path: str) -> str:
 
 
 class MyQueue:
+    # two stacks approach
 
     def __init__(self):
         self.stack = []
