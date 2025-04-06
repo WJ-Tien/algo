@@ -3,6 +3,8 @@ from datetime import datetime, timedelta, timezone
 from math import sqrt, log10 # 123
 
 """
+python str split() --> white spaces --> " " or \n or \r or \t....
+
 dict key must be immutable/hashable --> otherwise it will raise unhashable type error
 可雜湊物件（Hashable Object）從字面上看起來就是可以被雜湊函數所計算的物件，
 在 Python 只要是不可變物件，例如整數、浮點數、字串、位元組，這些都是可以進行雜湊計算的；
@@ -794,3 +796,14 @@ def hammingWeight(n: int) -> int:
         mask <<= 1
     return ans
 # ===========================================================================================================
+
+def countBits(n: int) -> list[int]:
+    # 338. Counting Bits
+    # P(x) = P(x/2) + x % 2
+    # lsb = 0, x&1 == 0 == even
+    # lsb = 1, x&1 == 1 == odd
+
+    ans = [0] * (n+1)
+    for i in range(n+1):
+        ans[i] = ans[i >> 1] + (i % 2) # i & 1
+    return ans

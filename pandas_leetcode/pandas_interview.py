@@ -2,11 +2,24 @@ import numpy as np
 import pandas as pd # noqa
 
 """
+MUST groupby(['col_a'])['col_b'] --> return aggregated col_a & aggregated col_b
+without col_b --> agg all columns except col_a
+.agg('min') 
+.agg(num_sold=('product', 'nunique'))
+
 count --> non-nulls
-size --> all (include non-nulls)
+size --> all (include nulls, series: #rows, dataframe: row * col)
+In groupby.size() --> return #rows
+count() --> need addtional cols, while size does not need
+bool [True, False].sum() = 1 + 0
+bool [True, False].count() = 2 
+bool [True, False].value_counts() = True:1, False: 1
 
 a = pd.Series({"A": 1, "B": 2, "C": 3}) --> series (index: ['A', 'B', 'C']) 
 a = pd.DataFrame({"A": [1], "B": [2], "C": [3]}) --> dataframe
+
+pd series can act as a python built-in array
+e.g. set(pd.Series)
 
 time series
 rng = pd.date_range("1/1/2012", periods=100, freq="s")
