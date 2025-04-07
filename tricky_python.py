@@ -1,9 +1,18 @@
+import unicodedata
 from collections import Counter
 from datetime import datetime, timedelta, timezone
 from math import sqrt, log10 # 123
 
 """
 python str split() --> white spaces --> " " or \n or \r or \t....
+
+myobj 沒有定義 __bool__()
+Python fallback 使用 __len__()
+__len__() 回傳 0 ➜ False
+__bool__ then __len__
+
+// --> floor division (-3.1//1) --> -4
+int --> toward zero int(-3.1) --> -3
 
 dict key must be immutable/hashable --> otherwise it will raise unhashable type error
 可雜湊物件（Hashable Object）從字面上看起來就是可以被雜湊函數所計算的物件，
@@ -753,7 +762,7 @@ def is_prime(n: int) -> bool:
 		return False
 	
 	for i in range(2, int(sqrt(n))+1):
-		if n % i == 0 and n != i:
+		if n % i == 0:
 			return False
 	return True
 
@@ -807,3 +816,45 @@ def countBits(n: int) -> list[int]:
     for i in range(n+1):
         ans[i] = ans[i >> 1] + (i % 2) # i & 1
     return ans
+
+
+def friday_the_13th():
+    ori_time = datetime.now()
+    ans = ""
+    for i in range(720):
+        cur_time = ori_time + timedelta(days=i)
+        if cur_time.weekday() == 4 and cur_time.day == 13:
+            print(str(cur_time).split(" ")[0])
+            ans = str(cur_time).split(" ")[0]
+            break
+    return ans
+
+
+
+def remove_diacritics(s):
+    return ''.join(c for c in unicodedata.normalize('NFD', s) if not unicodedata.combining(c))
+
+def is_anagram(left, right):
+    left = remove_diacritics(left)
+    right = remove_diacritics(right)
+    hmp = dict()
+    
+    for char in left:
+        if not char.isalpha():
+            continue
+        hmp[char.lower()] = hmp.get(char.lower(), 0) + 1
+    
+    for char in right:
+        if not char.isalpha():
+            continue
+        if char.lower() not in hmp:
+            return False
+        
+        hmp[char.lower()] -= 1
+        if hmp[char.lower()] < 0:
+            return False
+    
+    for freq in hmp.values():
+        if freq > 0:
+            return False
+    return True
