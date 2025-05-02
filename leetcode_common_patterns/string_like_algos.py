@@ -569,3 +569,21 @@ def finalString(s: str) -> str:
             else:
                 ans.append(char)
     return ''.join(ans)
+
+
+def mostCommonWord(paragraph: str, banned: list[str]) -> str:
+    # 819. Most Common Word
+    # O(N+M) TS
+
+    remove_punc = ''.join([char.lower() if char.isalnum() else ' ' for char in paragraph])
+    remove_punc = remove_punc.split()
+
+    banned_set = set(banned) 
+    word_freq = dict()
+
+    for word in remove_punc:
+        if word not in banned_set:
+            word_freq[word] = word_freq.get(word, 0) + 1
+    
+    most_common_word = max(word_freq, key=word_freq.get)
+    return most_common_word

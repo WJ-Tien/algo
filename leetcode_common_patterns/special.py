@@ -623,3 +623,85 @@ def oddCells(m: int, n: int, indices: list[list[int]]) -> int:
 
     # odd + even == odd
     return odd_rows * (n - odd_cols) + (m - odd_rows) * odd_cols
+
+
+def majorityElement_I(nums: list[int]) -> int:
+    count = 0
+    candidate = None
+
+    for num in nums:
+        if candidate == num:
+            count += 1
+        elif count == 0:
+            candidate = num
+            count = 1
+        else:
+            count -= 1
+    return candidate
+
+def majorityElement_II(nums: list[int]) -> list[int]:
+    # At most k-1 candidates with the "n/k" condidtion
+    # e.g. n/2 will have 1 candidate
+    # n/3 will have 2 candidates
+
+    # Key:
+    # for major elements, 
+    # when they are substracted from counts of minor elements
+    # they will always > 0
+
+    candidate_first = candidate_second = None
+    count_first = count_second = 0
+
+    for num in nums:
+        if candidate_first == num:
+            count_first += 1
+        elif candidate_second == num:
+            count_second += 1
+        elif count_first == 0:
+            candidate_first = num
+            count_first = 1
+        elif count_second == 0:
+            candidate_second = num
+            count_second = 1
+        else:
+            # new num --> substract all
+            count_first -= 1
+            count_second -= 1
+    
+    nfreq = len(nums) // 3
+    ans = []
+    for candidate in (candidate_first, candidate_second):
+        if candidate is not None and nums.count(candidate) > nfreq:
+            ans.append(candidate)
+    return ans
+
+def majorityElement_Gen(nums: list[int]) -> list[int]:
+
+    # General solution for n/k
+    # T: O(nk)
+    # S: O(k)
+
+    count_freq = dict()
+    k = 3
+
+    for num in nums:
+        if num in count_freq:
+            count_freq[num] += 1
+        elif len(count_freq) < k - 1:
+            count_freq[num] = 1
+        else:
+            del_keys = []
+            for key in count_freq.keys():
+                count_freq[key] -= 1
+                if count_freq[key] == 0:
+                    del_keys.append(key)
+            
+            for del_key in del_keys:
+                del count_freq[del_key]
+    
+    ans = []
+    nfreq = len(nums) // 3
+    for num in count_freq.keys():
+        if nums.count(num) > nfreq:
+            ans.append(num)
+    return ans

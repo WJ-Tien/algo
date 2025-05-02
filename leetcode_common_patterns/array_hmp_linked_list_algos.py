@@ -1032,3 +1032,12 @@ def numberOfPoints(nums: list[list[int]]) -> int:
             n_points += 1
     
     return n_points
+
+
+def minimumOperations(nums: list[int]) -> int:
+    seen = [False] * 101
+    for i in range(len(nums) - 1, -1, -1):
+        if seen[nums[i]]:
+            return i // 3 + 1
+        seen[nums[i]] = True
+    return 0

@@ -317,6 +317,12 @@ class B(test_class):
 class human:
 	# property has a conflict with __slots__
 	# 會發現如果類別有設定 __slots__ 屬性的話，在建立物件的時候會把物件的 __dict__, __weak_ref__ 屬性給拿掉。
+    #✅ 好處：
+    # 節省記憶體（不再使用 __dict__）
+    # 限制只能有 name, _age 屬性
+    # 屬性 lookup 更快（底層是 array-like 結構）
+    # ❌ 限制：
+    # ❌ 不能動態新增屬性：
 
 	__slots__ = ["name", "_age"] # inheritable
 
