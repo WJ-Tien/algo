@@ -864,3 +864,5 @@ def is_anagram(left, right):
         if freq > 0:
             return False
     return True
+
+

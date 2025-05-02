@@ -147,36 +147,34 @@ def swapPairs(head: Optional[ListNode]) -> Optional[ListNode]:
         cur = third_node
     return dummy.next
 
+class RotateSol:
 
-def rotate(nums: list[int], k: int) -> None:
-    """
-    Do not return anything, modify nums in-place instead.
-    """
+    def swap(self, nums, left, right):
+        while left <= right:
+            nums[left], nums[right] = nums[right], nums[left]
+            left += 1
+            right -= 1
 
-    k = k % len(nums)
-    # reverse whole array
-    # reverse first k
-    # reverse the remaining
+    def rotate(self, nums: list[int], k: int) -> None:
+        """
+        Do not return anything, modify nums in-place instead.
+        """
+        # [7,6,5,4,3,2,1]
+            # [6,7] + [1,2,3,4,5]
+            
+        k = k % len(nums)
 
-    l, r = 0, len(nums) - 1 # noqa
-    while l <= r:
-        nums[l], nums[r] = nums[r], nums[l]
-        l += 1 # noqa
-        r -= 1
-    
-    l = 0 #noqa
-    first_k = l + k - 1
-    remaining, r = first_k + 1, len(nums) - 1
+        # step 1: reverse all
+        self.swap(nums, 0, len(nums)-1) 
 
-    while l <= first_k:
-        nums[l], nums[first_k] = nums[first_k], nums[l]
-        l += 1 #noqa
-        first_k -= 1
+        # step 2: reverse the first k
+        # [0, k-1]
+        self.swap(nums, 0, k-1)
 
-    while remaining <= r:
-        nums[remaining], nums[r] = nums[r], nums[remaining]
-        remaining += 1
-        r -= 1
+        # step 3: reverse k+1 til the end
+        #[k, :]
+        self.swap(nums, k, len(nums)-1)
+
     
 def spiralOrder(matrix: list[list[int]]) -> list[int]:
 

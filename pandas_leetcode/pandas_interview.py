@@ -9,6 +9,7 @@ without col_b --> agg all columns except col_a
 
 count --> non-nulls
 size --> all (include nulls, series: #rows, dataframe: row * col)
+agg funcs default would skip 0
 In groupby.size() --> return #rows
 count() --> need addtional cols, while size does not need
 bool [True, False].sum() = 1 + 0
