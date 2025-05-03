@@ -193,33 +193,25 @@ def rotateRight(self, head: Optional[ListNode], k: int) -> Optional[ListNode]:
     if k == 0:
         return head
 
-    head = self.rev_list(head, list_len)
+    head, _ = self.rev_list(head, list_len)
     second_head = head
     for _ in range(k):
         second_head = second_head.next
 
-    head = self.rev_list(head, k)
-    second_head = self.rev_list(second_head, list_len - k)
-    last_item_of_first_list = self.get_last_item_of_list(head)
-    last_item_of_first_list.next = second_head
+    head, head_tail = self.rev_list(head, k)
+    second_head, _ = self.rev_list(second_head, list_len - k)
+    head_tail.next = second_head
     return head
 
-def get_last_item_of_list(self, head):   
+def rev_list(self, head, k):
     prev = None
     cur = head
-    while cur:
-        prev = cur
-        cur = cur.next
-    return prev
-
-def rev_list(self, cur, k):
-    prev = None
     for _ in range(k):
         next_node = cur.next
         cur.next = prev
         prev = cur
         cur = next_node
-    return prev
+    return prev, head # new_head and tail
 
 def get_list_len(self, head):
     cur = head
