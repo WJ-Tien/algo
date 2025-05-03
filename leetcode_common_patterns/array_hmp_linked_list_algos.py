@@ -175,6 +175,59 @@ class RotateSol:
         #[k, :]
         self.swap(nums, k, len(nums)-1)
 
+def rotateRight(self, head: Optional[ListNode], k: int) -> Optional[ListNode]:
+    """
+    1->2->3->4->5
+    5->4->3->2->1
+    4->5 
+    1->2->3 
+    4->5 -> 1->2->3
+    """
+
+    if not head or not head.next:
+        return head
+
+    list_len = self.get_list_len(head)
+    k = k % list_len
+
+    if k == 0:
+        return head
+
+    head = self.rev_list(head, list_len)
+    second_head = head
+    for _ in range(k):
+        second_head = second_head.next
+
+    head = self.rev_list(head, k)
+    second_head = self.rev_list(second_head, list_len - k)
+    last_item_of_first_list = self.get_last_item_of_list(head)
+    last_item_of_first_list.next = second_head
+    return head
+
+def get_last_item_of_list(self, head):   
+    prev = None
+    cur = head
+    while cur:
+        prev = cur
+        cur = cur.next
+    return prev
+
+def rev_list(self, cur, k):
+    prev = None
+    for _ in range(k):
+        next_node = cur.next
+        cur.next = prev
+        prev = cur
+        cur = next_node
+    return prev
+
+def get_list_len(self, head):
+    cur = head
+    list_len = 0
+    while cur:
+        list_len += 1
+        cur = cur.next
+    return list_len
     
 def spiralOrder(matrix: list[list[int]]) -> list[int]:
 
@@ -238,35 +291,6 @@ def productExceptSelf(nums: list[int]) -> list[int]:
         rprod *= nums[i]
 
     return ret
-
-
-def rotateRight(head: Optional[ListNode], k: int) -> Optional[ListNode]:
-
-    if head is None:
-        return None 
-
-    n = 0
-    cur_head = head
-    while cur_head:
-        n += 1
-        prev = cur_head
-        cur_head = cur_head.next
-    
-    prev.next = head # KEY: we have to make it a cycle
-    k = k % n
-    # k will be the new_head
-    # n - k - 1 will be the new head
-    # n - k = dist between head and new_head
-    new_tail = head
-    dist_new_head = n - k
-
-    for _ in range(dist_new_head - 1):
-        new_tail = new_tail.next
-    
-    head = new_tail.next
-    new_tail.next = None
-
-    return head
 
 class Node:
     def __init__(self, key: int, val: int) -> None:
