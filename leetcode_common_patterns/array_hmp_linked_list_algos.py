@@ -1055,3 +1055,22 @@ def minimumOperations(nums: list[int]) -> int:
             return i // 3 + 1
         seen[nums[i]] = True
     return 0
+
+
+
+def zeroFilledSubarray(self, nums: list[int]) -> int:
+
+    ans = 0
+    run = 0
+
+    for num in nums:
+        if num == 0:
+            run += 1
+        else:
+            ans += (run+1)*(run) // 2
+            run = 0
+
+    # edge case
+    if run > 0:
+        ans += (run+1)*(run) // 2
+    return ans
