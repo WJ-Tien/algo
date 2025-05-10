@@ -1074,3 +1074,39 @@ def zeroFilledSubarray(self, nums: list[int]) -> int:
     if run > 0:
         ans += (run+1)*(run) // 2
     return ans
+
+
+def isSubsequence(self, s: str, t: str) -> bool:
+
+    # two pointers
+    # compare idx !
+
+    # T: O(T)
+    # S: O(1)
+
+    s_bound, t_bound = len(s), len(t)
+
+    ptr_s = ptr_t = 0
+
+    while ptr_s < s_bound and ptr_t < t_bound:
+        if s[ptr_s] == t[ptr_t]:
+            ptr_s += 1
+        ptr_t += 1
+    
+    return ptr_s == s_bound
+
+
+def increasingTriplet(self, nums: list[int]) -> bool:
+
+    first = float("inf")
+    second = float("inf")
+
+    for num in nums:
+        if num <= first:
+            first = num
+        elif num <= second:
+            second = num
+        else:
+            return True
+    
+    return False
