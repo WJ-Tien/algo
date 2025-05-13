@@ -1,7 +1,7 @@
-from collections import deque
+from collections import deque, defaultdict
 from typing import Optional
 
-class ListNode:
+class listNode:
     def __init__(self, val=0, next=None):
         self.val = val
         self.next = next
@@ -119,7 +119,7 @@ def findKthLargest(nums: list[int], k: int) -> int:
         return nums[p]
     return quick_select(0, len(nums)-1)
 
-def swapPairs(head: Optional[ListNode]) -> Optional[ListNode]:
+def swapPairs(head: Optional[listNode]) -> Optional[listNode]:
 
     # the key is to use dummy node
     # while dummy.next will always be the same 
@@ -127,7 +127,7 @@ def swapPairs(head: Optional[ListNode]) -> Optional[ListNode]:
     # and prev to trace the new group head
     # if head is somehow dynamic
     # then you must use dummy node approach
-    dummy = ListNode(0)
+    dummy = listNode(0)
     cur = dummy.next = head
     prev = dummy # to revise head
 
@@ -175,7 +175,7 @@ class RotateSol:
         #[k, :]
         self.swap(nums, k, len(nums)-1)
 
-def rotateRight(self, head: Optional[ListNode], k: int) -> Optional[ListNode]:
+def rotateRight(self, head: Optional[listNode], k: int) -> Optional[listNode]:
     """
     1->2->3->4->5
     5->4->3->2->1
@@ -342,7 +342,7 @@ class LRUCacheComplicatd:
             del self.lru_cache[lru.key]
 
 
-def reorderList(head: Optional[ListNode]) -> None:
+def reorderlist(head: Optional[listNode]) -> None:
     """
     Do not return anything, modify head in-place instead.
     """
@@ -379,7 +379,7 @@ def reorderList(head: Optional[ListNode]) -> None:
         ori_head = ori_next_node
         rev_head = rev_next_node
 
-def oddEvenList(head: Optional[ListNode]) -> Optional[ListNode]:
+def oddEvenlist(head: Optional[listNode]) -> Optional[listNode]:
 
     if head is None:
         return None
@@ -402,14 +402,14 @@ def oddEvenList(head: Optional[ListNode]) -> Optional[ListNode]:
     return head 
 
 
-def reverseList_recur(head: Optional[ListNode]) -> Optional[ListNode]:
+def reverselist_recur(head: Optional[listNode]) -> Optional[listNode]:
     # 基本情況：如果是空鏈表或只有一個節點，直接返回
     if not head or not head.next:
         return head
     
     # 遞迴調用：先反轉後面的部分
     # newHead 將是原始鏈表的最後一個節點（反轉後的新頭節點）
-    new_head = reverseList_recur(head.next)
+    new_head = reverselist_recur(head.next)
     
     # 處理當前節點
     # head.next 是當前節點指向的下一個節點
@@ -421,7 +421,7 @@ def reverseList_recur(head: Optional[ListNode]) -> Optional[ListNode]:
 
     return new_head
 
-def reverseList_iter(head: Optional[ListNode]) -> Optional[ListNode]:
+def reverselist_iter(head: Optional[listNode]) -> Optional[listNode]:
     prev = None
     curr = head
     while curr:
@@ -432,9 +432,9 @@ def reverseList_iter(head: Optional[ListNode]) -> Optional[ListNode]:
     return prev
 
 
-def reverseList_dummy(head: Optional[ListNode]) -> Optional[ListNode]:
+def reverselist_dummy(head: Optional[listNode]) -> Optional[listNode]:
 
-    dummy = ListNode(0)
+    dummy = listNode(0)
     cur = dummy.next = head
     new_head = dummy # key for using dummy node !
     prev = None
@@ -470,11 +470,11 @@ def firstMissingPositive(nums: list[int]) -> int:
     return n + 1
 
 
-def reverseKGroup(head: Optional[ListNode], k: int) -> Optional[ListNode]:
+def reverseKGroup(head: Optional[listNode], k: int) -> Optional[listNode]:
     if not head or not head.next or k == 1:
         return head
     
-    dummy = ListNode(0)
+    dummy = listNode(0)
     dummy.next = head
     group_prev = dummy
 
@@ -831,8 +831,8 @@ def containsNearbyDuplicate(nums: list[int], k: int) -> bool:
     return False
 
 
-def deleteDuplicates(head: Optional[ListNode]) -> Optional[ListNode]:
-    # 83. Remove Duplicates from Sorted List
+def deleteDuplicates(head: Optional[listNode]) -> Optional[listNode]:
+    # 83. Remove Duplicates from Sorted list
 
     if head is None:
         return head
@@ -941,9 +941,9 @@ def canPlaceFlowers(f, flowerbed: list[int], n: int) -> bool:
             # so we can't return False here
             return cur_cnt >= n
 
-def removeElements(head: Optional[ListNode], val: int) -> Optional[ListNode]:
+def removeElements(head: Optional[listNode], val: int) -> Optional[listNode]:
 
-    dummy = ListNode(0, head)  # Dummy node simplifies removal logic
+    dummy = listNode(0, head)  # Dummy node simplifies removal logic
     cur = dummy
 
     while cur.next:
@@ -1077,6 +1077,7 @@ def zeroFilledSubarray(self, nums: list[int]) -> int:
 
 
 def isSubsequence(self, s: str, t: str) -> bool:
+    # 392. Is Subsequence
 
     # two pointers
     # compare idx !
@@ -1098,6 +1099,8 @@ def isSubsequence(self, s: str, t: str) -> bool:
 
 def increasingTriplet(self, nums: list[int]) -> bool:
 
+    # 334. Increasing Triplet Subsequence
+
     first = float("inf")
     second = float("inf")
 
@@ -1110,3 +1113,108 @@ def increasingTriplet(self, nums: list[int]) -> bool:
             return True
     
     return False
+
+
+
+def countQuadruplets(self, nums: list[int]) -> int:
+    # 1995. Count Special Quadruplets
+    # nums[a] + nums[b] = nums[d] - nums[c]
+
+    n = len(nums)
+    ans = 0
+    diffCnt = defaultdict(int)  
+
+    for b in range(n - 3, 0, -1):
+        c = b + 1 
+        for d in range(c + 1, n):
+            diff = nums[d] - nums[c]
+            diffCnt[diff] += 1
+
+        for a in range(b):          
+            need = nums[a] + nums[b]
+            ans += diffCnt.get(need, 0) 
+
+    return ans
+
+
+def fourSum(self, nums: list[int], target: int) -> list[list[int]]:
+    
+    nums.sort()                 # 先排序，方便雙指標收斂
+    n = len(nums)
+    res = []
+
+    for i in range(n - 3):      # 第一層固定 i
+        if i > 0 and nums[i] == nums[i - 1]:
+            continue            # 跳過重複 i 值
+
+        for j in range(i + 1, n - 2):   # 第二層固定 j
+            if j > i + 1 and nums[j] == nums[j - 1]:
+                continue        # 跳過重複 j 值
+
+            left, right = j + 1, n - 1  # 內層雙指標
+            while left < right:
+                s = nums[i] + nums[j] + nums[left] + nums[right]
+                if s == target:
+                    res.append([nums[i], nums[j], nums[left], nums[right]])
+                    left += 1
+                    right -= 1
+                    # 去重：連跳相同 left / right 值
+                    while left < right and nums[left] == nums[left - 1]:
+                        left += 1
+                    while left < right and nums[right] == nums[right + 1]:
+                        right -= 1
+                elif s < target:        # 總和太小 → 擴大 left
+                    left += 1
+                else:                   # 總和太大 → 縮小 right
+                    right -= 1
+    return res
+
+
+# =========================================================================================
+
+def fourSum_General(self, nums: list[int], target: int) -> list[list[int]]:
+    # T: O(n^(k-1))
+    # S: O(n)
+    return self.kSum(nums, 4, target)
+
+def kSum(self, nums: list[int], k: int, target: int) -> list[list[int]]:
+    nums.sort()                         # 先排序，方便去重與雙指標
+    return self._kSum(nums, 0, k, target)
+
+# 內部遞迴：從 start 開始找 k 個數，使其和為 target
+def _kSum(self, nums: list[int], start: int, k: int, target: int) -> list[list[int]]:
+    res = []
+    n = len(nums)
+
+    # ===== 基底：2-Sum，直接雙指標 =====
+    if k == 2:
+        left, right = start, n - 1
+        while left < right:
+            s = nums[left] + nums[right]
+            if s == target:
+                res.append([nums[left], nums[right]])
+                left += 1
+                right -= 1
+                # ---- 去重（兩端都跳）----
+                while left < right and nums[left] == nums[left - 1]:
+                    left += 1
+                while left < right and nums[right] == nums[right + 1]:
+                    right -= 1
+            elif s < target:
+                left += 1
+            else:                       # s > target
+                right -= 1
+        return res
+
+    # ===== 遞迴層：固定一個 nums[i]，往下找 (k-1)-Sum =====
+    for i in range(start, n - k + 1):
+        # -- 去重：同值的 i 只處理一次
+        if i > start and nums[i] == nums[i - 1]:
+            continue
+        # 往下遞迴求子組合
+        for subset in self._kSum(nums, i + 1, k - 1, target - nums[i]):
+            res.append([nums[i]] + subset)
+
+    return res
+
+# =========================================================================================
