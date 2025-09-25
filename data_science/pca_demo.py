@@ -104,12 +104,16 @@ print(pd.DataFrame(X_projected_sklearn, index=students, columns=['PC1_Sklearn'])
 
 
 # Loadings 儲存在 pca.components_ 屬性裡
+# 0.7 * math + 0.5 * physics
 loadings = pca.components_[0] # [0] 代表 PC1
 
 print("\n--- 載荷 (Loadings) 解讀 ---")
 print(f"PC1 的載荷向量: {loadings}")
 print("\n這代表 PC1 的配方是:")
 print(f"理科綜合能力 ≈ {loadings[0]:.3f} * (標準化數學) + {loadings[1]:.3f} * (標準化物理)")
+
+# pca.explained_variance_ 就是對應的特徵值 (Eigenvalues)
+print("\n特徵值 (pca.explained_variance_):\n", pca.explained_variance_)
 
 print("\n--- Sklearn 計算的變異解釋比例 ---")
 print(pca.explained_variance_ratio_)
