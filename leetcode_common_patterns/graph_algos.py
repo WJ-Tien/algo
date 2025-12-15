@@ -378,46 +378,61 @@ class DSUOptimal:
         return False # 已經是同一組，不需要合併
 
 class Solution:
-    def accountsMerge(self, accounts: list[list[str]]) -> list[list[str]]:
-        # 假設有 n 個帳戶，每個帳戶平均有 k 個電子郵件
-        # per find/union operation is α(N) -> we have nk --> nka(nk)
-        # Here, α(N) is the inverse Ackermann function that grows so slowly, that it doesn't exceed 4 for all reasonable N 
-        # approximately N<10^600
-        # a(N) = ackermann
-        # NK = total emails
+    def accountsMerge(self, accounts: List[List[str]]) -> List[List[str]]:
+        """
+        N = total account
+        K = average # of emails account
+        E = total # of emails = O(n*k)
+        """
+        # TC: NK log(NK)
+        # SC: NK
 
-        # T: O(NKlogNK)
-        # S: O(NK) worst case
-
+        email_accounts = dict()
+        email_to_user = dict()
         dsu = DSU()
-        email_to_name = dict()
 
-        for account in accounts:
-            name = account[0]
+        for account in accounts: # O(N)
+            user = account[0]
+            first_email = account[1]
 
-            for email in account[1:]:
-                email_to_name[email] = name
-                dsu.union(account[1], email) 
+            for email in account[1:]: # O(K)
+                dsu.finds(email) # O(α(E))
+                dsu.unions(first_email, email) # O(α(E)
+                email_to_user[email] = user # O(1)
+
+        """
+        dsu.parents
+        {
+         'David0@m.co': 'David0@m.co', 
+         'David1@m.co': 'David0@m.co', 
+         'David3@m.co': 'David0@m.co', 
+         'David4@m.co': 'David3@m.co', 
+         'David5@m.co': 'David3@m.co', 
+         'David2@m.co': 'David3@m.co'
+        }
+        """
+            
+        for email in dsu.parents: # O(N*K) 
+            # this is important
+            # we need to update the whole DSU again,
+            # in case there is something like, A -> B, B -> C. They should be eventually A->C && B->C
+            # this is the lazy update nature of dsu
+            email_root = dsu.finds(email)  # O(α(E))
+            if email_root not in email_accounts: # O(1)
+                email_accounts[email_root] = [email]
+            else:
+                email_accounts[email_root].append(email) # O(1)
         
-        merge = dict()
-
-        for email in email_to_name:
-            root = dsu.find(email)
-            if root not in merge:
-                merge[root] = []
-            merge[root].append(email)
-        
-        # {'john00@mail.com': 
-        # ['johnsmith@mail.com', 'john_newyork@mail.com', 'john00@mail.com'], 
-        # 'mary@mail.com': ['mary@mail.com'], 
-        # 'johnnybravo@mail.com': ['johnnybravo@mail.com']}
         ans = []
-        for email in merge: 
-            ret = [email_to_name[email]]
-            ret.extend(sorted(merge[email]))
-            ans.append(ret)
+        """
+        email_accounts
+        {'David0@m.co': ['David0@m.co', 'David1@m.co', 'David3@m.co', 'David4@m.co', 'David5@m.co', 'David2@m.co']}
+        """
+        for email_root in email_accounts: 
+            ans.append([email_to_user[email_root], *sorted(email_accounts[email_root])])
+            # NKlog(NK)
         return ans
-        
+
 
 def findCheapestPrice(n: int, flights: list[list[int]], src: int, dst: int, k: int) -> int:
     """
