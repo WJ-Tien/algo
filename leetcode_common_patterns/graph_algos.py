@@ -339,6 +339,42 @@ class DSU:
         # x --> y
         self.parent[self.find(x)] = self.find(y)
 
+# with rank
+class DSUOptimal:
+    def __init__(self):
+        self.parent = {}
+        self.rank = {}  # 新增：用來紀錄樹的高度 (Rank)
+
+    def find(self, x):
+        if x not in self.parent:
+            self.parent[x] = x
+            self.rank[x] = 0  # 初始化：新幫派高度為 0
+        
+        # Path Compression (路徑壓縮)：你原本寫得很好，保留
+        if x != self.parent[x]:
+            self.parent[x] = self.find(self.parent[x])
+        return self.parent[x]
+
+    def union(self, x, y):
+        rootX = self.find(x)
+        rootY = self.find(y)
+
+        if rootX != rootY:
+            # Union by Rank (按秩合併) 優化開始
+            # 策略：誰的樹比較高，誰就當老大（避免樹變得過深）
+            
+            if self.rank[rootX] > self.rank[rootY]:
+                self.parent[rootY] = rootX  # X 比較高，Y 歸順 X
+            elif self.rank[rootX] < self.rank[rootY]:
+                self.parent[rootX] = rootY  # Y 比較高，X 歸順 Y
+            else:
+                self.parent[rootY] = rootX  # 一樣高，誰當老大沒差(這邊選X)，但合併後高度要 +1
+                self.rank[rootX] += 1
+            
+            return True # 成功合併
+        
+        return False # 已經是同一組，不需要合併
+
 class Solution:
     def accountsMerge(self, accounts: list[list[str]]) -> list[list[str]]:
         # 假設有 n 個帳戶，每個帳戶平均有 k 個電子郵件
