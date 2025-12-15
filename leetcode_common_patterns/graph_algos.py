@@ -346,6 +346,7 @@ class DSUOptimal:
         self.rank = {}  # 新增：用來紀錄樹的高度 (Rank)
 
     def find(self, x):
+		# O(a(N))
         if x not in self.parent:
             self.parent[x] = x
             self.rank[x] = 0  # 初始化：新幫派高度為 0
@@ -356,6 +357,7 @@ class DSUOptimal:
         return self.parent[x]
 
     def union(self, x, y):
+		# O(a(N))
         rootX = self.find(x)
         rootY = self.find(y)
 
