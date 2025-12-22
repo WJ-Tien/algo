@@ -143,6 +143,43 @@ def longestPalindrome(s: str) -> str: #noqa
     
     return s[start: start + max_len]
 
+def longestPalindrome_better(s: str) -> str: #noqa
+	# start to start + max_len - 1 --> s[start: start+max_len]
+	# TC: O(N^2)
+	# SC: O(N) 
+
+	start = 0
+	max_len = 0
+	n = len(s)
+
+	for i in range(n):
+
+		# odd
+		cur_s, cur_len = self.expand_from_center(s, i, i, n)
+		if cur_len > max_len:
+			max_len = cur_len
+			start = cur_s
+		
+		# even
+		cur_s, cur_len = self.expand_from_center(s, i, i+1, n)
+		if cur_len > max_len:
+			max_len = cur_len
+			start = cur_s
+
+
+	return s[start: start+max_len]
+
+
+	def expand_from_center(self, s, left, right, n):
+		while left >= 0 and right < n:
+			if s[left] != s[right]:
+				break
+			left -= 1
+			right += 1
+
+		cur_len = (right - 1) - (left + 1) + 1 # right - left - 1
+		return left + 1, cur_len
+
 def characterReplacement(s: str, k: int) -> int:
     # Longest Repeating Character Replacement
 
